@@ -14,19 +14,11 @@ local function createTextLabel(parent, text, size, positionX, positionY)
     label.Position = UDim2.new(positionX, 0, positionY, 0)
     label.BackgroundTransparency = 1
     label.Text = text
-    label.TextColor3 = Color3.new(1, 1, 1)
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.TextSize = 18
     label.Font = Enum.Font.SourceSansBold
     label.TextXAlignment = Enum.TextXAlignment.Center
     label.Parent = parent
-    
-    -- Estilo de gradiente para las letras
-    label.TextStrokeTransparency = 0
-    label.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)  -- Rojo fosforescente
-    label.TextTransparency = 0.5
-    label.TextStrokeTransparency = 0
-    label.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)  -- Azul fosforescente
-    
     return label
 end
 
@@ -61,39 +53,13 @@ local function updatePlayerList(frame)
     return playerCount
 end
 
--- Función para actualizar la lista de transformaciones y la fuerza en un bucle infinito
-local function updateTransformationsAndStrength()
-    while true do
-        for i, player in ipairs(Players:GetPlayers()) do
-            local statsFolder = game.Workspace.Living[player.Name].Stats
-            local strength = statsFolder.Strength
-            local transformation = player.Status.Transformation.Value
-            
-            -- Actualizar los TextLabels de transformaciones y fuerza
-            if transformationLabelList[i] then
-                transformationLabelList[i].Text = tostring(transformation)
-            end
-            if strengthLabelList[i] then
-                strengthLabelList[i].Text = tostring(strength.Value)
-            end
-        end
-        wait(1) -- Actualizar cada segundo
-    end
-end
-
--- Función para limpiar el panel anterior
-local function clearPanel()
+-- Crear una función para destruir el panel anterior y crear uno nuevo
+local function createPanel()
     local existingPanel = game.CoreGui:FindFirstChild("PlayerListPanel")
     if existingPanel then
         existingPanel:Destroy()
     end
-end
 
--- Función para crear el panel
-local function createPanel()
-    -- Limpiar el panel anterior antes de crear uno nuevo
-    clearPanel()
-    
     local panel = Instance.new("ScreenGui")
     panel.Name = "PlayerListPanel"
     panel.Parent = game.CoreGui
@@ -134,39 +100,17 @@ local function createPanel()
     local playerCountLabel = createTextLabel(frame, "", 0.5, 0.25, 0.95)
     playerCountLabel.TextSize = 16
 
-    -- Función para minimizar/restaurar el panel
-    local function togglePanelSize()
-        if frame.Size == UDim2.new(0.5, 0, 0.6, 0) then
-            frame:TweenSizeAndPosition(UDim2.new(0.5, 0, 0.1, 0), UDim2.new(0.25, 0, 0.45, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-            scrollingFrame:TweenSize(UDim2.new(1, 0, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-            minimizeButton.Text = "+"
-        else
-            frame:TweenSizeAndPosition(UDim2.new(0.5, 0, 0.6, 0), UDim2.new(0.25, 0, 0.2, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-            scrollingFrame:TweenSize(UDim2.new(1, 0, 0.9, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-            minimizeButton.Text = "-"
+    -- Función para actualizar la tabla cada 3 segundos
+    local function updateTable()
+        while true do
+            local playerCount = updatePlayerList(scrollingFrame)
+            playerCountLabel.Text = "Jugadores En Partida: " .. playerCount
+            wait(3)  -- Actualizar cada 3 segundos
         end
     end
 
-    -- Crear botón de minimizar
-    local minimizeButton = Instance.new("TextButton")
-    minimizeButton.Size = UDim2.new(0.05, 0, 0.05, 0)
-    minimizeButton.Position = UDim2.new(0.95, 0, 0, 0)
-    minimizeButton.Text = "-"
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Color rojo
-    minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    minimizeButton.Font = Enum.Font.SourceSansBold
-    minimizeButton.TextSize = 18
-    minimizeButton.Parent = frame
-
-    -- Conectar la función de toggle al botón de minimizar
-    minimizeButton.MouseButton1Click:Connect(togglePanelSize)
-
-    -- Actualizar la lista de jugadores cuando se crea el panel
-    local playerCount = updatePlayerList(scrollingFrame)
-    playerCountLabel.Text = "Jugadores En Partida: " .. playerCount
-
-    -- Lanzar la función para actualizar la lista de transformaciones y fuerza
-    spawn(updateTransformationsAndStrength)
+    -- Lanzar la función para actualizar la tabla
+    spawn(updateTable)
 end
 
 -- Llamar a la función para crear el panel al inicio
