@@ -5,7 +5,7 @@ local CoreGui = game:GetService("StarterGui")
 
 CoreGui:SetCore("SendNotification", {
     Title = "Script hecho por",
-    Text = "Aedus (Suscríbete a su canal en yt)",
+    Text = "Pvtin2_Clan-SkR-CL",
     Duration = 2.5,
 })
 
