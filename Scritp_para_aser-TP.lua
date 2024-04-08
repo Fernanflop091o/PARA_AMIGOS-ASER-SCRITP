@@ -5,7 +5,7 @@ local CoreGui = game:GetService("StarterGui")
 
 CoreGui:SetCore("SendNotification", {
     Title = "Script hecho por",
-    Text = "Pvtin2_Clan-SkR-CL",
+    Text = "Aedus (Suscríbete a su canal en yt)",
     Duration = 2.5,
 })
 
@@ -16,13 +16,13 @@ local MainFrame = Instance.new("Frame")
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 MainFrame.BackgroundTransparency = 0.5
-MainFrame.Position = UDim2.new(0.65, 0, 0.1, -66) -- Ajustado el posicionamiento para que esté centrado en la pantalla y más bajo
+MainFrame.Position = UDim2.new(0.65, 0, 1.5, -43) -- Ajustado el posicionamiento para que esté centrado en la pantalla y más bajo
 MainFrame.Size = UDim2.new(0.4, 0, 1.1, 0) -- Ancho aumentado hacia la derecha, altura mantenida igual
 MainFrame.ClipsDescendants = true
 
 local TextBox = Instance.new("TextBox")
 TextBox.Parent = MainFrame
-TextBox.BackgroundColor3 = Color3.new(1, 266, 1)
+TextBox.BackgroundColor3 = Color3.new(1, 1, 1)
 TextBox.Position = UDim2.new(0.05, 0, 0.05, 0) -- Ajustado la posición del TextBox
 TextBox.Size = UDim2.new(0.9, 0, 0.1, 0)
 TextBox.Font = Enum.Font.SourceSans
