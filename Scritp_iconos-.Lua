@@ -1,5 +1,5 @@
 
-wait(18)
+wait(0.001)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local imageLabel = Instance.new("ImageLabel")
