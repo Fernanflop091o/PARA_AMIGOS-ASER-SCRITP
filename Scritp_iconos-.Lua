@@ -9,7 +9,7 @@ ScreenGui.ResetOnSpawn = false
 
 
 button.Size = UDim2.new(0, 31, 0, 31)
-button.Position = UDim2.new(0.9, 11, 0, -32)
+button.Position = UDim2.new(0.1, 39, 0, -32)
 button.BackgroundColor3 = Color3.new(0, 0, 0)  -- Cambiar a color negro
 button.BackgroundTransparency = 0.5  -- Cambiar a 0.5 para hacerlo semi-transparente
 button.Text = "" -- Oculta el texto del botón
@@ -17,7 +17,7 @@ button.Parent = ScreenGui
 
 
 button1.Size = UDim2.new(0, 31, 0, 31)
-button1.Position = UDim2.new(0.9, -32, 0, -32)
+button1.Position = UDim2.new(0.2, 20, 0, -32)
 button1.BackgroundColor3 = Color3.new(0, 0, 0)  -- Cambiar a color negro
 button1.BackgroundTransparency = 0.5  -- Cambiar a 0.5 para hacerlo semi-transparente
 button1.Text = "" -- Oculta el texto del botón
