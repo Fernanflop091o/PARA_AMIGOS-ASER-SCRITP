@@ -66,8 +66,8 @@ local transformaciones = {
 		{name = "SSJ Kaioken",fuerza = 16000},
 	},
 	fases = {
+                {name = "SSJBUI",fuerza = 120000000},
 		{name = "Beast",fuerza = 120000000},
-			       {name = "SSJBUI",fuerza = 120000000},
 	 	{name = "Ultra Ego",fuerza =  120000000},
 		{name = "SSJB4",fuerza =50000000},
 	 	{name = "LBSSJ4",fuerza = 100000000},
