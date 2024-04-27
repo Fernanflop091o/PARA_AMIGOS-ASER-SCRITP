@@ -1,4 +1,10 @@
--- Obtener servicios necesarios
+-- Verificar si ya existe el menú original
+local existingMenu = game.CoreGui:FindFirstChild("ScreenGui")
+if existingMenu then
+    return  -- Salir del script si el menú ya existe
+end
+
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
