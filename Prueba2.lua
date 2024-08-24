@@ -10,7 +10,7 @@ local statsPlayerFarmSa
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Prueba.lua"))()
 	
 
-wait(3.4)
+wait(4)
 
 local millon = 1000000
 local arregloAtaques = {
