@@ -1,4 +1,4 @@
-	loadstring(game:HttpGet("https://bit.ly/4cykAji"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Prueba.lua"))()
 	 local yo = game:GetService('Players').LocalPlayer
 local folderData = game.ReplicatedStorage.Datas[yo.UserId]
 local afk = game:service'VirtualUser'
