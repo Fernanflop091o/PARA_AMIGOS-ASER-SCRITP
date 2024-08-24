@@ -1,4 +1,3 @@
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Prueba.lua"))()
 	 local yo = game:GetService('Players').LocalPlayer
 local folderData = game.ReplicatedStorage.Datas[yo.UserId]
 local afk = game:service'VirtualUser'
@@ -8,6 +7,8 @@ local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipski
 local cargaAndBloqueo = true
 local activadaSpeed = false
 local statsPlayerFarmSa
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Prueba.lua"))()
+	
 
 wait(3.4)
 
