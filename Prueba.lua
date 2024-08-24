@@ -139,7 +139,7 @@ Players.LocalPlayer.OnTeleport:Connect(function(State)
 
         queueteleport([[
             task.wait(4.4)
-            loadstring(game:HttpGet('https://raw.githubusercontent.com/fernando6663535/Scritp_Gratis_Youtubr/main/Prueba2.lua'))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Prueba2.lua"))()
         ]])
     end
 end)
