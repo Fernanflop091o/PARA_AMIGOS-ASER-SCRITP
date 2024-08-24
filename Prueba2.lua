@@ -185,6 +185,7 @@ end
 function iniciarJuego()
 	local player = game.Players.LocalPlayer
 	local data = game.ReplicatedStorage.Datas[player.UserId]
+	validacionPlanetas()
 	game:GetService("ReplicatedStorage").Package.Events.Start:InvokeServer()
 	game.Players.LocalPlayer.Character.Humanoid.Health = 0
 	if data.Strength.Value>=8000000 then
@@ -464,7 +465,7 @@ function empezarQuest(array)
 	acumularStats() 
 	task.wait()
 
-	validacionPlanetas()
+
 
 	local enemigo = iteradorQuest(array)
 
