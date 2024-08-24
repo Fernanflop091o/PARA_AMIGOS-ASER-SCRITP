@@ -9,7 +9,7 @@ local cargaAndBloqueo = true
 local activadaSpeed = false
 local statsPlayerFarmSa
 
-
+wait(3.4)
 
 local millon = 1000000
 local arregloAtaques = {
