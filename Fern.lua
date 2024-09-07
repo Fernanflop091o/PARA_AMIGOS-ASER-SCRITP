@@ -350,18 +350,27 @@ function findboss(questname) -- Finds the bossmodel
 end
 
 
+
+
 Stacking = false
 task.spawn(function() -- Auto Charge
    
     while ScGui do
+    pcall(function()
+                if lplr.Status.Blocking.Value ~= true then
+                    task.spawn(function()
+                        --pcall(function()
+                            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                        --end)
+                    end)
+                end
+            end)
         if Farming then
             pcall(function()
                 local Ki = lplr.Character.Stats.Ki
                 while _G.Key == r and ScGui and (not Stacking) and ((not Boss) or Ki.Value < 40 or Ki.Value < Ki.MaxValue/10) and lplr.Character.Humanoid.Health > 0 do
                     CanAttack = nil -- Only = nil if charging
-                    game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
-                    local args = {[1] = true}
-					game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
+                    game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")            
                 end
                 if CanAttack == nil then
                     CanAttack = true
