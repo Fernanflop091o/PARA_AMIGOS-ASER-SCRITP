@@ -1,7 +1,4 @@
 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
-                
-
 		
 getgenv().Stats = {}
 
@@ -86,7 +83,8 @@ ScGui.Name = "Autofarm"
 ScGui.Parent = lplr.PlayerGui
 -- Instances:
 
-
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
+                
 kick = false
 
 local GC = getconnections or get_signal_cons
@@ -171,7 +169,6 @@ local function transform()
     if getloweststat() < 34000 then return end
     while not lplr.Status:FindFirstChild("Transformation") do task.wait() end
     if not Boss then
-        
     end
     if side.Value == "Good" then
         forms = {
@@ -257,7 +254,7 @@ local function transform()
                     if form[3] ~= nil  then
                         game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(form[3])
                     end
-                    CanAttack = false
+                    CanAttack = true
                     pcall(function()                                  
                         game.ReplicatedStorage.Package.Events.ta:InvokeServer()
                     end)
@@ -296,7 +293,7 @@ local function transform()
                 if useform == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
                 else
                     game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(useform)
-                    CanAttack = false
+                    CanAttack = true
                     killtarget = nil
                     
                     while lplr.Status.Transformation.Value ~= useform do
@@ -317,7 +314,7 @@ local function transform()
                     else
                         
                         game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
-                        CanAttack = false
+                        CanAttack = true
                         killtarget = nil
                         while lplr.Status.Transformation.Value ~= useform do
                             pcall(function()
@@ -325,7 +322,6 @@ local function transform()
                             end)
                             task.wait(0.01)
                         end
-                        while FindChar().HumanoidRootPart.Anchored == true do wait() end
                        CanAttack = true
                                    
                     end
