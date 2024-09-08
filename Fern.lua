@@ -161,21 +161,38 @@ end
 
 
 local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 
+-- Función para eliminar efectos y animaciones de un personaje
+local function eliminarEfectosYAnimaciones(personaje)
+    for _, objeto in pairs(personaje:GetDescendants()) do
+        if (objeto:IsA("ParticleEmitter") or objeto:IsA("Sound") or
+            objeto:IsA("Beam") or objeto:IsA("Trail") or
+            objeto:IsA("BillboardGui") or objeto:IsA("SurfaceGui") or
+            objeto:IsA("Animation") or objeto:IsA("AnimationTrack")) then
+            objeto:Destroy()
+            print("Elemento eliminado: " .. objeto.Name)
+        end
+    end
+end
+
+-- Eliminar efectos y animaciones del personaje del jugador
 spawn(function()
     while true do
-        for _, objeto in pairs(Character:GetDescendants()) do
-            -- Eliminar todos los efectos y animaciones
-            if (objeto:IsA("ParticleEmitter") or objeto:IsA("Sound") or
-                objeto:IsA("Beam") or objeto:IsA("Trail") or
-                objeto:IsA("BillboardGui") or objeto:IsA("SurfaceGui") or
-                objeto:IsA("Animation") or objeto:IsA("AnimationTrack")) then
-                objeto:Destroy()
-                print("Elemento eliminado: " .. objeto.Name)
+        eliminarEfectosYAnimaciones(Character)
+
+        -- Eliminar efectos y animaciones de los NPCs o jefes
+        for _, npc in pairs(Workspace:GetChildren()) do
+            if npc:FindFirstChild("questNPCs") then
+                for _, boss in pairs(npc.questNPCs:GetChildren()) do
+                    eliminarEfectosYAnimaciones(boss)
+                end
             end
         end
+
         wait()  -- Espera 2 segundos antes de volver a verificar
     end
 end)
