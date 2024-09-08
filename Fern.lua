@@ -160,6 +160,26 @@ if player and player.Character then
 end
 
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+spawn(function()
+    while true do
+        for _, objeto in pairs(Character:GetDescendants()) do
+            -- Eliminar todos los efectos y animaciones
+            if (objeto:IsA("ParticleEmitter") or objeto:IsA("Sound") or
+                objeto:IsA("Beam") or objeto:IsA("Trail") or
+                objeto:IsA("BillboardGui") or objeto:IsA("SurfaceGui") or
+                objeto:IsA("Animation") or objeto:IsA("AnimationTrack")) then
+                objeto:Destroy()
+                print("Elemento eliminado: " .. objeto.Name)
+            end
+        end
+        wait()  -- Espera 2 segundos antes de volver a verificar
+    end
+end)
+
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
