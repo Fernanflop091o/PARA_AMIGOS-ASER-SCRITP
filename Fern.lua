@@ -1,5 +1,7 @@
 
-	
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
+                
+
 		
 getgenv().Stats = {}
 
@@ -85,12 +87,6 @@ ScGui.Parent = lplr.PlayerGui
 -- Instances:
 
 
-
-
-wait(.01)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
-                
-
 kick = false
 
 local GC = getconnections or get_signal_cons
@@ -155,6 +151,14 @@ else
         {"Kid Nohag",20000},
         {"Klirin",0},
     }
+end
+
+local player = game.Players.LocalPlayer
+if player and player.Character then
+    local effects = player.Character:FindFirstChild("Effects")
+    if effects then
+        effects:Destroy()
+    end
 end
 
 
