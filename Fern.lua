@@ -151,77 +151,36 @@ else
     }
 end
 
-local Players = game:GetService("Players")
-
-local function removeAnimations(character)
-    for _, obj in pairs(character:GetDescendants()) do
-        if obj:IsA("Animator") or obj:IsA("Animation") then obj:Destroy() end
+local player = game.Players.LocalPlayer
+if player and player.Character then
+    local effects = player.Character:FindFirstChild("Effects")
+    if effects then
+        effects:Destroy()
     end
 end
 
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(removeAnimations)
-end)
-
-for _, player in pairs(Players:GetPlayers()) do
-    if player.Character then removeAnimations(player.Character) end
-end
-
-
-
 
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 
--- Crear carpeta para almacenar datos de daño
-local damageFolder = Instance.new("Folder")
-damageFolder.Name = "DamageData"
-damageFolder.Parent = ReplicatedStorage
-
--- Función para registrar daño
-local function logDamage(player, damageAmount)
-    local damageEntry = Instance.new("Folder")
-    damageEntry.Name = "Damage_" .. tick()
-    damageEntry.Parent = damageFolder
-
-    local playerName = Instance.new("StringValue")
-    playerName.Name = "PlayerName"
-    playerName.Value = player.Name
-    playerName.Parent = damageEntry
-
-    local damageValue = Instance.new("IntValue")
-    damageValue.Name = "DamageAmount"
-    damageValue.Value = damageAmount
-    damageValue.Parent = damageEntry
-end
-
--- Manejar daño recibido
-local function onCharacterAdded(character)
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.HealthChanged:Connect(function(newHealth)
-            local damageAmount = humanoid.MaxHealth - newHealth
-            if damageAmount > 0 then
-                local player = Players:GetPlayerFromCharacter(character)
-                if player then
-                    logDamage(player, damageAmount)
-                end
+spawn(function()
+    while true do
+        for _, objeto in pairs(Character:GetDescendants()) do
+            -- Eliminar todos los efectos y animaciones
+            if (objeto:IsA("ParticleEmitter") or objeto:IsA("Sound") or
+                objeto:IsA("Beam") or objeto:IsA("Trail") or
+                objeto:IsA("BillboardGui") or objeto:IsA("SurfaceGui") or
+                objeto:IsA("Animation") or objeto:IsA("AnimationTrack")) then
+                objeto:Destroy()
+                print("Elemento eliminado: " .. objeto.Name)
             end
-        end)
+        end
+        wait()  -- Espera 2 segundos antes de volver a verificar
     end
-end
-
--- Manejar jugadores nuevos y existentes
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(onCharacterAdded)
 end)
 
--- Aplicar a jugadores ya existentes
-for _, player in ipairs(Players:GetPlayers()) do
-    if player.Character then
-        onCharacterAdded(player.Character)
-    end
-end
+
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
