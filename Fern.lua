@@ -696,6 +696,119 @@ task.spawn(function() -- Pick quest
         task.wait()
     end
 end)  
+local function formatNumber(number)
+    local suffixes = {"", "K", "M", "B", "T", "QD"}
+    local suffix_index = 1
+
+    while math.abs(number) >= 1000 and suffix_index < #suffixes do
+        number = number / 1000.0
+        suffix_index = suffix_index + 1
+    end
+
+    return string.format("%.2f%s", number, suffixes[suffix_index])
+end
+
+local function updateNumbers()
+    local player = game.Players.LocalPlayer
+    local rebirthFrame = player.PlayerGui.Main.MainFrame.Frames.Rebirth
+    local statsFrame = player.PlayerGui.Main.MainFrame.Frames.Stats
+    local strengthLabel = statsFrame:FindFirstChild("Strength")
+
+    local strengthValue
+    if strengthLabel and strengthLabel:IsA("TextLabel") then
+        local strengthText = strengthLabel.Text:match("%d+")
+        strengthValue = tonumber(strengthText)
+    end
+
+    local menuGui = game.CoreGui.MenuGui
+
+    -- Limpiar todos los clones existentes antes de actualizar
+    for _, child in ipairs(menuGui.Background:GetChildren()) do
+        child:Destroy()
+    end
+
+    local yOffset = -50
+    local xOffset = 50
+
+    for _, child in ipairs(rebirthFrame:GetChildren()) do
+        if child:IsA("TextLabel") then
+            local text = child.Text:match("%d+")
+            if text then
+                local number = tonumber(text)
+                if number and strengthValue then
+                    local formattedNumber = formatNumber(number)
+                    local formattedStrength = formatNumber(strengthValue)
+                    local combinedText = formattedNumber .. "/" .. formattedStrength
+                    local clonedLabel = Instance.new("TextButton", menuGui.Background)
+                   clonedLabel.Name = "Cloned" .. child.Name
+                    clonedLabel.Text = combinedText
+                   clonedLabel.Font = child.Font
+                   clonedLabel.TextSize = 30
+                   clonedLabel.TextColor3 = Color3.fromRGB(0, 0, 0)  -- Color del texto
+                   clonedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Color de fondo
+                   clonedLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)  -- Color del contorno del texto
+                   clonedLabel.TextStrokeTransparency = 0.000  -- Transparencia del contorno del texto
+                   clonedLabel.BackgroundTransparency = 1
+                   clonedLabel.Position = UDim2.new(0, xOffset, 0, yOffset)
+                   clonedLabel.Size = UDim2.new(0, 200, 0, 30)
+                   yOffset = yOffset + 40
+                    
+                end
+            end
+        end
+    end
+end
+
+local function onCharacterAdded(character)
+    -- Conectar eventos de cambio relevantes para actualizar dinÃ¡micamente
+    character:WaitForChild("Humanoid").Died:Connect(function()
+        updateNumbers()  -- Actualizar nÃºmeros cuando el jugador muere
+    end)
+
+    -- Ejemplo de escucha de cambio en una propiedad especÃ­fica
+    local statsFrame = character:WaitForChild("PlayerGui"):WaitForChild("Main"):WaitForChild("MainFrame"):WaitForChild("Frames"):WaitForChild("Stats")
+    local strengthLabel = statsFrame:FindFirstChild("Strength")
+    if strengthLabel then
+        strengthLabel:GetPropertyChangedSignal("Text"):Connect(function()
+            updateNumbers()  -- Actualizar nÃºmeros cuando cambia la fuerza
+        end)
+    end
+end
+
+local function initialize()
+    local player = game.Players.LocalPlayer
+    local menuGui = Instance.new("ScreenGui")
+    menuGui.Name = "MenuGui"
+
+    local backgroundFrame = Instance.new("Frame")
+    backgroundFrame.Name = "Background"
+    backgroundFrame.Size = UDim2.new(0, 220, 0, 0)
+    backgroundFrame.Position = UDim2.new(0, 30, 0, 20)
+    backgroundFrame.BackgroundTransparency = 0.5
+    backgroundFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    backgroundFrame.BorderSizePixel = 0
+    backgroundFrame.Parent = menuGui
+
+    menuGui.Parent = game.CoreGui
+
+    -- Escuchar eventos de cambio de personaje
+    player.CharacterAdded:Connect(function(character)
+        onCharacterAdded(character)
+        updateNumbers()  -- Llamar a updateNumbers inicialmente para configurar la interfaz por primera vez
+    end)
+
+    player.CharacterRemoving:Connect(function()
+        updateNumbers()  -- Limpiar la interfaz al remover el personaje
+    end)
+
+    -- Llamar a updateNumbers regularmente para mantener actualizada la interfaz
+    game:GetService("RunService").Heartbeat:Connect(function()
+        updateNumbers()
+    end)
+end
+
+initialize()
+
 
 -- Asegúrate de que el script esté en un `LocalScript` dentro del `StarterPlayerScripts` o `StarterGui`.
 
