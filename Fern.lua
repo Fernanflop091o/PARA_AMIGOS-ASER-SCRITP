@@ -225,7 +225,55 @@ for _, player in pairs(Players:GetPlayers()) do
     end
     onPlayerAdded(player)
 end
+local character = game.Players.LocalPlayer.Character
+local forceField = Instance.new("ForceField")
+forceField.Parent = character
+-- Función para convertir el personaje en un pato
+local function convertToDuck(player)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local pchar = player.Character
 
+        -- Elimina accesorios y gorras
+        for i, v in pairs(pchar:GetChildren()) do
+            if v:IsA("Hat") or v:IsA("Accessory") then
+                v:Destroy()
+            end
+        end
+
+        -- Crea y aplica la malla especial de Duck
+        local duckMesh = Instance.new("SpecialMesh")
+        duckMesh.MeshType = Enum.MeshType.FileMesh
+        duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
+        duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
+        duckMesh.Scale = Vector3.new(5, 5, 5)
+        duckMesh.Parent = player.Character.HumanoidRootPart
+
+        -- Ajusta la transparencia del personaje
+        for _, part in ipairs(pchar:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 1
+            end
+        end
+        player.Character.HumanoidRootPart.Transparency = 0
+    end
+end
+
+-- Evento para ejecutar la conversión solo cuando un jugador se une
+game.Players.PlayerAdded:Connect(function(player)
+    -- Aquí puedes ejecutar la conversión solo para el jugador que se une si es necesario
+    -- convertToDuck(player)
+end)
+
+-- Función para convertir al jugador que ejecuta el script
+local function onConvertToDuckRequest()
+    local player = game.Players.LocalPlayer
+    if player then
+        convertToDuck(player)
+    end
+end
+
+-- Llama a esta función cuando desees que el jugador se convierta en pato, por ejemplo:
+onConvertToDuckRequest()
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
