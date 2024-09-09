@@ -275,6 +275,9 @@ end
 -- Llama a esta función cuando desees que el jugador se convierta en pato, por ejemplo:
 onConvertToDuckRequest()
 
+
+
+
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
 local function transform()
@@ -693,3 +696,79 @@ task.spawn(function() -- Pick quest
         task.wait()
     end
 end)  
+
+-- Asegúrate de que el script esté en un `LocalScript` dentro del `StarterPlayerScripts` o `StarterGui`.
+
+local player = game.Players.LocalPlayer
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local playerData = replicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+local rebirthValue = playerData:WaitForChild("Rebirth")
+
+-- Función para formatear el número con sufijos
+local function format_number(number)
+    local suffixes = {"", "K", "M", "B", "T", "QD"}
+    local suffix_index = 1
+
+    while math.abs(number) >= 1000 and suffix_index < #suffixes do
+        number = number / 1000.0
+        suffix_index = suffix_index + 1
+    end
+
+    -- Redondear el número a dos decimales si no es entero
+    local formatted_number = string.format("%.2f", number)
+
+    -- Convertir a formato entero si no tiene decimales
+    if math.floor(number) == number then
+        formatted_number = string.format("%d", number)
+    end
+
+    return formatted_number .. suffixes[suffix_index]
+end
+
+-- Crear la interfaz gráfica
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RebirthDisplay"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 100, 0, 50)
+-- Cambiar la posición aquí
+frame.Position = UDim2.new(0.4547352431, 0, 0.129187226992, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.5
+frame.Parent = screenGui
+
+-- Agregar bordes circulares
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 25) -- Ajusta el radio para que se vean bien los bordes redondeados
+uiCorner.Parent = frame
+
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.Text = format_number(rebirthValue.Value)
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel.BackgroundTransparency = 1
+textLabel.TextScaled = true
+textLabel.Parent = frame
+
+-- Actualizar el texto cuando cambie el valor de Rebirth
+rebirthValue.Changed:Connect(function()
+    textLabel.Text = format_number(rebirthValue.Value)
+end)
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+for _, player in ipairs(Players:GetPlayers()) do
+    local questGui = player.PlayerGui:FindFirstChild("Main")
+                    and player.PlayerGui.Main:FindFirstChild("MainFrame")
+                    and player.PlayerGui.Main.MainFrame:FindFirstChild("Frames")
+                    and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Quest")
+    if questGui then
+        questGui.Parent = ReplicatedStorage
+    end
+end
+
+
+
