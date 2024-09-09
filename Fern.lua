@@ -181,6 +181,51 @@ spawn(function()
 end)
 
 
+local Players = game:GetService("Players")
+
+local function setWalkingAnimation(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    local walkAnimation = Instance.new("Animation")
+    walkAnimation.Name = "WalkAnimation"
+    walkAnimation.AnimationId = "rbxassetid://4841403964" -- ID de animación de caminar
+
+    -- Eliminar otras animaciones
+    for _, obj in pairs(character:GetDescendants()) do
+        if obj:IsA("Animator") or obj:IsA("Animation") then
+            obj:Destroy()
+        end
+    end
+
+    -- Crear y aplicar la animación de caminar
+    local animator = Instance.new("Animator")
+    animator.Name = "Animator"
+    animator.Parent = humanoid
+
+    local animationTrack = humanoid:LoadAnimation(walkAnimation)
+    animationTrack:Play()
+
+    -- Opcional: Puedes establecer la animación para que se reproduzca continuamente
+    animationTrack.Looped = true
+end
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(function(character)
+        character:WaitForChild("Humanoid").Loaded:Connect(function()
+            setWalkingAnimation(character)
+        end)
+    end)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+
+-- Aplicar a los jugadores que ya están en el juego
+for _, player in pairs(Players:GetPlayers()) do
+    if player.Character then
+        setWalkingAnimation(player.Character)
+    end
+    onPlayerAdded(player)
+end
+
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
