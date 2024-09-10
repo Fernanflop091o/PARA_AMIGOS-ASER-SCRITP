@@ -1,68 +1,97 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
+local hasPrintedError = false
+
+local function safeCall(func)
+    local success, err = pcall(func)
+    if not success and not hasPrintedError then
+        warn("Error: " .. tostring(err))
+        hasPrintedError = true
+    end
+end
 
 local function clearEffects(character)
-    if character then
-        local effects = character:FindFirstChild("Effects")
-        if effects then
-            effects:Destroy()
-        end
-
-        for _, obj in pairs(character:GetDescendants()) do
-            if obj:IsA("ParticleEmitter") or obj:IsA("Sound") or
-               obj:IsA("Beam") or obj:IsA("Trail") or
-               obj:IsA("BillboardGui") or obj:IsA("SurfaceGui") or
-               obj:IsA("Animation") or obj:IsA("AnimationTrack") then
-                obj:Destroy()
+    safeCall(function()
+        if character then
+            local effects = character:FindFirstChild("Effects")
+            if effects then
+                effects:Destroy()
+            end            
+            for _, obj in pairs(character:GetDescendants()) do
+                if obj:IsA("ParticleEmitter") or obj:IsA("Sound") or
+                   obj:IsA("Beam") or obj:IsA("Trail") or
+                   obj:IsA("BillboardGui") or obj:IsA("SurfaceGui") or
+                   obj:IsA("Animation") or obj:IsA("AnimationTrack") then
+                    obj:Destroy()
+                end
             end
         end
-    end
+    end)
 end
 
 local function setWalkingAnimation(character)
-    local humanoid = character:WaitForChild("Humanoid")
-    local walkAnimation = Instance.new("Animation")
-    walkAnimation.Name = "WalkAnimation"
-    walkAnimation.AnimationId = "rbxassetid://4841403964"
+    safeCall(function()
+        local humanoid = character:WaitForChild("Humanoid")
+        local walkAnimation = Instance.new("Animation")
+        walkAnimation.Name = "WalkAnimation"
+        walkAnimation.AnimationId = "rbxassetid://4841403964"
 
-    for _, obj in pairs(character:GetDescendants()) do
-        if obj:IsA("Animator") or obj:IsA("Animation") then
-            obj:Destroy()
+        -- Elimina cualquier Animator o Animation previo
+        for _, obj in pairs(character:GetDescendants()) do
+            if obj:IsA("Animator") or obj:IsA("Animation") then
+                obj:Destroy()
+            end
         end
-    end
 
-    local animator = Instance.new("Animator")
-    animator.Name = "Animator"
-    animator.Parent = humanoid
+        -- Crea y configura el Animator
+        local animator = Instance.new("Animator")
+        animator.Name = "Animator"
+        animator.Parent = humanoid
 
-    local animationTrack = humanoid:LoadAnimation(walkAnimation)
-    animationTrack:Play()
-    animationTrack.Looped = true
+        -- Carga y reproduce la animación
+        local animationTrack = humanoid:LoadAnimation(walkAnimation)
+        animationTrack:Play()
+        animationTrack.Looped = true
+        
+        -- Espera 8 segundos y luego elimina la animación
+        spawn(function()
+            wait(8)
+            safeCall(function()
+                if animator and animationTrack then
+                    animationTrack:Stop()
+                    animationTrack:Destroy()
+                    animator:Destroy()
+                end
+            end)
+        end)
+    end)
 end
 
 local function convertToDuck(character)
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        for _, v in pairs(character:GetChildren()) do
-            if v:IsA("Hat") or v:IsA("Accessory") then
-                v:Destroy()
+    safeCall(function()
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            for _, v in pairs(character:GetChildren()) do
+                if v:IsA("Hat") or v:IsA("Accessory") then
+                    v:Destroy()
+                end
             end
-        end
 
-        local duckMesh = Instance.new("SpecialMesh")
-        duckMesh.MeshType = Enum.MeshType.FileMesh
-        duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
-        duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
-        duckMesh.Scale = Vector3.new(5, 5, 5)
-        duckMesh.Parent = character.HumanoidRootPart
+            local duckMesh = Instance.new("SpecialMesh")
+            duckMesh.MeshType = Enum.MeshType.FileMesh
+            duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
+            duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
+            duckMesh.Scale = Vector3.new(5, 5, 5)
+            duckMesh.Parent = character.HumanoidRootPart
 
-        for _, part in ipairs(character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.Transparency = 1
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Transparency = 1
+                end
             end
+            character.HumanoidRootPart.Transparency = 0
         end
-        character.HumanoidRootPart.Transparency = 0
-    end
+    end)
 end
 
 local function onCharacterAdded(character)
@@ -72,13 +101,17 @@ local function onCharacterAdded(character)
 end
 
 if player.Character then
-    onCharacterAdded(player.Character)
+    safeCall(function()
+        onCharacterAdded(player.Character)
+    end)
 end
 player.CharacterAdded:Connect(onCharacterAdded)
 
 if player and player.Character then
-    local forceField = Instance.new("ForceField")
-    forceField.Parent = player.Character
+    safeCall(function()
+        local forceField = Instance.new("ForceField")
+        forceField.Parent = player.Character
+    end)
 end
 
 local questGui = player.PlayerGui:FindFirstChild("Main")
@@ -86,7 +119,9 @@ local questGui = player.PlayerGui:FindFirstChild("Main")
                 and player.PlayerGui.Main.MainFrame:FindFirstChild("Frames")
                 and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Quest")
 if questGui then
-    questGui.Parent = ReplicatedStorage
+    safeCall(function()
+        questGui.Parent = ReplicatedStorage
+    end)
 end
 
 local function format_number(number)
@@ -135,14 +170,18 @@ textLabel.TextScaled = true
 textLabel.Parent = frame
 
 rebirthValue.Changed:Connect(function()
-    textLabel.Text = format_number(rebirthValue.Value)
+    safeCall(function()
+        textLabel.Text = format_number(rebirthValue.Value)
+    end)
 end)
 
 spawn(function()
     while true do
-        if player.Character then
-            clearEffects(player.Character)
-        end
-        wait(.5)
+        safeCall(function()
+            if player.Character then
+                clearEffects(player.Character)
+            end
+        end)
+        wait(0.5)
     end
 end)
