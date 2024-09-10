@@ -151,8 +151,6 @@ else
     }
 end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Freettt.lua"))()
-                
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
