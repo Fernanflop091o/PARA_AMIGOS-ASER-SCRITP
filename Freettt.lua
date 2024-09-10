@@ -19,54 +19,17 @@ local function clearEffects(character)
                 effects:Destroy()
             end            
             for _, obj in pairs(character:GetDescendants()) do
-                if obj:IsA("ParticleEmitter") or obj:IsA("Sound") or
-                   obj:IsA("Beam") or obj:IsA("Trail") or
-                   obj:IsA("BillboardGui") or obj:IsA("SurfaceGui") or
-                   obj:IsA("Animation") or obj:IsA("AnimationTrack") then
-                    obj:Destroy()
-                end
-            end
-        end
-    end)
-end
-
-local function setWalkingAnimation(character)
-    safeCall(function()
-        local humanoid = character:WaitForChild("Humanoid")
-        local walkAnimation = Instance.new("Animation")
-        walkAnimation.Name = "WalkAnimation"
-        walkAnimation.AnimationId = "rbxassetid://4841403964"
-
-        -- Elimina cualquier Animator o Animation previo
-        for _, obj in pairs(character:GetDescendants()) do
-            if obj:IsA("Animator") or obj:IsA("Animation") then
+            if obj:IsA("ParticleEmitter") or obj:IsA("Sound") or
+               obj:IsA("Beam") or obj:IsA("Trail") or
+               obj:IsA("BillboardGui") or obj:IsA("SurfaceGui") or
+               obj:IsA("Animation") or obj:IsA("AnimationTrack") then
                 obj:Destroy()
+                end
             end
         end
-
-        -- Crea y configura el Animator
-        local animator = Instance.new("Animator")
-        animator.Name = "Animator"
-        animator.Parent = humanoid
-
-        -- Carga y reproduce la animación
-        local animationTrack = humanoid:LoadAnimation(walkAnimation)
-        animationTrack:Play()
-        animationTrack.Looped = true
-        
-        -- Espera 8 segundos y luego elimina la animación
-        spawn(function()
-            wait(8)
-            safeCall(function()
-                if animator and animationTrack then
-                    animationTrack:Stop()
-                    animationTrack:Destroy()
-                    animator:Destroy()
-                end
-            end)
-        end)
     end)
 end
+
 
 local function convertToDuck(character)
     safeCall(function()
@@ -185,3 +148,6 @@ spawn(function()
         wait(0.5)
     end
 end)
+
+
+
