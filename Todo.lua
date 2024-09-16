@@ -1,5 +1,5 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
-                
+               
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
@@ -23,18 +23,15 @@ local function clearEffects(character)
             for _, obj in pairs(character:GetDescendants()) do
                 if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
                     if not obj.Name:lower():find("line") then
-                        print("Eliminando: " .. obj.Name .. " de tipo: " .. obj.ClassName)
                         obj:Destroy()
                     end
                 elseif obj:IsA("Sound") then
-                    print("Eliminando: " .. obj.Name .. " de tipo: " .. obj.ClassName)
                     obj:Destroy()
                 end
             end
         end
     end)
 end
-
 
 local function convertToDuck(character)
     safeCall(function()
@@ -63,9 +60,10 @@ local function convertToDuck(character)
 end
 
 local function onCharacterAdded(character)
-    clearEffects(character)
-    setWalkingAnimation(character)
-    convertToDuck(character)
+    safeCall(function()
+        clearEffects(character)
+        convertToDuck(character)
+    end)
 end
 
 if player.Character then
@@ -73,14 +71,12 @@ if player.Character then
         onCharacterAdded(player.Character)
     end)
 end
-player.CharacterAdded:Connect(onCharacterAdded)
 
-if player and player.Character then
+player.CharacterAdded:Connect(function(character)
     safeCall(function()
-        local forceField = Instance.new("ForceField")
-        forceField.Parent = player.Character
+        onCharacterAdded(character)
     end)
-end
+end)
 
 local questGui = player.PlayerGui:FindFirstChild("Main")
                 and player.PlayerGui.Main:FindFirstChild("MainFrame")
@@ -92,68 +88,14 @@ if questGui then
     end)
 end
 
-local function format_number(number)
-    local suffixes = {"", "K", "M", "B", "T", "QD"}
-    local suffix_index = 1
-
-    while math.abs(number) >= 1000 and suffix_index < #suffixes do
-        number = number / 1000.0
-        suffix_index = suffix_index + 1
-    end
-
-    local formatted_number = string.format("%.2f", number)
-
-    if math.floor(number) == number then
-        formatted_number = string.format("%d", number)
-    end
-
-    return formatted_number .. suffixes[suffix_index]
-end
-
-local playerData = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-local rebirthValue = playerData:WaitForChild("Rebirth")
-
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "RebirthDisplay"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
-
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 100, 0, 50)
-frame.Position = UDim2.new(0.4547352431, 0, 0.129187226992, 0)
-frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-frame.BackgroundTransparency = 0.5
-frame.Parent = screenGui
-
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 25)
-uiCorner.Parent = frame
-
-local textLabel = Instance.new("TextLabel")
-textLabel.Size = UDim2.new(1, 0, 1, 0)
-textLabel.Text = format_number(rebirthValue.Value)
-textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-textLabel.BackgroundTransparency = 1
-textLabel.TextScaled = true
-textLabel.Parent = frame
-
-rebirthValue.Changed:Connect(function()
-    safeCall(function()
-        textLabel.Text = format_number(rebirthValue.Value)
-    end)
-end)
-
 spawn(function()
     while true do
         safeCall(function()
-            if player.Character then
+            if player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 and player.Character:FindFirstChild("HumanoidRootPart") then
                 clearEffects(player.Character)
+                convertToDuck(player.Character)
             end
         end)
         wait(0.5)
     end
 end)
-
-
-
-
