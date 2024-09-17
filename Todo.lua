@@ -5,6 +5,115 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 local hasPrintedError = false
 
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local guiButton = Instance.new("ScreenGui")
+guiButton.Name = "ClickableButtonGui"
+guiButton.Parent = game.CoreGui
+
+local frameButton = Instance.new("Frame")
+frameButton.Name = "ButtonFrame"
+frameButton.Size = UDim2.new(0.100061566, 0, 0.100026964, 0)
+frameButton.Position = UDim2.new(0.0116822431 + 0.77, 0, 0.0248226952, 0)
+frameButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frameButton.BackgroundTransparency = 0.5
+frameButton.ClipsDescendants = true
+frameButton.Parent = guiButton
+
+local cornerButton = Instance.new("UICorner")
+cornerButton.CornerRadius = UDim.new(1, 0)
+cornerButton.Parent = frameButton
+
+local textButton = Instance.new("TextButton")
+textButton.Name = "ClickableButton"
+textButton.Size = UDim2.new(1, -10, 1, -10)
+textButton.Position = UDim2.new(0, 5, 0, 5)
+textButton.BackgroundTransparency = 1
+textButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+textButton.TextStrokeTransparency = 0
+textButton.Font = Enum.Font.SourceSans
+textButton.TextSize = 18
+textButton.TextWrapped = true
+textButton.TextXAlignment = Enum.TextXAlignment.Center
+textButton.TextYAlignment = Enum.TextYAlignment.Center
+textButton.Text = "Click Me (OFF)"
+textButton.Parent = frameButton
+
+local buttonActive = false
+local taskHandle
+local extraAmount = 5e9
+
+local function getPlayerStrength()
+    local player = Players.LocalPlayer
+    local folderData = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+    return folderData:WaitForChild("Strength").Value
+end
+
+local function getNextRebirthPrice(currentRebirths)
+    local basePrice = 3e6
+    local additionalPrice = 2e6
+    local nextPrice = (currentRebirths + 1) * basePrice + additionalPrice
+    return nextPrice
+end
+
+local function startLoop()
+    local player = Players.LocalPlayer
+    local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+    local currentRebirths = ldata:WaitForChild("Rebirth").Value
+    local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
+
+    if getPlayerStrength() < nextRebirthPrice + extraAmount then
+        textButton.Text = "Rebirth (ON)"
+        taskHandle = RunService.Heartbeat:Connect(function()
+            ReplicatedStorage.Package.Events.reb:InvokeServer()
+            wait(1)
+        end)
+    else
+        textButton.Text = "Stats (OFF)"
+        stopLoop()
+    end
+end
+
+local function stopLoop()
+    if taskHandle then
+        taskHandle:Disconnect()
+        taskHandle = nil
+    end
+end
+
+local function onClick()
+    buttonActive = not buttonActive
+    if buttonActive then
+        startLoop()
+    else
+        stopLoop()
+    end
+    textButton.Text = buttonActive and "Rebirth (ON)" or "Stats (OFF)"
+end
+
+textButton.MouseButton1Click:Connect(onClick)
+
+local function initialCheck()
+    local player = Players.LocalPlayer
+    local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+    local currentRebirths = ldata:WaitForChild("Rebirth").Value
+    local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
+    local playerStrength = getPlayerStrength()
+
+    if playerStrength >= nextRebirthPrice + extraAmount then
+        textButton.Text = "Click Me (OFF)"
+        buttonActive = false
+    else
+        textButton.Text = "Click Me (ON)"
+        buttonActive = true
+        startLoop()
+    end
+end
+
+
+
 local function safeCall(func)
     local success, err = pcall(func)
     if not success and not hasPrintedError then
@@ -97,3 +206,5 @@ spawn(function()
         wait(.01)
     end
 end)
+
+initialCheck()
