@@ -1,4 +1,3 @@
-wait(7)
 local ToDisable = {
     Textures = true,
     VisualEffects = true,
@@ -12,6 +11,8 @@ local ToEnable = {
 }
 
 local Stuff = {}
+local processInterval = 2 -- Intervalo en segundos para procesar elementos
+
 local function processAsset(v)
     if ToDisable.Parts and (v:IsA("Part") or v:IsA("Union") or v:IsA("BasePart")) then
         v.Material = Enum.Material.SmoothPlastic
@@ -39,10 +40,27 @@ local function processAsset(v)
     end
 end
 
--- Process each descendant
-for _, v in next, game:GetDescendants() do
-    processAsset(v)
+local function processDescendants()
+    local descendants = game:GetDescendants()
+    local count = #descendants
+    local batchSize = 100 -- Número de elementos a procesar en cada lote
+    local i = 1
+
+    while i <= count do
+        local endIndex = math.min(i + batchSize - 1, count)
+        for j = i, endIndex do
+            local v = descendants[j]
+            processAsset(v)
+        end
+        i = endIndex + 1
+        wait(processInterval)
+    end
 end
+
+-- Ejecutar el procesamiento en lotes
+spawn(function()
+    processDescendants()
+end)
 
 game:GetService("TestService"):Message("Effects Disabler Script : Successfully disabled " .. #Stuff .. " assets / effects. Settings :")
 
