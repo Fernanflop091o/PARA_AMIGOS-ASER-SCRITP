@@ -1,1 +1,1 @@
---esta es  el que ejecutan los todos pero le quite por que ahora estan separados
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/To_Bills.Lua"))()
