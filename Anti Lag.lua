@@ -1,3 +1,4 @@
+wait(7)
 local ToDisable = {
     Textures = true,
     VisualEffects = true,
