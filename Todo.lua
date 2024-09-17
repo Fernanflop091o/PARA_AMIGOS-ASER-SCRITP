@@ -1,3 +1,4 @@
+-- Load external scripts
 local success1, err1 = pcall(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
 end)
@@ -9,14 +10,16 @@ end)
 if not success1 then warn("Error loading CONNOMETRO.lua: " .. tostring(err1)) end
 if not success2 then warn("Error loading Anti Lag.lua: " .. tostring(err2)) end
 
-
+-- Services and variables
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
-local hasPrintedError = false
+local taskHandle = nil
+local extraAmount = 5e9
+local buttonActive = false
 
-
+-- GUI Setup
 local guiButton = Instance.new("ScreenGui", game.CoreGui)
 guiButton.Name = "ClickableButtonGui"
 
@@ -44,17 +47,10 @@ textButton.TextXAlignment = Enum.TextXAlignment.Center
 textButton.TextYAlignment = Enum.TextYAlignment.Center
 textButton.Text = "Click Me (OFF)"
 
-local buttonActive = false
-local taskHandle
-local extraAmount = 5e9
-
-
+-- Utility Functions
 local function safeCall(func)
     local success, err = pcall(func)
-    if not success and not hasPrintedError then
-        warn("Error: " .. tostring(err))
-        hasPrintedError = true
-    end
+    if not success then warn("Error: " .. tostring(err)) end
 end
 
 local function getPlayerStrength()
@@ -67,6 +63,7 @@ local function getNextRebirthPrice(currentRebirths)
 end
 
 local function startLoop()
+    if taskHandle then return end -- Evita iniciar múltiples bucles
     local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
     local currentRebirths = ldata:WaitForChild("Rebirth").Value
     local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
@@ -75,7 +72,7 @@ local function startLoop()
         textButton.Text = "Rebirth (ON)"
         taskHandle = RunService.Heartbeat:Connect(function()
             ReplicatedStorage.Package.Events.reb:InvokeServer()
-            wait(1)
+            wait(1) -- Reduce la carga con un tiempo de espera mayor
         end)
     else
         textButton.Text = "Stats (OFF)"
@@ -116,86 +113,84 @@ local function initialCheck()
     end
 end
 
+-- Character Functions
 local function clearEffects(character)
-    safeCall(function()
-        if character then
-            for _, obj in pairs(character:GetDescendants()) do
-                if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
-                    if not obj.Name:lower():find("line") then
-                        obj:Destroy()
-                    end
-                elseif obj:IsA("Sound") then
-                    obj:Destroy()
-                end
+    if not character then return end
+    for _, obj in pairs(character:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+            if not obj.Name:lower():find("line") then
+                obj:Destroy()
             end
+        elseif obj:IsA("Sound") then
+            obj:Destroy()
         end
-    end)
+    end
 end
 
 local function convertToDuck(character)
-    safeCall(function()
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            for _, v in pairs(character:GetChildren()) do
-                if v:IsA("Hat") or v:IsA("Accessory") then
-                    v:Destroy()
-                end
-            end
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
-            local duckMesh = Instance.new("SpecialMesh")
-            duckMesh.MeshType = Enum.MeshType.FileMesh
-            duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
-            duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
-            duckMesh.Scale = Vector3.new(5, 5, 5)
-            duckMesh.Parent = character.HumanoidRootPart
-
-            for _, part in ipairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.Transparency = 1
-                end
-            end
-            character.HumanoidRootPart.Transparency = 0
+    for _, v in pairs(character:GetChildren()) do
+        if v:IsA("Hat") or v:IsA("Accessory") then
+            v:Destroy()
         end
-    end)
+    end
+
+    local duckMesh = Instance.new("SpecialMesh")
+    duckMesh.MeshType = Enum.MeshType.FileMesh
+    duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
+    duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
+    duckMesh.Scale = Vector3.new(5, 5, 5)
+    duckMesh.Parent = character.HumanoidRootPart
+
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Transparency = 1
+        end
+    end
+    character.HumanoidRootPart.Transparency = 0
+end
+
+local function moveQuestGui()
+    local questGui = player.PlayerGui:FindFirstChild("Main")
+                and player.PlayerGui.Main:FindFirstChild("MainFrame")
+                and player.PlayerGui.Main.MainFrame:FindFirstChild("Frames")
+                and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Quest")
+
+    if questGui then
+        questGui.Parent = ReplicatedStorage
+    end
 end
 
 local function onCharacterAdded(character)
     clearEffects(character)
     convertToDuck(character)
+    moveQuestGui() -- Mueve el GUI cuando el personaje cambia
 end
 
 if player.Character then
-    safeCall(function()
-        onCharacterAdded(player.Character)
-    end)
+    onCharacterAdded(player.Character)
 end
 
 player.CharacterAdded:Connect(onCharacterAdded)
 
-local questGui = player.PlayerGui:FindFirstChild("Main")
-                and player.PlayerGui.Main:FindFirstChild("MainFrame")
-                and player.PlayerGui.Main.MainFrame:FindFirstChild("Frames")
-                and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Quest")
-
-if questGui then
-    safeCall(function()
-        questGui.Parent = ReplicatedStorage
-    end)
-end
-
-spawn(function()
-    while true do
-        safeCall(function()
-            local char = player.Character
-            if char and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 and char:FindFirstChild("HumanoidRootPart") then
-                clearEffects(char)
-                convertToDuck(char)
-            end
-        end)
-        wait(0.01)
+-- Continuous character update (Optimizado)
+local char
+local lastCharacterCheck = tick()
+RunService.Heartbeat:Connect(function()
+    if tick() - lastCharacterCheck > 1 then -- Reduce la frecuencia de comprobación a cada segundo
+        lastCharacterCheck = tick()
+        char = player.Character
+        if char and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 and char:FindFirstChild("HumanoidRootPart") then
+            clearEffects(char)
+            convertToDuck(char)
+            moveQuestGui()
+        end
     end
 end)
 
-
+-- Connect button click
 textButton.MouseButton1Click:Connect(onClick)
 
+-- Initial check
 initialCheck()
