@@ -41,6 +41,9 @@ textButton.TextYAlignment = Enum.TextYAlignment.Center
 textButton.Text = "Click Me (OFF)"
 textButton.Parent = frameButton
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/refs/heads/main/Anti%20Lag.lua"))()
+           
+
 local buttonActive = false
 local taskHandle
 local extraAmount = 5e9
