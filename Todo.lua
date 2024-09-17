@@ -14,18 +14,16 @@ local function safeCall(func)
 end
 
 local function clearEffects(character)
-    safeCall(function()
+safeCall(function()
         if character then
-            local effects = character:FindFirstChild("Effects")
-            if effects then
-                effects:Destroy()
-            end
             for _, obj in pairs(character:GetDescendants()) do
                 if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
                     if not obj.Name:lower():find("line") then
+                        print("Eliminando: " .. obj.Name .. " de tipo: " .. obj.ClassName)
                         obj:Destroy()
                     end
                 elseif obj:IsA("Sound") then
+                    print("Eliminando: " .. obj.Name .. " de tipo: " .. obj.ClassName)
                     obj:Destroy()
                 end
             end
@@ -36,19 +34,22 @@ end
 local function convertToDuck(character)
     safeCall(function()
         if character and character:FindFirstChild("HumanoidRootPart") then
+            -- Eliminar sombreros o accesorios
             for _, v in pairs(character:GetChildren()) do
                 if v:IsA("Hat") or v:IsA("Accessory") then
                     v:Destroy()
                 end
             end
 
+            
             local duckMesh = Instance.new("SpecialMesh")
             duckMesh.MeshType = Enum.MeshType.FileMesh
-            duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
-            duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
-            duckMesh.Scale = Vector3.new(5, 5, 5)
+            duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831" -- ID del mesh del pato
+            duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827" -- ID de la textura del pato
+            duckMesh.Scale = Vector3.new(5, 5, 5) -- Escala del pato
             duckMesh.Parent = character.HumanoidRootPart
 
+            
             for _, part in ipairs(character:GetDescendants()) do
                 if part:IsA("BasePart") then
                     part.Transparency = 1
@@ -59,11 +60,10 @@ local function convertToDuck(character)
     end)
 end
 
+
 local function onCharacterAdded(character)
-    safeCall(function()
-        clearEffects(character)
-        convertToDuck(character)
-    end)
+    clearEffects(character)
+    convertToDuck(character)
 end
 
 if player.Character then
@@ -72,11 +72,9 @@ if player.Character then
     end)
 end
 
-player.CharacterAdded:Connect(function(character)
-    safeCall(function()
-        onCharacterAdded(character)
-    end)
-end)
+
+player.CharacterAdded:Connect(onCharacterAdded)
+
 
 local questGui = player.PlayerGui:FindFirstChild("Main")
                 and player.PlayerGui.Main:FindFirstChild("MainFrame")
@@ -96,6 +94,6 @@ spawn(function()
                 convertToDuck(player.Character)
             end
         end)
-        wait(0.5)
+        wait(.01)
     end
 end)
