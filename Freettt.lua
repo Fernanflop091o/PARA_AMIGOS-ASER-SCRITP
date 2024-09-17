@@ -4,7 +4,7 @@ local queueTeleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (f
 
 local function executeScript()
     if queueTeleport then
-        queueTeleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/fernando6663535/Lua/main/Farm.lua'))()")
+        queueTeleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/fernando6663535/Lua/main/To_Bills.Lua'))()")
     end
 end
 
