@@ -1,5 +1,12 @@
+-- Cargar el script remoto
+local success, errorMsg = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/Queuet/refs/heads/main/DATOS.lua"))()
+end)
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/Queuet/refs/heads/main/DATOS.lua"))()
+if not success then
+    warn("Error al cargar el script remoto: " .. errorMsg)
+end
+
 local ToDisable = {
     Textures = true,
     VisualEffects = true,
@@ -47,9 +54,15 @@ local function processAsset(v)
     end
 end
 
--- Process each descendant
-for _, v in next, game:GetDescendants() do
-    processAsset(v)
+-- Procesar cada descendiente
+local success, errorMsg = pcall(function()
+    for _, v in next, game:GetDescendants() do
+        processAsset(v)
+    end
+end)
+
+if not success then
+    warn("Error al procesar los descendientes: " .. errorMsg)
 end
 
 local function removeNextItem(itemList, delayTime)
@@ -73,30 +86,49 @@ local function removeNextItem(itemList, delayTime)
     end
 end
 
--- Start removing items
-removeNextItem(Stuff.Textures, 22)
-removeNextItem(Stuff.VisualEffects, 12)
-removeNextItem(Stuff.Parts, 18)
-removeNextItem(Stuff.Particles, 16)
-removeNextItem(Stuff.Sky, 18)
+-- Iniciar la eliminación de elementos
+success, errorMsg = pcall(function()
+    removeNextItem(Stuff.Textures, 22)
+    removeNextItem(Stuff.VisualEffects, 12)
+    removeNextItem(Stuff.Parts, 18)
+    removeNextItem(Stuff.Particles, 16)
+    removeNextItem(Stuff.Sky, 18)
+end)
 
--- Enable FullBright if needed
-if ToEnable.FullBright then
-    local Lighting = game:GetService("Lighting")
-    
-    Lighting.FogColor = Color3.fromRGB(255, 255, 255)
-    Lighting.FogEnd = math.huge
-    Lighting.FogStart = math.huge
-    Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-    Lighting.Brightness = 5
-    Lighting.ColorShift_Bottom = Color3.fromRGB(255, 255, 255)
-    Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
-    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
-    Lighting.Outlines = true
+if not success then
+    warn("Error al eliminar elementos: " .. errorMsg)
 end
 
-game:GetService("TestService"):Message("Effects Disabler Script : Successfully disabled assets / effects. Settings :")
+-- Habilitar FullBright si es necesario
+if ToEnable.FullBright then
+    local Lighting = game:GetService("Lighting")
 
-for i, v in next, ToDisable do
-    print(tostring(i) .. ": " .. tostring(v))
+    success, errorMsg = pcall(function()
+        Lighting.FogColor = Color3.fromRGB(255, 255, 255)
+        Lighting.FogEnd = math.huge
+        Lighting.FogStart = math.huge
+        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        Lighting.Brightness = 5
+        Lighting.ColorShift_Bottom = Color3.fromRGB(255, 255, 255)
+        Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
+        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        Lighting.Outlines = true
+    end)
+
+    if not success then
+        warn("Error al habilitar FullBright: " .. errorMsg)
+    end
+end
+
+-- Mensaje de éxito
+success, errorMsg = pcall(function()
+    game:GetService("TestService"):Message("Effects Disabler Script : Successfully disabled assets / effects. Settings :")
+
+    for i, v in next, ToDisable do
+        print(tostring(i) .. ": " .. tostring(v))
+    end
+end)
+
+if not success then
+    warn("Error al enviar el mensaje final: " .. errorMsg)
 end
