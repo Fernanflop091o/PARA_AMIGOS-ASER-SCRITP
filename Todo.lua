@@ -54,8 +54,15 @@ local function safeCall(func)
 end
 
 local function getPlayerStrength()
-    local folderData = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-    return folderData:WaitForChild("Strength").Value
+    local success, result = pcall(function()
+        local folderData = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+        return folderData:WaitForChild("Strength").Value
+    end)
+    if not success then
+        warn("Error getting player strength: " .. tostring(result))
+        return 0
+    end
+    return result
 end
 
 local function getNextRebirthPrice(currentRebirths)
@@ -64,19 +71,26 @@ end
 
 local function startLoop()
     if taskHandle then return end -- Evita iniciar múltiples bucles
-    local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-    local currentRebirths = ldata:WaitForChild("Rebirth").Value
-    local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
+    local success, result = pcall(function()
+        local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+        local currentRebirths = ldata:WaitForChild("Rebirth").Value
+        local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
 
-    if getPlayerStrength() < nextRebirthPrice + extraAmount then
-        textButton.Text = "Rebirth (ON)"
-        taskHandle = RunService.Heartbeat:Connect(function()
-            ReplicatedStorage.Package.Events.reb:InvokeServer()
-            wait(1) -- Reduce la carga con un tiempo de espera mayor
-        end)
-    else
-        textButton.Text = "Stats (OFF)"
-        stopLoop()
+        if getPlayerStrength() < nextRebirthPrice + extraAmount then
+            textButton.Text = "Rebirth (ON)"
+            taskHandle = RunService.Heartbeat:Connect(function()
+                pcall(function()
+                    ReplicatedStorage.Package.Events.reb:InvokeServer()
+                end)
+                wait(1) -- Reduce la carga con un tiempo de espera mayor
+            end)
+        else
+            textButton.Text = "Stats (OFF)"
+            stopLoop()
+        end
+    end)
+    if not success then
+        warn("Error in startLoop: " .. tostring(result))
     end
 end
 
@@ -98,18 +112,23 @@ local function onClick()
 end
 
 local function initialCheck()
-    local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-    local currentRebirths = ldata:WaitForChild("Rebirth").Value
-    local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
-    local playerStrength = getPlayerStrength()
+    local success, result = pcall(function()
+        local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+        local currentRebirths = ldata:WaitForChild("Rebirth").Value
+        local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
+        local playerStrength = getPlayerStrength()
 
-    if playerStrength >= nextRebirthPrice + extraAmount then
-        textButton.Text = "Click Me (OFF)"
-        buttonActive = false
-    else
-        textButton.Text = "Click Me (ON)"
-        buttonActive = true
-        startLoop()
+        if playerStrength >= nextRebirthPrice + extraAmount then
+            textButton.Text = "Click Me (OFF)"
+            buttonActive = false
+        else
+            textButton.Text = "Click Me (ON)"
+            buttonActive = true
+            startLoop()
+        end
+    end)
+    if not success then
+        warn("Error in initialCheck: " .. tostring(result))
     end
 end
 
@@ -119,10 +138,14 @@ local function clearEffects(character)
     for _, obj in pairs(character:GetDescendants()) do
         if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
             if not obj.Name:lower():find("line") then
-                obj:Destroy()
+                pcall(function()
+                    obj:Destroy()
+                end)
             end
         elseif obj:IsA("Sound") then
-            obj:Destroy()
+            pcall(function()
+                obj:Destroy()
+            end)
         end
     end
 end
@@ -132,7 +155,9 @@ local function convertToDuck(character)
 
     for _, v in pairs(character:GetChildren()) do
         if v:IsA("Hat") or v:IsA("Accessory") then
-            v:Destroy()
+            pcall(function()
+                v:Destroy()
+            end)
         end
     end
 
@@ -145,10 +170,14 @@ local function convertToDuck(character)
 
     for _, part in ipairs(character:GetDescendants()) do
         if part:IsA("BasePart") then
-            part.Transparency = 1
+            pcall(function()
+                part.Transparency = 1
+            end)
         end
     end
-    character.HumanoidRootPart.Transparency = 0
+    pcall(function()
+        character.HumanoidRootPart.Transparency = 0
+    end)
 end
 
 local function moveQuestGui()
@@ -158,7 +187,9 @@ local function moveQuestGui()
                 and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Quest")
 
     if questGui then
-        questGui.Parent = ReplicatedStorage
+        pcall(function()
+            questGui.Parent = ReplicatedStorage
+        end)
     end
 end
 
@@ -182,9 +213,11 @@ RunService.Heartbeat:Connect(function()
         lastCharacterCheck = tick()
         char = player.Character
         if char and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 and char:FindFirstChild("HumanoidRootPart") then
-            clearEffects(char)
-            convertToDuck(char)
-            moveQuestGui()
+            pcall(function()
+                clearEffects(char)
+                convertToDuck(char)
+                moveQuestGui()
+            end)
         end
     end
 end)
