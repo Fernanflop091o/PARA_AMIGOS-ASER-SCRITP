@@ -1,3 +1,4 @@
+-- Utility Functions
 local function safeCall(func)
     local success, err = pcall(func)
     if not success then
@@ -31,6 +32,7 @@ local function deleteJSON(fileName)
     end)
 end
 
+-- Configuration Settings
 local settingsFileName = "WaitTimeConfig.json"
 local waitTime = 4
 local savedSettings = loadFromJSON(settingsFileName)
@@ -38,6 +40,7 @@ if savedSettings and savedSettings.waitTime then
     waitTime = savedSettings.waitTime
 end
 
+-- Show Configuration Menu
 local function showConfigMenu()
     local Players = game:GetService("Players")
     local player = Players.LocalPlayer
@@ -90,13 +93,14 @@ local function showConfigMenu()
             saveToJSON(settingsFileName, {waitTime = waitTime})
             screenGui:Destroy()
             print("Tiempo de espera configurado a: " .. waitTime .. " segundos.")
-            executeScript()
+            safeCall(executeScript)
         else
             print("Por favor, ingresa un número válido mayor que 0.")
         end
     end)
 end
 
+-- Create Reset Button
 local function createResetButton()
     local Players = game:GetService("Players")
     local player = Players.LocalPlayer
@@ -121,14 +125,17 @@ local function createResetButton()
         uicorner.CornerRadius = UDim.new(0, 20)
 
         resetButton.MouseButton1Click:Connect(function()
-            deleteJSON(settingsFileName)
-            resetGui:Destroy()
-            print("Tiempo de espera eliminado. Por favor, configura un nuevo tiempo.")
-            showConfigMenu()
+            safeCall(function()
+                deleteJSON(settingsFileName)
+                resetGui:Destroy()
+                print("Tiempo de espera eliminado. Por favor, configura un nuevo tiempo.")
+                showConfigMenu()
+            end)
         end)
     end
 end
 
+-- Execute Script
 local function executeScript()
     -- Crear el botón de reset antes de ejecutar el script principal
     createResetButton()
@@ -144,16 +151,17 @@ local function executeScript()
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
             wait(.01)
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Fer2.lua"))()
-        else
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Fer2.lua"))()
         end
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Fer2.lua"))()
     end)
 end
 
-if savedSettings and savedSettings.waitTime then
-    print("Tiempo de espera cargado: " .. waitTime .. " segundos.")
-    executeScript()
-else
-    showConfigMenu()
-end
+-- Main Execution
+safeCall(function()
+    if savedSettings and savedSettings.waitTime then
+        print("Tiempo de espera cargado: " .. waitTime .. " segundos.")
+        executeScript()
+    else
+        showConfigMenu()
+    end
+end)
