@@ -1,5 +1,5 @@
 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/Fernanflop091o/Queuet/refs/heads/main/DATOS.lua'))()")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/Queuet/refs/heads/main/DATOS.lua"))()
 local ToDisable = {
     Textures = true,
     VisualEffects = true,
