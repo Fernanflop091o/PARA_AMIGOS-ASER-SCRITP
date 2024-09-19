@@ -3,11 +3,13 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/m
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 local player = Players.LocalPlayer
 local taskHandle = nil
-local extraAmount = 5e9
 local buttonActive = false
+local fileName = "buttonState.json"
 
+-- GUI del botón
 local guiButton = Instance.new("ScreenGui", game.CoreGui)
 guiButton.Name = "ClickableButtonGui"
 
@@ -35,70 +37,24 @@ textButton.TextXAlignment = Enum.TextXAlignment.Center
 textButton.TextYAlignment = Enum.TextYAlignment.Center
 textButton.Text = "Rebirth (OFF)"
 
--- Función para obtener la fuerza del jugador
-local function getPlayerStrength()
-    local success, result = pcall(function()
-        local folderData = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-        return folderData:WaitForChild("Strength").Value
-    end)
-    if not success then
-        warn("Error obteniendo fuerza del jugador: " .. tostring(result))
-        return 0
-    end
-    return result
+-- Guardar el estado en un archivo JSON
+local function saveState()
+    local data = {
+        buttonActive = buttonActive
+    }
+    writefile(fileName, HttpService:JSONEncode(data))
 end
 
--- Función para obtener el precio del próximo Rebirth
-local function getNextRebirthPrice(currentRebirths)
-    return (currentRebirths + 1) * 3e6 + 2e6
-end
-
--- Función para iniciar el bucle de Rebirth
-local function startLoop()
-    if taskHandle then return end -- Evita iniciar múltiples bucles
-    local success, result = pcall(function()
-        local ldata = ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-        local currentRebirths = ldata:WaitForChild("Rebirth").Value
-        local nextRebirthPrice = getNextRebirthPrice(currentRebirths)
-
-        if getPlayerStrength() < nextRebirthPrice + extraAmount then
-            textButton.Text = "Rebirth (ON)"
-            taskHandle = RunService.Heartbeat:Connect(function()
-                pcall(function()
-                    ReplicatedStorage.Package.Events.reb:InvokeServer()
-                end)
-                wait(1) -- Espera para reducir la carga
-            end)
-        else
-            textButton.Text = "Stats (OFF)"
-            stopLoop()
-        end
-    end)
-    if not success then
-        warn("Error en startLoop: " .. tostring(result))
+-- Cargar el estado desde un archivo JSON
+local function loadState()
+    if isfile(fileName) then
+        local data = HttpService:JSONDecode(readfile(fileName))
+        buttonActive = data.buttonActive
+        textButton.Text = buttonActive and "Rebirth (ON)" or "Rebirth (OFF)"
     end
 end
 
--- Función para detener el bucle
-local function stopLoop()
-    if taskHandle then
-        taskHandle:Disconnect()
-        taskHandle = nil
-    end
-end
-
--- Función para cuando se hace clic en el botón
-local function onClick()
-    buttonActive = not buttonActive
-    if buttonActive then
-        startLoop()
-    else
-        stopLoop()
-    end
-    textButton.Text = buttonActive and "Rebirth (ON)" or "Stats (OFF)"
-end
-
--- Función para transformar al personaje en un pato
+-- Transformación en pato
 local function convertToDuck(character)
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
@@ -112,8 +68,8 @@ local function convertToDuck(character)
 
     local duckMesh = Instance.new("SpecialMesh")
     duckMesh.MeshType = Enum.MeshType.FileMesh
-    duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
-    duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
+    duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831" -- Mesh del pato
+    duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827" -- Textura del pato
     duckMesh.Scale = Vector3.new(5, 5, 5)
     duckMesh.Parent = character.HumanoidRootPart
 
@@ -129,17 +85,51 @@ local function convertToDuck(character)
     end)
 end
 
--- Función para manejar la transformación en pato tras 9 segundos
-local function onCharacterAdded(character)
-    wait(9) -- Espera 9 segundos antes de la transformación
-    convertToDuck(character)
+-- Ejecutar la transformación en pato después de 9 segundos
+local function startTransformationTimer()
+    task.wait(9)
+    convertToDuck(player.Character)
 end
 
-if player.Character then
-    onCharacterAdded(player.Character)
+-- Iniciar/Reiniciar el ciclo de rebirth
+local function startLoop()
+    if taskHandle then return end
+    taskHandle = RunService.Heartbeat:Connect(function()
+        pcall(function()
+            ReplicatedStorage:WaitForChild("Package"):WaitForChild("Events"):WaitForChild("reb"):InvokeServer()
+        end)
+        wait(1) -- Reducir la carga
+    end)
+    startTransformationTimer() -- Iniciar el temporizador de 9 segundos para transformarse en pato
 end
 
-player.CharacterAdded:Connect(onCharacterAdded)
+-- Detener el ciclo de rebirth
+local function stopLoop()
+    if taskHandle then
+        taskHandle:Disconnect()
+        taskHandle = nil
+    end
+end
 
--- Conectar el clic del botón
+-- Manejo del clic en el botón
+local function onClick()
+    buttonActive = not buttonActive
+    if buttonActive then
+        startLoop()
+    else
+        stopLoop()
+    end
+    textButton.Text = buttonActive and "Rebirth (ON)" or "Rebirth (OFF)"
+    saveState() -- Guardar el estado en el archivo JSON
+end
+
+-- Conectar el botón con la función de clic
 textButton.MouseButton1Click:Connect(onClick)
+
+-- Cargar el estado inicial
+loadState()
+if buttonActive then
+    startLoop()
+else
+    stopLoop()
+end
