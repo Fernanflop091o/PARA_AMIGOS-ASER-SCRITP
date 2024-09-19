@@ -1,5 +1,6 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/fernando6663535/Lua/main/CONNOMETRO.lua"))()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/refs/heads/main/Anti%20Lag.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/refs/heads/main/Anti%20Lag.lua"))()
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -20,7 +21,6 @@ frameButton.Position = UDim2.new(0.0116822431 + 0.77, 0, 0.0248226952, 0)
 frameButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 frameButton.BackgroundTransparency = 0.5
 frameButton.ClipsDescendants = true
-
 Instance.new("UICorner", frameButton).CornerRadius = UDim.new(1, 0)
 
 local textButton = Instance.new("TextButton", frameButton)
@@ -87,7 +87,7 @@ end
 
 -- Ejecutar la transformación en pato después de 9 segundos
 local function startTransformationTimer()
-    task.wait(9)
+    task.wait()
     convertToDuck(player.Character)
 end
 
@@ -133,3 +133,6 @@ if buttonActive then
 else
     stopLoop()
 end
+
+-- Hacer el botón siempre clickeable
+textButton.TextButton.MouseButton1Click:Connect(onClick)
