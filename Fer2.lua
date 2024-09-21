@@ -376,7 +376,7 @@ task.spawn(function() -- Rebirth, teleport earth/bills
         if Farming then
             if _G.StatGrinding ~= true and (getloweststat() >= ((ldata.Rebirth.Value*3e6) + 2e6)) and (getloweststat() < (((ldata.Rebirth.Value*3e6) + 2e6)*2)) and ldata.Rebirth.Value < checkplr()[2] then
                 --spawn(function()                
-                
+                game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
             end
             if getloweststat() >= 150e6 and ldata.Zeni.Value >= 15000 and planet == "Earth" then                          
     game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
