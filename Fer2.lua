@@ -188,6 +188,7 @@ local function transform()
         }
     elseif side.Value == "Evil" then
         forms = {
+          {"Astral Instinct",120e6,"Blanco"},	
             {"Beast",120e6,"Blanco"},
             {"Ultra Ego",120e6,"Blanco"},
             {"LBSSJ4",100e6},
