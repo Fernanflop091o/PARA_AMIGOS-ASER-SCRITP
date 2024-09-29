@@ -161,6 +161,7 @@ local function transform()
     end
     if side.Value == "Good" then
         forms = {
+	    {"Astral Instinct",120e6,"Blanco"},	
             {"Beast",120e6,"Blanco"},
             {"SSJBUI",120e6,"Blanco"},
             {"LBSSJ4",100e6},
