@@ -148,6 +148,8 @@ else
     }
 end
 
+
+
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
 local function transform()
@@ -320,8 +322,6 @@ local function transform()
         end
     end
 end
-
-
 
 
 local questbosses = game.Workspace.Living
@@ -533,34 +533,21 @@ end)
 
 task.spawn(function() -- Pick quest
     while ScGui and getloweststat() < checkplr()[3] do
-        if Farming then
+        if Farming  then
             transform()
             --while not CanAttack do wait() end
-            
             if ldata.Quest.Value == "" or not Boss then
-                for i, boss in pairs(bosses) do
+                for i,boss in pairs(bosses) do
                     if ldata.Rebirth.Value >= 2000 and boss[1] == "Mapa" then
                         boss[2] = 0
                     end
-                    
-                    if getloweststat() / 2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) 
-                        and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") 
-                        and game.Workspace.Living[boss[1]].Humanoid.Health > 0 then
-
-                        -- Teletransportarse al NPC de la misión
+                    if getloweststat()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0 then
                         if ldata.Quest.Value ~= boss[1] then
                             pcall(function()
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[boss[1]])
+                                
                             end)
-
-                            -- Esperar un momento para asegurarse de que el teletransporte se complete
-                            task.wait(1) -- Ajusta el tiempo según sea necesario
-
-                            -- Después de teletransportarse, iniciar la misión
-                            ldata.Quest.Value = boss[1] -- Asigna la misión al jugador
                         end
-
-                        -- Verificar si la misión se asignó correctamente
                         if ldata.Quest.Value == boss[1] then
                             Boss = game.Workspace.Living[boss[1]]
                             if CanAttack ~= false then -- Sets if it's not nil                            
@@ -574,13 +561,12 @@ task.spawn(function() -- Pick quest
                         break 
                     end
                 end
-            elseif game.Workspace.Living:FindFirstChild(ldata.Quest.Value) then
+            elseif game.Workspace.Living:FindFirstChild(ldata.Quest.Value)  then
                 Boss = game.Workspace.Living[ldata.Quest.Value]
-            else 
-                ldata.Quest.Value = ""
+            else ldata.Quest.Value = ""
                 wait(.01)
             end
         end
         task.wait()
     end
-end)
+end)  
