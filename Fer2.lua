@@ -382,12 +382,12 @@ task.spawn(function() -- Rebirth, teleport earth/bills
             end
             if getloweststat() >= 150e6 and ldata.Zeni.Value >= 15000 and planet == "Earth" then                          
     game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
-                wait()
+                wait(5)
             end
             -- If just rebirthed and in Beerus go to Earth
             if getloweststat() < 50e6 and planet == "Bills" then               
     game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                wait()
+                wait(5)
             end
         end
         task.wait()
