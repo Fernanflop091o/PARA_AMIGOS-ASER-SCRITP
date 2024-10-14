@@ -3,6 +3,7 @@ if MenuPanel then
     return  
 end
 
+
 local success, fail = pcall(function()
     local player = game.Players.LocalPlayer
     local Players = game:GetService("Players")
@@ -54,6 +55,9 @@ local success, fail = pcall(function()
     local timeTextLabel = Instance.new("TextLabel")
     local button = Instance.new("TextButton", screenGui)
     local bestId
+    local background = Instance.new("Frame")
+    local playerListContainer = Instance.new("ScrollingFrame")
+    local containerCorner = Instance.new("UICorner") 
    
     
 local userId = player.UserId
@@ -448,11 +452,7 @@ button.TextStrokeTransparency = 0
 button.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)
 button.Text = "Cargando..."
 button.Parent = MenuPanel
-    
- 
-
-
-
+   
 
 local function SafeCall(func, ...)
     local success, result = pcall(func, ...)
@@ -461,8 +461,7 @@ local function SafeCall(func, ...)
     end
     return success, result
 end
-    
-
+   
 
 local TweenService = game:GetService("TweenService")
 local colorArray = {
@@ -1254,14 +1253,179 @@ end)
 end
 
 local function loop2()
-    while true do
-        SafeCall(function()
-            if isLoop2Active then
-                -- Lógica de loop 2
+   SafeCall(function()
+local background = Instance.new("Frame")
+local playerListContainer = Instance.new("ScrollingFrame")
+
+local function format_number(number)
+    local suffixes = {"", "K", "M", "B", "T", "QD"}
+    local suffix_index = 1
+
+    while math.abs(number) >= 1000 and suffix_index < #suffixes do
+        number = number / 1000
+        suffix_index = suffix_index + 1
+    end
+
+    local formatted_number = math.floor(number + 0.5)
+    return formatted_number .. suffixes[suffix_index]
+end
+
+background.Size = UDim2.new(0.877, 0, 0.15, 0)
+background.Position = UDim2.new(0, -7, 0.613, 101)
+background.BackgroundTransparency = 1
+background.Parent = MenuPanel
+
+playerListContainer.Size = UDim2.new(1, -20, 0.85, -10)
+playerListContainer.Position = UDim2.new(0, 10, 0.1, 5)
+playerListContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+playerListContainer.BorderSizePixel = 0
+playerListContainer.ScrollBarThickness = 6
+playerListContainer.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+playerListContainer.ScrollBarImageTransparency = 0.5
+playerListContainer.Parent = background
+
+local containerCorner = Instance.new("UICorner")
+containerCorner.CornerRadius = UDim.new(0, 15)
+containerCorner.Parent = playerListContainer
+
+local function teleportToPlayer(targetPlayer)
+    local success, err = pcall(function()
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = targetPlayer.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.CFrame.LookVector * 3 -- Teletransportar a 3 unidades detrás
+            player.Character:MoveTo(targetPosition)
+        end
+    end)
+
+    if not success then
+        warn("Error teleporting to player: " .. err)
+    end
+end
+
+local function createLabel(parent, text, position, size, playerToTeleport)
+    local success, err = pcall(function()
+        local frame = Instance.new("Frame")
+        frame.Size = size
+        frame.Position = position
+        frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        frame.BorderSizePixel = 0
+        frame.Parent = parent
+
+        local frameCorner = Instance.new("UICorner")
+        frameCorner.CornerRadius = UDim.new(0, 15)
+        frameCorner.Parent = frame
+
+        local label = Instance.new("TextButton")
+        label.Size = UDim2.new(1, -10, 1, -10)
+        label.Position = UDim2.new(0, 5, 0, 5)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.Font = Enum.Font.SourceSans
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextSize = 16
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.TextWrapped = true
+        label.Parent = frame
+
+        
+        label.MouseButton1Click:Connect(function()
+            -- Iniciar el teletransporte
+            warn("Teleporting to: " .. playerToTeleport.DisplayName)
+
+            -- Usar una función anónima para el teletransporte continuo
+            spawn(function()
+	while isLoop4Active do
+                    teleportToPlayer(playerToTeleport)
+             task.wait()
+                end
+            end)
+        end)
+
+        return frame
+    end)
+
+    if not success then
+        warn("Error creating label: " .. err)
+    end
+end
+
+local function isPlayerAlive(player)
+    local success, result = pcall(function()
+        return player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 and player.Character:FindFirstChild("HumanoidRootPart")
+    end)
+
+    return success and result
+end
+
+local function updatePlayerList()
+    local success, err = pcall(function()
+        local players = Players:GetPlayers()
+        table.sort(players, function(a, b)
+            if isPlayerAlive(a) and isPlayerAlive(b) then
+                return game.ReplicatedStorage.Datas[a.UserId].Strength.Value > game.ReplicatedStorage.Datas[b.UserId].Strength.Value
+            elseif isPlayerAlive(a) then
+                return true
+            else
+                return false
             end
         end)
-        wait()
+
+        for _, child in ipairs(playerListContainer:GetChildren()) do
+            if child:IsA("Frame") then
+                child:Destroy()
+            end
+        end
+
+        local yPos = 5
+
+        for _, player in ipairs(players) do
+            if isPlayerAlive(player) then
+                local playerData = game.ReplicatedStorage.Datas:FindFirstChild(player.UserId)
+                if playerData then
+                    local playerName = player.DisplayName .. "\n(" .. player.Name .. ")"
+                    local rebirthValue = playerData.Rebirth.Value
+                    local forceValue = playerData.Strength.Value
+                    local formattedForce = format_number(forceValue)
+
+                    local playerFrame = Instance.new("Frame")
+                    playerFrame.Size = UDim2.new(1, -10, 0, 40)
+                    playerFrame.Position = UDim2.new(0, 5, 0, yPos)
+                    playerFrame.BackgroundTransparency = 0.3
+                    playerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                    playerFrame.BorderSizePixel = 0
+                    playerFrame.Parent = playerListContainer
+
+                    createLabel(playerFrame, playerName, UDim2.new(0, 0, 0, 0), UDim2.new(0.5, -5, 1, 0), player)
+                    createLabel(playerFrame, tostring(rebirthValue), UDim2.new(0.5, 5, 0, 0), UDim2.new(0.25, -5, 1, 0), player)
+                    createLabel(playerFrame, formattedForce, UDim2.new(0.75, 9, 0, 0), UDim2.new(0.25, -5, 1, 0), player)
+
+                    yPos = yPos + playerFrame.Size.Y.Offset + 5
+                end
+            end
+        end
+
+        playerListContainer.CanvasSize = UDim2.new(0, 0, 0, yPos - 5)
+    end)
+
+    if not success then
+        warn("Error updating player list: " .. err)
     end
+end
+
+Players.PlayerAdded:Connect(function()
+    spawn(updatePlayerList)
+end)
+
+Players.PlayerRemoving:Connect(function()
+    spawn(updatePlayerList)
+end)
+
+spawn(updatePlayerList)
+
+while wait(5) do
+    spawn(updatePlayerList)
+end
+        wait()
+    end)
 end
 
 local function loop3()
@@ -1496,6 +1660,7 @@ end)
           task.wait(1/60) 
     end
 end
+
 
 SafeCall(Cal)
 SafeCall(showPlayerThumbnail)
