@@ -1227,9 +1227,7 @@ task.spawn(function() -- Pick quest
 
     pcall(function()
         game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[boss[1]])
-    end)
-    
-    ldata.Quest.Value = boss[1]
+    end) 
 end
                         if ldata.Quest.Value == boss[1] then
                             Boss = game.Workspace.Living[boss[1]]
