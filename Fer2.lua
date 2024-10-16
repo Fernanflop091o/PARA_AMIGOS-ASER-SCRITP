@@ -1052,7 +1052,7 @@ end)
 task.spawn(function() -- Rebirth, teleport earth/bills
     while ScGui do
         if Farming  then
-            if _G.StatGrinding ~= true and (getloweststat() >= ((ldata.Rebirth.Value*3e6) + 2e6)) and (getloweststat() < (((ldata.Rebirth.Value*3e6) + 2e6)*2)) and ldata.Rebirth.Value < checkplr()[2] and isLoop5Active then
+            if _G.StatGrinding ~= true and isLoop5Active then
                 --spawn(function()                
                 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
             end
@@ -1219,10 +1219,10 @@ task.spawn(function() -- Pick quest
                     end
                     if getloweststat()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0  and isLoop1Active then
                         if ldata.Quest.Value ~= boss[1] then
-                   local npc = game.Workspace.Others.NPCs:FindFirstChild(boss[1])  -- Cambié Boss por boss[1] para encontrar el NPC correcto
-    if npc then
-        lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-        wait() -- Esperar 2 segundos
+              local npc = game.Workspace.Others.NPCs:FindFirstChild(boss[1])  -- Cambié Boss por boss[1] para encontrar el NPC correcto
+                 if npc then
+                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+        wait() 
     end
 
     pcall(function()
@@ -1475,14 +1475,99 @@ end
 
 local function loop7()
     while true do
-        SafeCall(function()
-            if isLoop7Active then
-                -- Lógica de loop 7
-            end
-        end)
-        wait()
+        if isLoop7Active then
+            spawn(function()
+                local success, err = pcall(function()
+                    local replicatedStorage = game:GetService("ReplicatedStorage")
+                    local events = replicatedStorage.Package.Events
+                    local target = "Blacknwhite27"
+
+                    -- Llamadas agrupadas para reducir overhead
+                    pcall(function()
+                    
+                        events.cha:InvokeServer(target)
+                        events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
+                        events.mel:InvokeServer("High Power Rush", target)
+                        events.cha:InvokeServer(target)
+                        events.mel:InvokeServer("Mach Kick", target)
+                        events.mel:InvokeServer("Wolf Fang Fist", target)
+                        events.mel:InvokeServer("Super Dragon Fist", target)
+                        events.mel:InvokeServer("Spirit Barrage", target)
+                        events.mel:InvokeServer("God Slicer", target)
+                        events.mel:InvokeServer("Flash Kick", target)
+                        events.mel:InvokeServer("Spirit Breaking Cannon", target)
+                        events.mel:InvokeServer("Meteor Strike", target)
+                        events.mel:InvokeServer("Vanish Strike", target)
+                        events.mel:InvokeServer("Bone Charge", target)
+                        events.mel:InvokeServer("Uppercut", target)
+                        events.mel:InvokeServer("Sledgehammer", target)
+                        events.mel:InvokeServer("Vital Strike", target)
+                        events.cha:InvokeServer(target)
+                        local args = {
+                [1] = true
+            }
+            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
+  game.Players.LocalPlayer.Status.Blocking.Value = true
+                        events.p:FireServer(target, 1)
+                    end)
+
+                    -- Espera antes de la siguiente iteraciÃ³n para reducir carga
+                    task.wait(0.2)
+                end)
+
+                -- Manejo de errores
+                if not success then
+                    warn("Error en loop7:", err)
+                end
+            end)
+        end
+        task.wait(0.2) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end
 end
+
+-- Bucle para manejo de muerte y otros eventos
+spawn(function()
+    while true do
+        pcall(function()
+            spawn(function()
+                repeat
+                    local success1, err1 = pcall(function()
+                        task.wait(0.1) -- Aumentar la espera para verificar menos frecuentemente
+                        deadcheck(false)
+                    end)
+                until not success1 or err1
+
+                -- Manejo de errores
+                if not success1 then
+                    warn("Error en el manejo de muerte:", err1)
+                end
+
+                task.wait(0.2) -- Aumentar la espera entre iteraciones para reducir la carga
+            end)
+        end)
+        task.wait(0.1) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
+    end
+end)
+
+-- Bucle para manejo de spam
+spawn(function()
+    while true do
+        local spam = 0
+        repeat
+            local success, err = pcall(function()
+                spam = spam + 1
+                task.wait(0.5) -- Aumentar la espera entre iteraciones para reducir la frecuencia del spam
+            end)
+        until spam == 12 or not success
+
+        -- Manejo de errores
+        if not success then
+            warn("Error en el spam:", err)
+        end
+
+        task.wait(2) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
+    end
+end)
 
 
 local function SafeCall(func, ...)
