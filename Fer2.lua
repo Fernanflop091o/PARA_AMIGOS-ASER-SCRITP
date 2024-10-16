@@ -1219,11 +1219,18 @@ task.spawn(function() -- Pick quest
                     end
                     if getloweststat()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0  and isLoop1Active then
                         if ldata.Quest.Value ~= boss[1] then
-                            pcall(function()
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[boss[1]])
-                                
-                            end)
-                        end
+                   local npc = game.Workspace.Others.NPCs:FindFirstChild(boss[1])  -- Cambié Boss por boss[1] para encontrar el NPC correcto
+    if npc then
+        lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+        wait() -- Esperar 2 segundos
+    end
+
+    pcall(function()
+        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[boss[1]])
+    end)
+    
+    ldata.Quest.Value = boss[1]
+end
                         if ldata.Quest.Value == boss[1] then
                             Boss = game.Workspace.Living[boss[1]]
                             if CanAttack ~= false then -- Sets if it's not nil                            
