@@ -1462,11 +1462,23 @@ local function loop5()
     end
 end
 
-local function loop4()
-    SafeCall(function()
-        
-                firstquest = true
-autostack = false
+local function loop6()
+    while true do
+        SafeCall(function()
+            if isLoop6Active then
+                -- Verifica si el script ya se ha ejecutado
+local MenuPanel = game.CoreGui:FindFirstChild("Fernando")
+if MenuPanel then
+    return -- Si el panel ya existe, termina la ejecución del script
+end
+
+-- Si el panel no existe, lo creamos
+MenuPanel = Instance.new("ScreenGui") -- Crea un nuevo ScreenGui
+MenuPanel.Name = "Fernando"
+MenuPanel.Parent = game.CoreGui
+
+local firstquest = true
+local autostack = false
 
 local Settings = {Tables = {Forms = {}};Variables = {Farm = false}}
 setmetatable(Settings, {__index = function() warn('Dumbass') end})
@@ -1485,7 +1497,7 @@ local quests = {
 } 
 
 function target()
-    local player = game:GetService("Players").LocalPlayer.name
+    local player = game:GetService("Players").LocalPlayer.Name
     print(player)
     targetted = player
 end
@@ -1496,7 +1508,7 @@ target()
 local function autoquest(boolean)
     repeat
         -- Esperar hasta que el objetivo esté en el espacio de trabajo
-    until game.workspace.Living[targetted]
+    until game.Workspace.Living[targetted]
 
     local a = data.Strength.Value
     local b = data.Energy.Value
@@ -1534,7 +1546,7 @@ local function autoquest(boolean)
 
     if autostack == true and checkValue > 8000000 then
         if lastquest ~= SelectedQuests then
-            game.workspace.Living[targetted].UpperTorso:Destroy()
+            game.Workspace.Living[targetted].UpperTorso:Destroy()
             getgenv().stacked = false
             repeat
                 print("in auto loop died check")
@@ -1591,10 +1603,10 @@ spawn(function()
         isFlying = false
     end
 
-    while isLoop6Active do
+    while true and isLoop6Active do
         wait() 
         pcall(function()
-            while isLoop6Active do
+            while true and isLoop6Active do
                 wait()
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
@@ -1629,7 +1641,7 @@ end)
 spawn(function()
     while isLoop6Active and wait() do
         pcall(function()
-            while getgenv().stacked == true and isLoop6Active and wait() do 
+            while getgenv().stacked == true and wait() and isLoop6Activedo 
                 -- Sin transformaciones
             end
         end)
@@ -1640,8 +1652,8 @@ end)
 spawn(function()
     while isLoop6Active and wait() do
         pcall(function()
-            if data.Strength.Value < 20000000009880000000 and isLoop6Active then
-                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
+            if data.Strength.Value < 20000000009880000000 then
+                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests and isLoop6Active do
                     local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
                     if npc and npc:FindFirstChild("HumanoidRootPart") then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
@@ -1653,16 +1665,15 @@ spawn(function()
     end
 end)
 
-
 spawn(function()
     while isLoop6Active do
-     task.wait()
+        task.wait()
         pcall(function()
-            while isLoop6Active do 
+            while true do 
                 task.wait()
                 local currentHour = math.floor(game.Lighting.ClockTime)
                 local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-                if currentHour == 0 and currentMinute == 0  and isLoop6Active then
+                if currentHour == 0 and currentMinute == 0 then
                     local A_1 = "Earth"
                     local Event = game:GetService("ReplicatedStorage").Package.Events.TP
                     Event:InvokeServer(A_1)
@@ -1672,9 +1683,10 @@ spawn(function()
         end)
     end
 end)
-          
+            end
+        end)
         wait()
-    end)
+    end
 end
 
 local function loop7()
