@@ -1462,10 +1462,9 @@ local function loop5()
     end
 end
 
-local function loop6()
-    while true do
-        SafeCall(function()
-            if isLoop6Active then
+local function loop4()
+    SafeCall(function()
+        
                 firstquest = true
 autostack = false
 
@@ -1592,10 +1591,10 @@ spawn(function()
         isFlying = false
     end
 
-    while true do
+    while isLoop6Active do
         wait() 
         pcall(function()
-            while true do
+            while isLoop6Active do
                 wait()
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
@@ -1628,9 +1627,9 @@ spawn(function()
 end)
 
 spawn(function()
-    while true and wait() do
+    while isLoop6Active and wait() do
         pcall(function()
-            while getgenv().stacked == true and wait() do 
+            while getgenv().stacked == true and isLoop6Active and wait() do 
                 -- Sin transformaciones
             end
         end)
@@ -1639,9 +1638,9 @@ end)
 
 -- Función de teletransporte al NPC de la misión si no está en la misión
 spawn(function()
-    while true and wait() do
+    while isLoop6Active and wait() do
         pcall(function()
-            if data.Strength.Value < 20000000009880000000 then
+            if data.Strength.Value < 20000000009880000000 and isLoop6Active then
                 while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
                     local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
                     if npc and npc:FindFirstChild("HumanoidRootPart") then
@@ -1656,14 +1655,14 @@ end)
 
 
 spawn(function()
-    while true do
+    while isLoop6Active do
      task.wait()
         pcall(function()
-            while true do 
+            while isLoop6Active do 
                 task.wait()
                 local currentHour = math.floor(game.Lighting.ClockTime)
                 local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-                if currentHour == 0 and currentMinute == 0 then
+                if currentHour == 0 and currentMinute == 0  and isLoop6Active then
                     local A_1 = "Earth"
                     local Event = game:GetService("ReplicatedStorage").Package.Events.TP
                     Event:InvokeServer(A_1)
@@ -1673,10 +1672,9 @@ spawn(function()
         end)
     end
 end)
-            end
-        end)
+          
         wait()
-    end
+    end)
 end
 
 local function loop7()
