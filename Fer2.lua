@@ -1466,14 +1466,14 @@ local function loop6()
     while true do
         SafeCall(function()
             if isLoop6Active then
-    local MenuPanel = game.CoreGui:FindFirstChild("Fernando")
-if MenuPanel then
+    local Coco = game.CoreGui:FindFirstChild("gotu")
+if Coco then
     return  
 end
 
-MenuPanel = Instance.new("ScreenGui")
-MenuPanel.Name = "Fernando"
-MenuPanel.Parent = game.CoreGui
+Coco = Instance.new("ScreenGui")
+Coco.Name = "gotu"
+Coco.Parent = game.CoreGui
 
 local firstquest = true
 local autostack = false
