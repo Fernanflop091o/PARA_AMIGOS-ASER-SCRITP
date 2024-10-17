@@ -1466,7 +1466,213 @@ local function loop6()
     while true do
         SafeCall(function()
             if isLoop6Active then
-                -- Lógica de loop 6
+                firstquest = true
+autostack = false
+
+local Settings = {Tables = {Forms = {}};Variables = {Farm = false}}
+setmetatable(Settings, {__index = function() warn('Dumbass') end})
+
+local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+local plr = game.Players.LocalPlayer
+local player = game:GetService("Players").LocalPlayer
+local events = game:GetService("ReplicatedStorage").Package.Events
+local rs = game:GetService("RunService")
+local data = game.ReplicatedStorage.Datas[player.UserId]
+local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
+
+local quests = {
+    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 90000 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 90000, endRange = 1000000008867676089868 },
+} 
+
+function target()
+    local player = game:GetService("Players").LocalPlayer.name
+    print(player)
+    targetted = player
+end
+
+print(game.PlaceId)
+target()
+
+local function autoquest(boolean)
+    repeat
+        -- Esperar hasta que el objetivo esté en el espacio de trabajo
+    until game.workspace.Living[targetted]
+
+    local a = data.Strength.Value
+    local b = data.Energy.Value
+    local c = data.Defense.Value
+    local d = data.Speed.Value
+    print(a, b, c, d)
+
+    local smallest = a
+    if b < smallest then
+        smallest = b
+    end
+    if c < smallest then
+        smallest = c
+    end
+    if d < smallest then
+        smallest = d
+    end
+
+    checkValue = smallest
+    print("check value is " .. checkValue)
+    print("The smallest number is: " .. smallest)
+
+    for i, quest in ipairs(quests) do
+        if checkValue >= quest.requiredValue and checkValue <= quest.endRange then
+            print("Quest " .. quest.name .. " has a required value between " .. quest.requiredValue .. " and " .. quest.endRange)
+            SelectedQuests = quest.name
+            SelectedMobs = quest.nickname
+        end
+    end
+
+    if firstquest == true then
+        lastquest = SelectedQuests
+        firstquest = false
+    end
+
+    if autostack == true and checkValue > 8000000 then
+        if lastquest ~= SelectedQuests then
+            game.workspace.Living[targetted].UpperTorso:Destroy()
+            getgenv().stacked = false
+            repeat
+                print("in auto loop died check")
+                task.wait()
+            until plr.Character.Humanoid.Health >= 0
+            task.wait(8)
+        end
+        lastquest = SelectedQuests
+    end
+end
+
+getgenv().stacked = false
+
+local function quest()
+    print(SelectedQuests)
+    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests then
+        player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
+        repeat
+            task.wait()
+            events.Qaction:InvokeServer(game:GetService("Workspace").Others.NPCs[SelectedQuests])
+        until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
+    end
+end
+
+spawn(function()
+    local isFlying = false
+    local debounce = false
+
+    local function activateFlight()
+        local character = game.Players.LocalPlayer.Character
+        local root = character:WaitForChild("HumanoidRootPart")
+
+        local bv = root:FindFirstChildOfClass("BodyVelocity") or Instance.new("BodyVelocity", root)
+        local bg = root:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", root)
+
+        bg.P = 1
+        bg.MaxTorque = Vector3.new(500000, 500000, 500000)
+        bv.P = 1
+        bv.MaxForce = Vector3.new(100000, 100000, 100000)
+
+        isFlying = true
+        bv.Velocity = Vector3.new(0, 50, 0) -- Eleva al jugador
+    end
+
+    local function deactivateFlight()
+        local character = game.Players.LocalPlayer.Character
+        local root = character:WaitForChild("HumanoidRootPart")
+
+        local bv = root:FindFirstChildOfClass("BodyVelocity")
+        if bv then
+            bv.Velocity = Vector3.new(0, 0, 0) -- Detiene el vuelo
+        end
+
+        isFlying = false
+    end
+
+    while true do
+        wait() 
+        pcall(function()
+            while true do
+                wait()
+                if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
+                        autoquest()
+                        if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                            quest()
+                            getgenv().farm = true
+                            activateFlight()
+                            repeat
+                                player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 0)
+                                wait()
+                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                            until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
+                            if player.Character.Humanoid.Health <= 0 then
+                                getgenv().farm = false
+                                getgenv().stacked = false
+                                deactivateFlight()
+                                repeat
+                                    wait()
+                                until player.Character.Humanoid.Health >= 0
+                                wait(8)
+                            end
+                            deactivateFlight()
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+spawn(function()
+    while true and wait() do
+        pcall(function()
+            while getgenv().stacked == true and wait() do 
+                -- Sin transformaciones
+            end
+        end)
+    end
+end)
+
+-- Función de teletransporte al NPC de la misión si no está en la misión
+spawn(function()
+    while true and wait() do
+        pcall(function()
+            if data.Strength.Value < 20000000009880000000 then
+                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
+                    local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
+                    if npc and npc:FindFirstChild("HumanoidRootPart") then
+                        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                    end
+                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
+                end
+            end
+        end)
+    end
+end)
+
+
+spawn(function()
+    while true do
+     task.wait()
+        pcall(function()
+            while true do 
+                task.wait()
+                local currentHour = math.floor(game.Lighting.ClockTime)
+                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+                if currentHour == 0 and currentMinute == 0 then
+                    local A_1 = "Earth"
+                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
+                    Event:InvokeServer(A_1)
+                    task.wait(4)
+                end
+            end
+        end)
+    end
+end)
             end
         end)
         wait()
