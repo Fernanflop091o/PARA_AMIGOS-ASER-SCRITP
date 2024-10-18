@@ -1677,6 +1677,26 @@ spawn(function()
         end)
     end
 end)
+
+spawn(function()
+    while true do
+     task.wait()
+        pcall(function()
+            while true do 
+                task.wait()
+                local currentHour = math.floor(game.Lighting.ClockTime)
+                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+                if currentHour == 0 and currentMinute == 0 and isLoop6Active then
+                    local A_1 = "Earth"
+                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
+                    Event:InvokeServer(A_1)
+                    task.wait(4)
+                end
+            end
+        end)
+    end
+end) 
+
             wait()
     end)
 end
