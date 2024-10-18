@@ -1480,13 +1480,13 @@ local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 
 local allowedPlayers = {
     "fernanfloP091o",
-    "Armijosfernando2178"
-     "AlejandroItzi"
-      "TheFinal126"
-       "@0oAKILESo0"
-        "ItzSebaGod"
-         "brxxn_sl"
-          "GOKUVSJJJ"
+    "Armijosfernando2178",
+     "AlejandroItzi",
+      "TheFinal126",
+       "@0oAKILESo0",
+        "ItzSebaGod",
+         "brxxn_sl",
+          "GOKUVSJJJ",
 }
 
 -- Verificar si el jugador está en la lista permitida
