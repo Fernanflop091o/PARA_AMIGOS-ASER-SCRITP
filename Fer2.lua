@@ -1478,6 +1478,25 @@ local rs = game:GetService("RunService")
 local data = game.ReplicatedStorage.Datas[player.UserId]
 local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 
+local allowedPlayers = {
+    "fernanfloP091o",
+    "Armijosfernando2178"
+}
+
+-- Verificar si el jugador está en la lista permitida
+local function isPlayerAllowed(playerName)
+    for _, allowedName in ipairs(allowedPlayers) do
+        if playerName == allowedName then
+            return true
+        end
+    end
+    return false
+end
+
+if not isPlayerAllowed(player.Name) then
+    return -- Si el jugador no está en la lista permitida, detener el script
+end
+
 local quests = {
     { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 90000 },
     { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 90000, endRange = 1000000008867676089868 },
@@ -1532,7 +1551,7 @@ local function autoquest(boolean)
     end
 
     if autostack == true and checkValue > 8000 then
-        if lastquest ~= SelectedQuests and isLoop6Active  then
+        if lastquest ~= SelectedQuests and isLoop6Active then
             game.workspace.Living[targetted].UpperTorso:Destroy()
             getgenv().stacked = false
             repeat
@@ -1635,7 +1654,6 @@ spawn(function()
     end
 end)
 
--- Función de teletransporte al NPC de la misión si no está en la misión
 spawn(function()
     while true and wait() do
         pcall(function()
@@ -1652,10 +1670,9 @@ spawn(function()
     end
 end)
 
-
 spawn(function()
     while true do
-     task.wait()
+        task.wait()
         pcall(function()
             while true do 
                 task.wait()
@@ -1670,7 +1687,7 @@ spawn(function()
             end
         end)
     end
-end) 
+end)
             wait()
     end)
 end
