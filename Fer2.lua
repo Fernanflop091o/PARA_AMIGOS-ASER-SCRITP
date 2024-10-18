@@ -1467,7 +1467,7 @@ local function loop6()
  firstquest = true
 autostack = false
 
-local Settings = {Tables = {Forms = {}};Variables = {Farm = false}}
+local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
 setmetatable(Settings, {__index = function() warn('Dumbass') end})
 
 local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
@@ -1479,51 +1479,42 @@ local data = game.ReplicatedStorage.Datas[player.UserId]
 local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 
 local allowedPlayers = {
-    "fernanfloP091o",
-    "Armijosfernando2178",
-     "AlejandroItzi",
-      "TheFinal126",
-       "@0oAKILESo0",
-        "ItzSebaGod",
-         "brxxn_sl",
-          "GOKUVSJJJ",
-          "xxXDarknessRisingXxx",
-          "ryu_krs",
-          "mattz678",
-          "FreireBG",
-          "Fernanflop093",
-          
+    "fernanfloP091o", "Armijosfernando2178", "AlejandroItzi", "TheFinal126",
+    "@0oAKILESo0", "ItzSebaGod", "brxxn_sl", "GOKUVSJJJ", 
+    "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093"
 }
 
--- Verificar si el jugador está en la lista permitida
-local function isPlayerAllowed(playerName)
+local quests = {
+    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 90000 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 90000, endRange = 1000000008867676089868 },
+}
+
+function isPlayerAllowed(name)
     for _, allowedName in ipairs(allowedPlayers) do
-        if playerName == allowedName then
+        if name == allowedName then
             return true
         end
     end
     return false
 end
 
-if not isPlayerAllowed(player.Name) then
-    return -- Si el jugador no está en la lista permitida, detener el script
-end
-
-local quests = {
-    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 90000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 90000, endRange = 1000000008867676089868 },
-} 
-
 function target()
-    local player = game:GetService("Players").LocalPlayer.name
-    print(player)
-    targetted = player
+    local playerName = game:GetService("Players").LocalPlayer.Name
+    if isPlayerAllowed(playerName) then
+        print("Player is allowed: " .. playerName)
+        targetted = playerName
+    else
+        warn("Player not allowed: " .. playerName)
+        return
+    end
 end
 
 print(game.PlaceId)
 target()
 
 local function autoquest(boolean)
+    if not isPlayerAllowed(targetted) then return end
+    
     repeat
         -- Esperar hasta que el objetivo esté en el espacio de trabajo
     until game.workspace.Living[targetted]
@@ -1579,6 +1570,8 @@ end
 getgenv().stacked = false
 
 local function quest()
+    if not isPlayerAllowed(player.Name) then return end
+    
     print(SelectedQuests)
     if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests and isLoop6Active then
         player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
@@ -1594,6 +1587,8 @@ spawn(function()
     local debounce = false
 
     local function activateFlight()
+        if not isPlayerAllowed(player.Name) then return end
+
         local character = game.Players.LocalPlayer.Character
         local root = character:WaitForChild("HumanoidRootPart")
 
@@ -1624,7 +1619,7 @@ spawn(function()
     while true and isLoop6Active do
         wait() 
         pcall(function()
-            while true and isLoop6Active  do
+            while true and isLoop6Active do
                 wait()
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
@@ -1657,7 +1652,7 @@ spawn(function()
 end)
 
 spawn(function()
-    while true and wait() and isLoop6Active  do
+    while true and wait() and isLoop6Active do
         pcall(function()
             while getgenv().stacked == true and wait() do 
                 -- Sin transformaciones
@@ -1666,6 +1661,7 @@ spawn(function()
     end
 end)
 
+-- Función de teletransporte al NPC de la misión si no está en la misión
 spawn(function()
     while true and wait() do
         pcall(function()
@@ -1676,25 +1672,6 @@ spawn(function()
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
                     task.wait() -- Esperar 5 segundos antes de verificar nuevamente
-                end
-            end
-        end)
-    end
-end)
-
-spawn(function()
-    while true do
-        task.wait()
-        pcall(function()
-            while true do 
-                task.wait()
-                local currentHour = math.floor(game.Lighting.ClockTime)
-                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-                if currentHour == 0 and currentMinute == 0 and isLoop6Active then
-                    local A_1 = "Earth"
-                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
-                    Event:InvokeServer(A_1)
-                    task.wait(4)
                 end
             end
         end)
