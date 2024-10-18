@@ -1487,6 +1487,12 @@ local allowedPlayers = {
         "ItzSebaGod",
          "brxxn_sl",
           "GOKUVSJJJ",
+          "xxXDarknessRisingXxx",
+          "ryu_krs",
+          "mattz678",
+          "FreireBG",
+          "Fernanflop093",
+          
 }
 
 -- Verificar si el jugador está en la lista permitida
