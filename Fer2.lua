@@ -1485,6 +1485,8 @@ local allowedPlayers = {
       "TheFinal126"
        "@0oAKILESo0"
         "ItzSebaGod"
+         "brxxn_sl"
+          "GOKUVSJJJ"
 }
 
 -- Verificar si el jugador está en la lista permitida
