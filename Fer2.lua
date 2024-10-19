@@ -1677,23 +1677,22 @@ spawn(function()
 end)
 
 spawn(function()
-    coroutine.wrap(function()
-        while true do
-            task.wait()
-            pcall(function()
-                while true do 
-                    task.wait()
-                    local currentHour = math.floor(game.Lighting.ClockTime)
-                    if currentHour == 0 and isLoop6Active then
-                        local A_1 = "Earth"
-                        local Event = game:GetService("ReplicatedStorage").Package.Events.TP
-                        Event:InvokeServer(A_1)
-                        task.wait(1) 
-                    end
+    while true do
+        task.wait()
+        pcall(function()
+            while true do 
+                task.wait()
+                local currentHour = math.floor(game.Lighting.ClockTime)
+                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+                if currentHour == 0 and isLoop6Active then
+                    local A_1 = "Earth"
+                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
+                    Event:InvokeServer(A_1)
+                    task.wait(1) -- Espera 4 segundos antes de verificar de nuevo
                 end
-            end)
-        end
-    end)()
+            end
+        end)
+    end
 end)
 
             wait()
