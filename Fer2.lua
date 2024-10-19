@@ -1479,7 +1479,7 @@ local data = game.ReplicatedStorage.Datas[player.UserId]
 local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 
 local allowedPlayers = {
-    "fernanfloP091o", "armijosfernando2178", "Azeldex", "Elmegafer"
+    "fernanfloP091o", "armijosfernando2178", "azeldex", "elmegafer"
 }
 
 local quests = {
