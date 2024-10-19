@@ -1479,7 +1479,7 @@ local data = game.ReplicatedStorage.Datas[player.UserId]
 local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 
 local allowedPlayers = {
-    "fernanfloP091o", "Armijosfernando2178"
+    "fernanfloP091o", "armijosfernando2178"
 }
 
 local quests = {
@@ -1676,24 +1676,24 @@ spawn(function()
     end
 end)
 
--- Script de captura del tiempo (hora/minuto) para misiones específicas
 spawn(function()
-    while true do
-        task.wait()
-        pcall(function()
-            while true do 
-                task.wait()
-                local currentHour = math.floor(game.Lighting.ClockTime)
-                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-                if currentHour == 0 and currentMinute == 0 and isLoop6Active then
-                    local A_1 = "Earth"
-                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
-                    Event:InvokeServer(A_1)
-                    task.wait(4)
+    coroutine.wrap(function()
+        while true do
+            task.wait()
+            pcall(function()
+                while true do 
+                    task.wait()
+                    local currentHour = math.floor(game.Lighting.ClockTime)
+                    if currentHour == 0 and isLoop6Active then
+                        local A_1 = "Earth"
+                        local Event = game:GetService("ReplicatedStorage").Package.Events.TP
+                        Event:InvokeServer(A_1)
+                        task.wait(1) 
+                    end
                 end
-            end
-        end)
-    end
+            end)
+        end
+    end)()
 end)
 
             wait()
