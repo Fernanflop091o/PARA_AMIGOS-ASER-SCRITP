@@ -1676,9 +1676,10 @@ spawn(function()
     end
 end)
 
+-- Script de captura del tiempo (hora/minuto) para misiones específicas
 spawn(function()
     while true do
-     task.wait()
+        task.wait()
         pcall(function()
             while true do 
                 task.wait()
@@ -1693,7 +1694,7 @@ spawn(function()
             end
         end)
     end
-end) 
+end)
 
             wait()
     end)
