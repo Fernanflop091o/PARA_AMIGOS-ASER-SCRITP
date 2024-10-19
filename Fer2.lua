@@ -1481,12 +1481,11 @@ local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 local allowedPlayers = {
     "fernanfloP091o", "armijosfernando2178", "azeldex", "elmegafer",
     "123daishinkan", "ItzSebaGod", "alexisetter2008",
-    
      "AlejandroItzi", "TheFinal126",
     "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB"
+    "DEMONZTSB", "rodri2020proxd"
    
 }
 
