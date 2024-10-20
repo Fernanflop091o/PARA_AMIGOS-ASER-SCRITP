@@ -1674,10 +1674,19 @@ spawn(function()
             if data.Strength.Value < 20000000009880000000 then
                 while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
                     local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
+                    local currentHour = math.floor(game.Lighting.ClockTime)
+                    local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
-                        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                        if (currentHour == 3 and currentMinute >= 20) and (currentHour == 3 and currentMinute <= 38) then
+                            local randomX = math.random(900, 1100)
+                            local randomZ = math.random(900, 1100)
+                            player.Character.HumanoidRootPart.CFrame = CFrame.new(randomX, 500, randomZ)
+                        else
+                            player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                        end
                     end
-                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
+                    task.wait()
                 end
             end
         end)
@@ -1685,7 +1694,7 @@ spawn(function()
 end)
 
 spawn(function()
-    local lastClockTime = game.Lighting.ClockTime
+    local lastClockTime = game.Lighting.ClockTime    
     while true do
         task.wait()
         pcall(function()
