@@ -1485,7 +1485,7 @@ local allowedPlayers = {
     "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB", "rodri2020proxd"
+    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792"
    
 }
 
@@ -1666,7 +1666,7 @@ spawn(function()
     end
 end)
 
--- Función de teletransporte al NPC de la misión si no está en la misión
+
 spawn(function()
     while true and wait() do
         pcall(function()
@@ -1701,6 +1701,8 @@ spawn(function()
         end)
     end
 end)
+
+
 
             wait()
     end)
