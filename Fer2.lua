@@ -1685,26 +1685,31 @@ spawn(function()
 end)
 
 spawn(function()
+    local lastClockTime = game.Lighting.ClockTime
     while true do
         task.wait()
         pcall(function()
-            while true do 
+            while true do
                 task.wait()
                 local currentHour = math.floor(game.Lighting.ClockTime)
                 local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+                if game.Lighting.ClockTime < lastClockTime then
+                    local A_1 = "Earth"
+                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
+                    Event:InvokeServer(A_1)
+                    task.wait(1)
+                end
+                lastClockTime = game.Lighting.ClockTime
                 if currentHour == 0 and isLoop6Active then
                     local A_1 = "Earth"
                     local Event = game:GetService("ReplicatedStorage").Package.Events.TP
                     Event:InvokeServer(A_1)
-                    task.wait(1) -- Espera 4 segundos antes de verificar de nuevo
+                    task.wait(1)
                 end
             end
         end)
     end
 end)
-
-
-
             wait()
     end)
 end
