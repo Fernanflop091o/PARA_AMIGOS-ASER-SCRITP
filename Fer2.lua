@@ -1486,7 +1486,7 @@ local allowedPlayers = {
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
     "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", "Flux_chog",
-    "checho_649", "Freire69"
+    "robloxesmuymalo2020", "Freire69"
    
 }
 
