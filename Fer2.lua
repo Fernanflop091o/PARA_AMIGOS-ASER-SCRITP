@@ -1485,7 +1485,7 @@ local allowedPlayers = {
     "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB", "rodri2020proxd"
+    "DEMONZTSB", "rodri2020proxd", "Azeldex"
    
 }
 
