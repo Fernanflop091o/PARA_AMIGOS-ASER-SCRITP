@@ -62,10 +62,10 @@ local function showConfigMenu()
     titleLabel.Size = UDim2.new(1, 0, 0.3, 0)
     titleLabel.Position = UDim2.new(0, 0, 0, 0)
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = "Configuración de Tiempo de Espera"
+    titleLabel.Text = "Tiempo de Espera al llegar ah bills recomendado 3.5/3.9/4/3.8/3.3] dependiendo cuanto demora  tu esploit en aparecer :3"
     titleLabel.TextColor3 = Color3.new(1, 1, 1)
     titleLabel.Font = Enum.Font.SourceSansBold
-    titleLabel.TextSize = 16
+    titleLabel.TextSize = 9
 
     local inputBox = Instance.new("TextBox", frame)
     inputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
@@ -117,7 +117,7 @@ local function createResetButton()
         local resetButton = Instance.new("TextButton", resetGui)
         resetButton.Size = UDim2.new(0, 100, 0, 40)
         resetButton.Position = UDim2.new(0.5, -50, 0.5, 100)
-        resetButton.Text = "Time.Glody: " .. tostring(waitTime) .. "s"
+        resetButton.Text = "Time.Godly: " .. tostring(waitTime) .. "s"
         resetButton.TextColor3 = Color3.new(1, 1, 1)
         resetButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
         resetButton.Font = Enum.Font.SourceSansBold
