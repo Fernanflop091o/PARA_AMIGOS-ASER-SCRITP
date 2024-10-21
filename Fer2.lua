@@ -1639,8 +1639,7 @@ spawn(function()
                                   task.wait()
                                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27")
-                                
+                            if game.ReplicatedStorage.Datas[game.Players.LocalPlayer.UserId].Rebirth.Value <= 2800 then game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") end
                             until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                             if player.Character.Humanoid.Health <= 0 then
                                 getgenv().farm = false
