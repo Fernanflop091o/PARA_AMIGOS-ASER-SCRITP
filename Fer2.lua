@@ -1491,8 +1491,8 @@ local allowedPlayers = {
 }
 
 local quests = {
-    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 90000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 90000, endRange = 1000000008867676089868 },
+    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 20000 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = 1000000008867676089868 },
 }
 
 function isPlayerAllowed(name)
@@ -1638,6 +1638,8 @@ spawn(function()
                                 player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 0)
                                   task.wait()
                                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                                game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27")
                             until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                             if player.Character.Humanoid.Health <= 0 then
                                 getgenv().farm = false
