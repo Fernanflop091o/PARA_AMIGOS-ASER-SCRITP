@@ -1635,7 +1635,7 @@ spawn(function()
                             getgenv().farm = true
                             activateFlight()
                             repeat
-                                player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 0)
+                             player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                                   task.wait()
                                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
