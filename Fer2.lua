@@ -1463,8 +1463,7 @@ local function loop5()
 end
 
 local function loop6()
-    SafeCall(function()
- firstquest = true
+firstquest = true
 autostack = false
 
 local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
@@ -1485,8 +1484,7 @@ local allowedPlayers = {
     "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", "Flux_chog",
-    "robloxesmuymalo2020", "Freire69"
+    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792"
    
 }
 
@@ -1674,19 +1672,10 @@ spawn(function()
             if data.Strength.Value < 20000000009880000000 then
                 while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
                     local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
-                    local currentHour = math.floor(game.Lighting.ClockTime)
-                    local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
-                        if (currentHour == 3 and currentMinute >= 20) and (currentHour == 3 and currentMinute <= 38) then
-                            local randomX = math.random(900, 1100)
-                            local randomZ = math.random(900, 1100)
-                            player.Character.HumanoidRootPart.CFrame = CFrame.new(randomX, 500, randomZ)
-                        else
-                            player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                        end
+                        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait()
+                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
                 end
             end
         end)
