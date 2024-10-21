@@ -1486,7 +1486,8 @@ local allowedPlayers = {
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093o", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
     "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", "Flux_chog",
-    "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319"
+    "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319",
+    "andygamer012345"
    
 }
 
@@ -1638,6 +1639,7 @@ spawn(function()
                              player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                                   task.wait()
                                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                  game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                             if game.ReplicatedStorage.Datas[game.Players.LocalPlayer.UserId].Rebirth.Value <= 2800 then game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") end
                             until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
