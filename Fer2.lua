@@ -1689,21 +1689,17 @@ end)
 
 spawn(function()
     while true do
-     task.wait()
+        task.wait()
         pcall(function()
-            while true do 
-                task.wait()
-                local currentHour = math.floor(game.Lighting.ClockTime)
-                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-                if currentHour == 0 and currentMinute == 0  then
-                    game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
-                    task.wait()
-                end
+            local currentHour = math.floor(game.Lighting.ClockTime)
+            if currentHour < 3 or currentHour == 0 then
+                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
+            elseif currentHour >= 12 then
+                return 
             end
         end)
     end
-end) 
-
+end)
             task.wait()
     end)
 end
