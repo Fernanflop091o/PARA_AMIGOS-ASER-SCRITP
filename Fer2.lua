@@ -1483,7 +1483,7 @@ local allowedPlayers = {
     "123daishinkan", "ItzSebaGod", "alexisetter2008",
      "AlejandroItzi", "TheFinal126",
     "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
-    "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
+    "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093o", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
     "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", "Flux_chog",
     "robloxesmuymalo2020", "Freire69", "furia3476"
@@ -1579,7 +1579,7 @@ local function quest()
     if not isPlayerAllowed(player.Name) then return end
     
     print(SelectedQuests)
-    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests and isLoop6Active then
+    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests  then
         player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
         repeat
             task.wait()
@@ -1640,6 +1640,7 @@ spawn(function()
                                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                                 game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27")
+                                if (invokeCount or 0) < 2 then game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27") invokeCount = (invokeCount or 0) + 1 end
                             until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                             if player.Character.Humanoid.Health <= 0 then
                                 getgenv().farm = false
