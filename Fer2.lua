@@ -1566,7 +1566,7 @@ local function autoquest(boolean)
                 print("in auto loop died check")
                 task.wait()
             until plr.Character.Humanoid.Health >= 0
-            task.wait(6)
+            task.wait()
         end
         lastquest = SelectedQuests
     end
@@ -1622,10 +1622,10 @@ spawn(function()
     end
 
     while true and isLoop6Active do
-        wait() 
+        task.wait()
         pcall(function()
             while true and isLoop6Active do
-                wait()
+                task.wait()
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
                         autoquest()
@@ -1635,7 +1635,7 @@ spawn(function()
                             activateFlight()
                             repeat
                                 player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame + Vector3.new(0, 0, 0)
-                                wait()
+                                  task.wait()
                                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                             until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                             if player.Character.Humanoid.Health <= 0 then
@@ -1643,9 +1643,9 @@ spawn(function()
                                 getgenv().stacked = false
                                 deactivateFlight()
                                 repeat
-                                    wait()
+                                    task.wait()
                                 until player.Character.Humanoid.Health >= 0
-                                wait(8)
+                                task.wait()
                             end
                             deactivateFlight()
                         end
