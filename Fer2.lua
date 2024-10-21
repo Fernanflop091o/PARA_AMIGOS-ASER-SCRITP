@@ -1464,7 +1464,7 @@ end
 
 local function loop6()
     SafeCall(function()
- firstquest = true
+firstquest = true
 autostack = false
 
 local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
@@ -1666,7 +1666,7 @@ spawn(function()
     end
 end)
 
--- Función de teletransporte al NPC de la misión si no está en la misión
+
 spawn(function()
     while true and wait() do
         pcall(function()
@@ -1683,24 +1683,18 @@ spawn(function()
     end
 end)
 
+
 spawn(function()
-    local lastClockTime = game.Lighting.ClockTime
-
-    while true do
-        task.wait()
+    while true and wait() do
         pcall(function()
-            while true do
-                task.wait()
-                local currentHour = math.floor(game.Lighting.ClockTime)
-
-                if game.Lighting.ClockTime < lastClockTime or (currentHour == 0 and isLoop6Active) then
-                    local A_1 = "Earth"
-                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
-                    Event:InvokeServer(A_1)
-                    task.wait(1)
+            if data.Strength.Value < 20000000009880000000 then
+                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
+                    local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
+                    if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
+                        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                    end
+                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
                 end
-
-                lastClockTime = game.Lighting.ClockTime
             end
         end)
     end
