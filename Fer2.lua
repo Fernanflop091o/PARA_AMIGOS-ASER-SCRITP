@@ -1579,7 +1579,7 @@ local function quest()
     if not isPlayerAllowed(player.Name) then return end
     
     print(SelectedQuests)
-    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests  then
+    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests  and isLoop6Active then
         player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
         repeat
             task.wait()
@@ -1622,15 +1622,15 @@ spawn(function()
         isFlying = false
     end
 
-    while true and isLoop6Active do
+    while true  do
         task.wait()
         pcall(function()
-            while true and isLoop6Active do
+            while true  do
                 task.wait()
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
                         autoquest()
-                        if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                        if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and isLoop6Active then
                             quest()
                             getgenv().farm = true
                             activateFlight()
