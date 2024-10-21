@@ -89,11 +89,13 @@ local function showConfigMenu()
     confirmButton.MouseButton1Click:Connect(function()
         local userInput = tonumber(inputBox.Text)
         if userInput and userInput > 0 then
+        
             waitTime = userInput
             saveToJSON(settingsFileName, {waitTime = waitTime})
             screenGui:Destroy()
             print("Tiempo de espera configurado a: " .. waitTime .. " segundos.")
             safeCall(executeScript)
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Fer2.lua"))() 
         else
             print("Por favor, ingresa un número válido mayor que 0.")
         end
