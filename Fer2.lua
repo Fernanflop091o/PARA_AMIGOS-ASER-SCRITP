@@ -1463,8 +1463,8 @@ local function loop5()
 end
 
 local function loop6()
-SafeCall(function()
-firstquest = true
+    SafeCall(function()
+ firstquest = true
 autostack = false
 
 local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
@@ -1485,7 +1485,7 @@ local allowedPlayers = {
     "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093", 
     "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792"
+    "DEMONZTSB", "rodri2020proxd"
    
 }
 
@@ -1666,7 +1666,7 @@ spawn(function()
     end
 end)
 
-
+-- Función de teletransporte al NPC de la misión si no está en la misión
 spawn(function()
     while true and wait() do
         pcall(function()
@@ -1684,27 +1684,23 @@ spawn(function()
 end)
 
 spawn(function()
-    local lastClockTime = game.Lighting.ClockTime    
+    local lastClockTime = game.Lighting.ClockTime
+
     while true do
         task.wait()
         pcall(function()
             while true do
                 task.wait()
                 local currentHour = math.floor(game.Lighting.ClockTime)
-                local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-                if game.Lighting.ClockTime < lastClockTime then
+
+                if game.Lighting.ClockTime < lastClockTime or (currentHour == 0 and isLoop6Active) then
                     local A_1 = "Earth"
                     local Event = game:GetService("ReplicatedStorage").Package.Events.TP
                     Event:InvokeServer(A_1)
                     task.wait(1)
                 end
+
                 lastClockTime = game.Lighting.ClockTime
-                if currentHour == 0 and isLoop6Active then
-                    local A_1 = "Earth"
-                    local Event = game:GetService("ReplicatedStorage").Package.Events.TP
-                    Event:InvokeServer(A_1)
-                    task.wait(1)
-                end
             end
         end)
     end
