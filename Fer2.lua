@@ -1463,6 +1463,7 @@ local function loop5()
 end
 
 local function loop6()
+SafeCall(function()
 firstquest = true
 autostack = false
 
