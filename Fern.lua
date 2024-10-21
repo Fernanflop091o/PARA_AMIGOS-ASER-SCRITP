@@ -87,18 +87,20 @@ local function showConfigMenu()
     confirmButton.TextSize = 14
 
     confirmButton.MouseButton1Click:Connect(function()
-        local userInput = tonumber(inputBox.Text)
-        if userInput and userInput > 0 then
-            waitTime = userInput
-            saveToJSON(settingsFileName, {waitTime = waitTime})
-            screenGui:Destroy()
-            print("Tiempo de espera configurado a: " .. waitTime .. " segundos.")
-            safeCall(executeScript)
-        else
-            print("Por favor, ingresa un número válido mayor que 0.")
-        end
-    end)
-end
+    local userInput = tonumber(inputBox.Text)
+    if userInput and userInput > 0 then
+        waitTime = userInput
+        saveToJSON(settingsFileName, {waitTime = waitTime})
+        screenGui:Destroy()
+        print("Tiempo de espera configurado a: " .. waitTime .. " segundos.")
+        
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Fer2.lua"))()
+        end)
+    else
+        print("Por favor, ingresa un número válido mayor que 0.")
+    end
+end)
 
 -- Create Reset Button
 local function createResetButton()
