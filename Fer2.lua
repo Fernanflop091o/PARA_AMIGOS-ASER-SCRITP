@@ -1,5 +1,9 @@
 local MenuPanel = game.CoreGui:FindFirstChild("Fernando")
-if MenuPanel then
+local playerCount = #game.Players:GetPlayers()
+if playerCount > 3 then
+    if MenuPanel then
+        MenuPanel:Destroy()
+    end
     return  
 end
 
@@ -1895,9 +1899,9 @@ earthButton.MouseButton1Click:Connect(function()
     SafeCall(function()
         local playerCount = #game.Players:GetPlayers()
         print("Número de jugadores: " .. playerCount)  -- Para depuración
-        if playerCount > 2 then
+        if playerCount > 3 then
             game:GetService("TeleportService"):Teleport(3311165597, game.Players.LocalPlayer)
-        elseif playerCount < 2 then
+        elseif playerCount < 3 then
             game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
         end
     end)
@@ -1907,9 +1911,9 @@ billsButton.MouseButton1Click:Connect(function()
   SafeCall(function()
         local playerCount = #game.Players:GetPlayers()
         print("Número de jugadores: " .. playerCount)  -- Para depuración
-        if playerCount > 2 then
+        if playerCount > 3 then
             game:GetService("TeleportService"):Teleport(5151400895, game.Players.LocalPlayer)
-        elseif playerCount < 2 then
+        elseif playerCount < 3 then
             game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
         end
     end)
