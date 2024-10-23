@@ -1466,7 +1466,23 @@ local function loop5()
     while true do
         SafeCall(function()
             if isLoop5Active then
-                -- Lógica de loop 5
+                local s = game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Quest
+s.Visible = false
+s.Position = UDim2.new(0.01, 0, 0.4, 0)
+
+spawn(function()
+    while true do
+        local success, err = pcall(function()
+            s.Position = UDim2.new(2, 0, 0, 0)
+            task.wait()
+        end)
+        
+        if not success then
+            warn("Error: " .. err)
+        end
+        task.wait()
+    end
+end)
             end
         end)
         wait()
