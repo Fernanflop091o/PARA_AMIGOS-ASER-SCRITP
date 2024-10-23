@@ -1,7 +1,12 @@
 local MenuPanel = game.CoreGui:FindFirstChild("Fernando")
 local playerCount = #game.Players:GetPlayers()
+
 if MenuPanel then
+    return  
+end
+
 if playerCount > 3 then
+    if MenuPanel then
         MenuPanel:Destroy()
     end
     wait(3)
