@@ -14,10 +14,6 @@ if playerCount > 3 then
     return  
 end
 
-if playerCount > 1 then
-    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-end
-
 
 local success, fail = pcall(function()
     local player = game.Players.LocalPlayer
