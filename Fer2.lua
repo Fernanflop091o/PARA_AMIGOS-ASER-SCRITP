@@ -14,6 +14,9 @@ if playerCount > 3 then
     return  
 end
 
+if playerCount > 1 then
+    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+end
 
 local success, fail = pcall(function()
     local player = game.Players.LocalPlayer
@@ -1510,7 +1513,7 @@ local allowedPlayers = {
     "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", "Flux_chog",
     "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319",
     "andygamer012345", "Crocrakxer246", "fernando_snake", "R4T4TOPP0",
-    "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN"
+    "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd"
    
 }
 
@@ -2017,4 +2020,3 @@ SafeCall(showPlayerThumbnail)
 if not success then
     warn("Error en la inicialización: " .. tostring(fail))
 end
-
