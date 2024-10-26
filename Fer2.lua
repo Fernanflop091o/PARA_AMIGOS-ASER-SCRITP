@@ -1675,9 +1675,11 @@ spawn(function()
                                     if not attacked then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                                     else
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                                     end
                                     
                                     CanAttack = true
