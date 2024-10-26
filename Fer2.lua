@@ -1552,7 +1552,7 @@ spawn(function()
                                 repeat
                                     task.wait()
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait(0.1)
+                                task.wait()
                             end
                             deactivateFlight()
                         end
@@ -1583,7 +1583,7 @@ spawn(function()
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait(0.05) -- Esperar 5 segundos antes de verificar nuevamente
+                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
                 end
             end
         end)
@@ -1594,7 +1594,7 @@ end)
 spawn(function()
     local lastHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait(0.5)
+        task.wait(0.1)
         pcall(function()
             local currentHour = math.floor(game.Lighting.ClockTime)
             if currentHour < lastHour or currentHour < 3 or currentHour == 0 then
