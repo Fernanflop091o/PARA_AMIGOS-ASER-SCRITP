@@ -1940,7 +1940,7 @@ local function updateBallColor()
         ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
     elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
         if (tick() % 1) < 0.5 then
-            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+            ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
         else
             ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
         end
