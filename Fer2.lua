@@ -1363,7 +1363,7 @@ local allowedPlayers = {
     "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319",
     "andygamer012345", "Crocrakxer246", "fernando_snake", "R4T4TOPP0",
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd",
-    "kayoolicool", "wellington19800", "maisde8milksks"
+    "kayoolicool", "wellington19800", "maisde8milksks", "frandeli0101"
    
 }
 
@@ -1459,7 +1459,7 @@ local function quest()
     if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests  and isLoop6Active then
         player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
         repeat
-            task.wait(0.2)
+            task.wait(0.1)
             events.Qaction:InvokeServer(game:GetService("Workspace").Others.NPCs[SelectedQuests])
         until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
     end
@@ -1552,7 +1552,7 @@ spawn(function()
                                 repeat
                                     task.wait()
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait(0.2)
+                                task.wait(0.1)
                             end
                             deactivateFlight()
                         end
@@ -1583,7 +1583,7 @@ spawn(function()
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait(0.3) -- Esperar 5 segundos antes de verificar nuevamente
+                    task.wait(0.05) -- Esperar 5 segundos antes de verificar nuevamente
                 end
             end
         end)
@@ -1606,7 +1606,7 @@ spawn(function()
         end)
     end
 end)
-            task.wait(0.2)
+            task.wait()
     end)
 end
 
