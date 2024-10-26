@@ -9,7 +9,7 @@ if playerCount > 3 then
     if MenuPanel then
         MenuPanel:Destroy()
     end
-    wait(3)
+    wait(1)
     game:Shutdown()
     return  
 end
@@ -1459,7 +1459,7 @@ local function quest()
     if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests  and isLoop6Active then
         player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
         repeat
-            task.wait()
+            task.wait(0.2)
             events.Qaction:InvokeServer(game:GetService("Workspace").Others.NPCs[SelectedQuests])
         until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
     end
@@ -1518,7 +1518,7 @@ spawn(function()
                                     task.wait()
                                 end
                             end)
-                                  task.wait()
+                                  task.wait(0.1)
                                 spawn(function()
                                 while getgenv().farm and v and v.Humanoid.Health > 0 do
                                     if not attacked then
@@ -1552,7 +1552,7 @@ spawn(function()
                                 repeat
                                     task.wait()
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait()
+                                task.wait(0.2)
                             end
                             deactivateFlight()
                         end
@@ -1583,7 +1583,7 @@ spawn(function()
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
+                    task.wait(0.3) -- Esperar 5 segundos antes de verificar nuevamente
                 end
             end
         end)
@@ -1594,7 +1594,7 @@ end)
 spawn(function()
     local lastHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait()
+        task.wait(0.5)
         pcall(function()
             local currentHour = math.floor(game.Lighting.ClockTime)
             if currentHour < lastHour or currentHour < 3 or currentHour == 0 then
@@ -1606,7 +1606,7 @@ spawn(function()
         end)
     end
 end)
-            task.wait()
+            task.wait(0.2)
     end)
 end
 
@@ -1784,7 +1784,7 @@ while wait() do
     spawn(updatePlayerList)
 end
             end
-        task.wait()
+        task.wait(5)
     end
 end
 
@@ -1956,7 +1956,7 @@ end
         SafeCall(updateTime())   
         button.Text = Serverping()        
         SafeCall(updateBallColor())   
-          task.wait() 
+          task.wait(1/60) 
     end
 end
 
