@@ -72,6 +72,8 @@ local success, fail = pcall(function()
     local background = Instance.new("Frame")
     local playerListContainer = Instance.new("ScrollingFrame")
     local containerCorner = Instance.new("UICorner") 
+    local corner = Instance.new("UICorner")
+    local ballFrame = Instance.new("Frame")
    
     
 local userId = player.UserId
@@ -94,7 +96,7 @@ TextLabel.BorderSizePixel = 0
 TextLabel.Position = UDim2.new(0.5, -350, 0.4, -130)
 TextLabel.Size = UDim2.new(0, 410, 0, 30)
 TextLabel.Font = Enum.Font.SourceSans
-TextLabel.Text = "Prx_Atualizacion                                                      "
+TextLabel.Text = "DBU                                                      "
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.TextScaled = true
 TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)
@@ -463,6 +465,17 @@ button.TextStrokeTransparency = 0
 button.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)
 button.Text = "Cargando..."
 button.Parent = MenuPanel
+
+
+ballFrame.Size = UDim2.new(0.01592638372826266, 0, 0.22392638372826266, 0) -- Tamaño de la bola
+ballFrame.Position = UDim2.new(0.9796319186413133, 0, 0.7796319186413133, 0) -- Centro de la pantalla
+ballFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0) -- Amarillo brillante
+ballFrame.BackgroundTransparency = 0 -- Totalmente opaco
+ballFrame.Parent = TextLabel 
+
+corner.CornerRadius = UDim.new(0.9, 0)
+corner.Parent = ballFrame
+
    
 
 local function SafeCall(func, ...)
@@ -1767,7 +1780,7 @@ end)
 
 spawn(updatePlayerList)
 
-while wait(5) do
+while wait() do
     spawn(updatePlayerList)
 end
             end
@@ -1919,12 +1932,31 @@ end
     end
 end)
 
+local function updateBallColor()
+    local currentHour = math.floor(game.Lighting.ClockTime)
+    local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+
+    if currentHour == 15 and currentMinute >= 40 then
+        ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
+    elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
+        if (tick() % 1) < 0.5 then
+            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+        else
+            ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
+        end
+    else
+        ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+    end
+end
+    
+
     while true do
         SafeCall(updateFPS)   
         SafeCall(updatePing)   
         SafeCall(updateTime())   
-        button.Text = Serverping()
-          task.wait(1/60) 
+        button.Text = Serverping()        
+        SafeCall(updateBallColor())   
+          task.wait() 
     end
 end
 
