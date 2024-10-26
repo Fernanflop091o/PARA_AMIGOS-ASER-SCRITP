@@ -1592,17 +1592,18 @@ end)
 
 
 spawn(function()
-    local lastHour = math.floor(game.Lighting.ClockTime)
+    local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait(0.1)
+        task.wait()
         pcall(function()
-            local currentHour = math.floor(game.Lighting.ClockTime)
-            if currentHour < lastHour or currentHour < 3 or currentHour == 0 then
+            local currentGameHour = math.floor(game.Lighting.ClockTime)            
+            if currentGameHour < lastGameHour or currentGameHour < 3 or currentGameHour == 0 then
                 game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
-            elseif currentHour >= 12 then
-                return 
+            elseif currentGameHour >= 3 and currentGameHour < 12 then
+                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
             end
-            lastHour = currentHour
+
+            lastGameHour = currentGameHour
         end)
     end
 end)
