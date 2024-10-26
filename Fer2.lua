@@ -1363,7 +1363,7 @@ local allowedPlayers = {
     "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319",
     "andygamer012345", "Crocrakxer246", "fernando_snake", "R4T4TOPP0",
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd",
-    "kayoolicool"
+    "kayoolicool", "wellington19800", "maisde8milksks"
    
 }
 
