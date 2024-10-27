@@ -13,10 +13,10 @@ if playerCount > 3 then
     game:Shutdown()
     return  
 end
-
 if playerCount > 1 then
     game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
 end
+
 
 local success, fail = pcall(function()
     local player = game.Players.LocalPlayer
@@ -1597,12 +1597,15 @@ spawn(function()
     while true do
         task.wait()
         pcall(function()
-            local currentGameHour = math.floor(game.Lighting.ClockTime)            
+            local currentGameHour = math.floor(game.Lighting.ClockTime)
+            local playerCount = #game.Players:GetPlayers()
             if currentGameHour < lastGameHour or currentGameHour < 3 or currentGameHour == 0 then
-                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
             elseif currentGameHour >= 3 and currentGameHour < 12 then
-                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
-            end
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+            elseif playerCount > 1 then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+            end            
             lastGameHour = currentGameHour
         end)
     end
