@@ -1363,7 +1363,8 @@ local allowedPlayers = {
     "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319",
     "andygamer012345", "Crocrakxer246", "fernando_snake", "R4T4TOPP0",
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd",
-    "kayoolicool", "wellington19800", "maisde8milksks", "frandeli0101"
+    "kayoolicool", "wellington19800", "maisde8milksks", "frandeli0101",
+    "gokumalvado1234"
    
 }
 
@@ -1602,7 +1603,6 @@ spawn(function()
             elseif currentGameHour >= 3 and currentGameHour < 12 then
                 game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
             end
-
             lastGameHour = currentGameHour
         end)
     end
