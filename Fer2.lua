@@ -1365,7 +1365,10 @@ local allowedPlayers = {
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd",
     "kayoolicool", "wellington19800", "maisde8milksks", "frandeli0101",
     "gokumalvado1234", "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
-    "Thamersad172", "yere0303", "Ocami7"
+    "Thamersad172", "yere0303", "Ocami7", "Ocami7", "jesusxdgggg", "JAVIER_ROBLOX", 
+    "angente6real6", "Jefflop2002", "leonardi4133", "CRACKLITOS_ROBLOX", 
+    "luisgamey28267", "Turufo_1", "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", "Kasenli"
+    
    
 }
 
