@@ -1103,8 +1103,8 @@ end)
 
 task.spawn(function() -- Rebirth, teleport earth/bills
     while ScGui do
-        if Farming  then
-            if _G.StatGrinding ~= true and isLoop5Active then
+        if Farming  then            
+            if  (getloweststat() >= ((ldata.Rebirth.Value*3e6) + 2e6)) and (getloweststat() < (((ldata.Rebirth.Value*3e6) + 2e6)*2)) and ldata.Rebirth.Value < checkplr()[2] and isLoop5Active then               
                 --spawn(function()                
                 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
             end
@@ -1585,7 +1585,7 @@ spawn(function()
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait() -- Esperar 5 segundos antes de verificar nuevamente
+                    task.wait(0.2) 
                 end
             end
         end)
