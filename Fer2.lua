@@ -1364,7 +1364,8 @@ local allowedPlayers = {
     "andygamer012345", "Crocrakxer246", "fernando_snake", "R4T4TOPP0",
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd",
     "kayoolicool", "wellington19800", "maisde8milksks", "frandeli0101",
-    "gokumalvado1234"
+    "gokumalvado1234", "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
+    "Thamersad172", "yere0303", "Ocami7"
    
 }
 
