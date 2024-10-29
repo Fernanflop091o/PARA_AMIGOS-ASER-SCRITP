@@ -1372,8 +1372,8 @@ local allowedPlayers = {
 }
 
 local quests = {
-    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 20000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = 1000000008867676089868 },
+    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 35000 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 35000, endRange = 1000000008867676089868 },
 }
 
 local function isPlayerAllowed(name)
