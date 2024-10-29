@@ -1489,7 +1489,7 @@ local function tpToBoss(boss)
     end
 end
 
-spawn(function()
+task.spawn(function()
     while true  do
         task.wait()
         pcall(function()
@@ -1510,7 +1510,7 @@ spawn(function()
                                 end
                             end)
                                   task.wait(0.1)
-                                spawn(function()
+                                task.spawn(function()
                                 while getgenv().farm and v and v.Humanoid.Health > 0 do
                                     if not attacked then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
@@ -1527,7 +1527,7 @@ spawn(function()
                                 end
                             end)
                             if table.find(mobs, v.Name) then
-                                spawn(function()
+                                task.spawn(function()
                                     game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
                                     game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
@@ -1554,19 +1554,18 @@ spawn(function()
     end
 end)
 
-spawn(function()
+task.spawn(function()
     while true do
-        task.wait() -- Ajusta el tiempo de espera según sea necesario
+        task.wait() 
         pcall(function()
             if player.Character:FindFirstChild("HumanoidRootPart") then
                 for _, v in ipairs(game.Workspace.Living:GetChildren()) do
                     if v.Name:lower() == SelectedMobs:lower() and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                        -- Realiza ataques adicionales si el jugador está atacando
-                        if attacked then
-                            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                            task.wait() -- Espera un poco entre ataques
+                        if attacked then                         
+                            while not lplr.Status.Blocking.Value do
+                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                                task.wait()
+                            end
                         end
                     end
                 end
@@ -1575,7 +1574,7 @@ spawn(function()
     end
 end)
 
-spawn(function()
+task.spawn(function()
     while true and wait() do
         pcall(function()
             if data.Strength.Value < 20000000009880000000 then
@@ -1591,7 +1590,7 @@ spawn(function()
     end
 end)
 
-spawn(function()
+task.spawn(function()
     local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
         task.wait(0.3)
