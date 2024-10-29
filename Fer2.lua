@@ -1352,7 +1352,7 @@ local rs = game:GetService("RunService")
 
 local allowedPlayers = {
     "fernanfloP091o", "armijosfernando2178", "azeldex", "elmegafer",
-    "123daishinkan", "ItzSebaGod", "alexisetter2008", "AlejandroItzi", 
+    "123daishinkan", "ItzSebaGod", "alexisetter2008", "AlejandroItzi",
     "TheFinal126", "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
     "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", 
     "Fernanflop093o", "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
@@ -1361,29 +1361,22 @@ local allowedPlayers = {
     "SuperPato0319", "andygamer012345", "Crocrakxer246", 
     "fernando_snake", "R4T4TOPP0", "Gotenks_129", "juancarlosvillo", 
     "CR7_CHAMPIOSN", "FrivUpd", "kayoolicool", "wellington19800", 
-    "maisde8milksks", "frandeli0101", "gokumalvado1234", 
-    "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
-    "Thamersad172", "yere0303", "Ocami7", "jesusxdgggg", 
-    "JAVIER_ROBLOX", "angente6real6", "Jefflop2002", "leonardi4133", 
-    "CRACKLITOS_ROBLOX", "luisgamey28267", "Turufo_1", 
-    "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", 
-    "Kasenli", "FACHERITO_XD9"
+    "maisde8milksks", "frandeli0101", "gokumalvado1234"
 }
 
 local quests = {
     { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 20000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = math.huge },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = 1000000008867676089868 },
 }
 
-local function logError(err)
-    warn("Error: " .. tostring(err))
-end
-
 local function isPlayerAllowed(name)
-    return table.find(allowedPlayers, name) ~= nil
+    for _, allowedName in ipairs(allowedPlayers) do
+        if name == allowedName then
+            return true
+        end
+    end
+    return false
 end
-
-local targetted = nil
 
 local function target()
     local playerName = player.Name
@@ -1392,34 +1385,37 @@ local function target()
         targetted = playerName
     else
         warn("Player not allowed: " .. playerName)
+        return
     end
 end
 
+print(game.PlaceId)
 target()
 
-local function autoquest()
+local function autoquest(boolean)
     if not isPlayerAllowed(targetted) then return end
     
     repeat
-        task.wait(0.1) -- Esperar un poco antes de verificar
+        task.wait()
     until game.workspace.Living[targetted]
 
-    local strengths = {
+    local values = {
         Strength = data.Strength.Value,
         Energy = data.Energy.Value,
         Defense = data.Defense.Value,
         Speed = data.Speed.Value
     }
 
-    local smallest = math.min(strengths.Strength, strengths.Energy, strengths.Defense, strengths.Speed)
+    local smallest = math.min(values.Strength, values.Energy, values.Defense, values.Speed)
+    checkValue = smallest
+    print("check value is " .. checkValue)
     print("The smallest number is: " .. smallest)
 
     for _, quest in ipairs(quests) do
-        if smallest >= quest.requiredValue and smallest <= quest.endRange then
+        if checkValue >= quest.requiredValue and checkValue <= quest.endRange then
             print("Quest " .. quest.name .. " has a required value between " .. quest.requiredValue .. " and " .. quest.endRange)
             SelectedQuests = quest.name
             SelectedMobs = quest.nickname
-            break
         end
     end
 
@@ -1428,13 +1424,15 @@ local function autoquest()
         firstquest = false
     end
 
-    if autostack and smallest > 8000 and lastquest ~= SelectedQuests then
-        if isLoop6Active then
+    if autostack and checkValue > 8000 then
+        if lastquest ~= SelectedQuests and isLoop6Active then
             game.workspace.Living[targetted].UpperTorso:Destroy()
             getgenv().stacked = false
             repeat
+                print("in auto loop died check")
                 task.wait()
-            until player.Character.Humanoid.Health > 0
+            until plr.Character.Humanoid.Health >= 0
+            task.wait()
         end
         lastquest = SelectedQuests
     end
@@ -1446,14 +1444,24 @@ local function quest()
     if not isPlayerAllowed(player.Name) then return end
     
     print(SelectedQuests)
-    if data.Quest.Value ~= SelectedQuests and isLoop6Active then
-        player.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
+    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests and isLoop6Active then
+        player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
         repeat
             task.wait(0.1)
-            events.Qaction:InvokeServer(game.Workspace.Others.NPCs[SelectedQuests])
-        until data.Quest.Value == SelectedQuests
+            events.Qaction:InvokeServer(game:GetService("Workspace").Others.NPCs[SelectedQuests])
+        until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
     end
 end
+
+spawn(function()
+    while true do
+        pcall(function()
+            autoquest(autostack)
+            quest()
+            task.wait(1)
+        end)
+    end
+end)
 
 local function activateFlight()
     local character = player.Character
