@@ -1345,111 +1345,96 @@ local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
 setmetatable(Settings, {__index = function() warn('Dumbass') end})
 
 local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
-local plr = game.Players.LocalPlayer
-local player = game:GetService("Players").LocalPlayer
+local player = game.Players.LocalPlayer
+local data = game.ReplicatedStorage.Datas[player.UserId]
 local events = game:GetService("ReplicatedStorage").Package.Events
 local rs = game:GetService("RunService")
-local data = game.ReplicatedStorage.Datas[player.UserId]
-local rebirthRemote = game:GetService("ReplicatedStorage").Package.Events.reb
 
 local allowedPlayers = {
-        "fernanfloP091o", "armijosfernando2178", "azeldex", "elmegafer",
-    "123daishinkan", "ItzSebaGod", "alexisetter2008",
-     "AlejandroItzi", "TheFinal126",
-    "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
-    "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", "Fernanflop093o", 
-    "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", "Flux_chog",
-    "robloxesmuymalo2020", "Freire69", "furia3476", "SuperPato0319",
-    "andygamer012345", "Crocrakxer246", "fernando_snake", "R4T4TOPP0",
-    "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", "FrivUpd",
-    "kayoolicool", "wellington19800", "maisde8milksks", "frandeli0101",
-    "gokumalvado1234", "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
-    "Thamersad172", "yere0303", "Ocami7", "Ocami7", "jesusxdgggg", "JAVIER_ROBLOX", 
-    "angente6real6", "Jefflop2002", "leonardi4133", "CRACKLITOS_ROBLOX", 
-    "luisgamey28267", "Turufo_1", "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", "Kasenli"
-    
-   
+    "fernanfloP091o", "armijosfernando2178", "azeldex", "elmegafer",
+    "123daishinkan", "ItzSebaGod", "alexisetter2008", "AlejandroItzi", 
+    "TheFinal126", "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
+    "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", 
+    "Fernanflop093o", "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
+    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", 
+    "Flux_chog", "robloxesmuymalo2020", "Freire69", "furia3476", 
+    "SuperPato0319", "andygamer012345", "Crocrakxer246", 
+    "fernando_snake", "R4T4TOPP0", "Gotenks_129", "juancarlosvillo", 
+    "CR7_CHAMPIOSN", "FrivUpd", "kayoolicool", "wellington19800", 
+    "maisde8milksks", "frandeli0101", "gokumalvado1234", 
+    "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
+    "Thamersad172", "yere0303", "Ocami7", "jesusxdgggg", 
+    "JAVIER_ROBLOX", "angente6real6", "Jefflop2002", "leonardi4133", 
+    "CRACKLITOS_ROBLOX", "luisgamey28267", "Turufo_1", 
+    "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", 
+    "Kasenli"
 }
 
 local quests = {
     { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 20000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = 1000000008867676089868 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = math.huge },
 }
 
-function isPlayerAllowed(name)
-    for _, allowedName in ipairs(allowedPlayers) do
-        if name == allowedName then
-            return true
-        end
-    end
-    return false
+local function logError(err)
+    warn("Error: " .. tostring(err))
 end
 
-function target()
-    local playerName = game:GetService("Players").LocalPlayer.Name
+local function isPlayerAllowed(name)
+    return table.find(allowedPlayers, name) ~= nil
+end
+
+local targetted = nil
+
+local function target()
+    local playerName = player.Name
     if isPlayerAllowed(playerName) then
         print("Player is allowed: " .. playerName)
         targetted = playerName
     else
         warn("Player not allowed: " .. playerName)
-        return
     end
 end
 
-print(game.PlaceId)
 target()
 
-local function autoquest(boolean)
+local function autoquest()
     if not isPlayerAllowed(targetted) then return end
     
     repeat
-        -- Esperar hasta que el objetivo esté en el espacio de trabajo
+        task.wait(0.1) -- Esperar un poco antes de verificar
     until game.workspace.Living[targetted]
 
-    local a = data.Strength.Value
-    local b = data.Energy.Value
-    local c = data.Defense.Value
-    local d = data.Speed.Value
-    print(a, b, c, d)
+    local strengths = {
+        Strength = data.Strength.Value,
+        Energy = data.Energy.Value,
+        Defense = data.Defense.Value,
+        Speed = data.Speed.Value
+    }
 
-    local smallest = a
-    if b < smallest then
-        smallest = b
-    end
-    if c < smallest then
-        smallest = c
-    end
-    if d < smallest then
-        smallest = d
-    end
-
-    checkValue = smallest
-    print("check value is " .. checkValue)
+    local smallest = math.min(strengths.Strength, strengths.Energy, strengths.Defense, strengths.Speed)
     print("The smallest number is: " .. smallest)
 
-    for i, quest in ipairs(quests) do
-        if checkValue >= quest.requiredValue and checkValue <= quest.endRange then
+    for _, quest in ipairs(quests) do
+        if smallest >= quest.requiredValue and smallest <= quest.endRange then
             print("Quest " .. quest.name .. " has a required value between " .. quest.requiredValue .. " and " .. quest.endRange)
             SelectedQuests = quest.name
             SelectedMobs = quest.nickname
+            break
         end
     end
 
-    if firstquest == true then
+    if firstquest then
         lastquest = SelectedQuests
         firstquest = false
     end
 
-    if autostack == true and checkValue > 8000 then
-        if lastquest ~= SelectedQuests and isLoop6Active then
+    if autostack and smallest > 8000 and lastquest ~= SelectedQuests then
+        if isLoop6Active then
             game.workspace.Living[targetted].UpperTorso:Destroy()
             getgenv().stacked = false
             repeat
-                print("in auto loop died check")
                 task.wait()
-            until plr.Character.Humanoid.Health >= 0
-            task.wait()
+            until player.Character.Humanoid.Health > 0
         end
         lastquest = SelectedQuests
     end
@@ -1461,106 +1446,62 @@ local function quest()
     if not isPlayerAllowed(player.Name) then return end
     
     print(SelectedQuests)
-    if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests  and isLoop6Active then
-        player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
+    if data.Quest.Value ~= SelectedQuests and isLoop6Active then
+        player.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
         repeat
             task.wait(0.1)
-            events.Qaction:InvokeServer(game:GetService("Workspace").Others.NPCs[SelectedQuests])
-        until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
+            events.Qaction:InvokeServer(game.Workspace.Others.NPCs[SelectedQuests])
+        until data.Quest.Value == SelectedQuests
+    end
+end
+
+local function activateFlight()
+    local character = player.Character
+    if not character then return end
+
+    local root = character:WaitForChild("HumanoidRootPart")
+    local bv = root:FindFirstChildOfClass("BodyVelocity") or Instance.new("BodyVelocity", root)
+    local bg = root:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", root)
+
+    bg.P = 1
+    bg.MaxTorque = Vector3.new(500000, 500000, 500000)
+    bv.P = 1
+    bv.MaxForce = Vector3.new(100000, 100000, 100000)
+
+    bv.Velocity = Vector3.new(0, 50, 0) -- Eleva al jugador
+    return true
+end
+
+local function deactivateFlight()
+    local character = player.Character
+    if not character then return end
+
+    local root = character:WaitForChild("HumanoidRootPart")
+    local bv = root:FindFirstChildOfClass("BodyVelocity")
+    if bv then
+        bv.Velocity = Vector3.new(0, 0, 0) -- Detiene el vuelo
     end
 end
 
 spawn(function()
-    local isFlying = false
-    local debounce = false
-
-    local function activateFlight()
-        if not isPlayerAllowed(player.Name) then return end
-
-        local character = game.Players.LocalPlayer.Character
-        local root = character:WaitForChild("HumanoidRootPart")
-
-        local bv = root:FindFirstChildOfClass("BodyVelocity") or Instance.new("BodyVelocity", root)
-        local bg = root:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", root)
-
-        bg.P = 1
-        bg.MaxTorque = Vector3.new(500000, 500000, 500000)
-        bv.P = 1
-        bv.MaxForce = Vector3.new(100000, 100000, 100000)
-
-        isFlying = true
-        bv.Velocity = Vector3.new(0, 50, 0) -- Eleva al jugador
-    end
-
-    local function deactivateFlight()
-        local character = game.Players.LocalPlayer.Character
-        local root = character:WaitForChild("HumanoidRootPart")
-
-        local bv = root:FindFirstChildOfClass("BodyVelocity")
-        if bv then
-            bv.Velocity = Vector3.new(0, 0, 0) -- Detiene el vuelo
-        end
-
-        isFlying = false
-    end
-
-    while true  do
-        task.wait()
+    while true do
+        task.wait(0.1)
         pcall(function()
-            while true  do
-                task.wait()
-                if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
-                        autoquest()
-                        if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and isLoop6Active then
-                            quest()
-                            getgenv().farm = true
-                            activateFlight()
-                            repeat
-                             spawn(function()
-                                while getgenv().farm and v and v.Humanoid.Health > 0 do
-                                    player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-                                    task.wait()
-                                end
-                            end)
-                                  task.wait(0.1)
-                                spawn(function()
-                                while getgenv().farm and v and v.Humanoid.Health > 0 do
-                                    if not attacked then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                    else
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                    end
-                                    
-                                    CanAttack = true
-                                    task.wait()
-                                end
-                            end)
-                            if table.find(mobs, v.Name) then
-                                spawn(function()
-                                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                    game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                    if game.ReplicatedStorage.Datas[game.Players.LocalPlayer.UserId].Rebirth.Value <= 2800 then
-                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") end
-                                end)
-                            end
-                            until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
-                            if player.Character.Humanoid.Health <= 0 then
-                                getgenv().farm = false
-                                getgenv().stacked = false
-                                deactivateFlight()
-                                repeat
-                                    task.wait()
-                                until player.Character.Humanoid.Health >= 0
-                                task.wait()
-                            end
-                            deactivateFlight()
-                        end
+            if player.Character:FindFirstChild("HumanoidRootPart") then
+                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+                    autoquest()
+                    if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and isLoop6Active then
+                        quest()
+                        getgenv().farm = true
+                        activateFlight()
+                        repeat
+                            player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+                            events.p:FireServer("Blacknwhite27", 1)
+                            events.p:FireServer("Blacknwhite27", 2)
+                            events.block:InvokeServer(true)
+                            task.wait(0.1)
+                        until not getgenv().farm or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
+                        deactivateFlight()
                     end
                 end
             end
@@ -1569,22 +1510,12 @@ spawn(function()
 end)
 
 spawn(function()
-    while true and wait() and isLoop6Active do
-        pcall(function()
-            while getgenv().stacked == true and wait() do 
-                -- Sin transformaciones
-            end
-        end)
-    end
-end)
-
-
-spawn(function()
-    while true and wait() do
+    while true do
+        task.wait(1) -- Delay para evitar bucles apretados
         pcall(function()
             if data.Strength.Value < 20000000009880000000 then
-                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
-                    local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
+                while data.Quest.Value ~= SelectedQuests do
+                    local npc = game.Workspace.Others.NPCs[SelectedQuests]
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
@@ -1595,22 +1526,15 @@ spawn(function()
     end
 end)
 
-
 spawn(function()
-    local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait()
+        task.wait(1)
         pcall(function()
             local currentGameHour = math.floor(game.Lighting.ClockTime)
             local playerCount = #game.Players:GetPlayers()
-            if currentGameHour < lastGameHour or currentGameHour < 3 or currentGameHour == 0 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            elseif currentGameHour >= 3 and currentGameHour < 12 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            elseif playerCount > 1 then
+            if currentGameHour < 3 or currentGameHour == 0 or playerCount > 1 then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
             end            
-            lastGameHour = currentGameHour
         end)
     end
 end)
