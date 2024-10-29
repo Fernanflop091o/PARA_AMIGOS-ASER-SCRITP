@@ -1511,7 +1511,7 @@ end)
 
 spawn(function()
     while true do
-        task.wait(1) -- Delay para evitar bucles apretados
+        task.wait(.3) -- Delay para evitar bucles apretados
         pcall(function()
             if data.Strength.Value < 20000000009880000000 then
                 while data.Quest.Value ~= SelectedQuests do
@@ -1529,7 +1529,7 @@ end)
 spawn(function()
     local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait()
+        task.wait(0.3)
         pcall(function()
             local currentGameHour = math.floor(game.Lighting.ClockTime)
             local playerCount = #game.Players:GetPlayers()
