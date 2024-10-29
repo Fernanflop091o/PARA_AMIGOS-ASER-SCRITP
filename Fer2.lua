@@ -1372,11 +1372,11 @@ local allowedPlayers = {
 }
 
 local quests = {
-    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 35000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 35000, endRange = 1000000008867676089868 },
+    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 20000 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = math.huge },
 }
 
-local function isPlayerAllowed(name)
+function isPlayerAllowed(name)
     for _, allowedName in ipairs(allowedPlayers) do
         if name == allowedName then
             return true
@@ -1385,10 +1385,9 @@ local function isPlayerAllowed(name)
     return false
 end
 
-local function target()
-    local playerName = player.Name
+function target()
+    local playerName = game:GetService("Players").LocalPlayer.Name
     if isPlayerAllowed(playerName) then
-        print("Player is allowed: " .. playerName)
         targetted = playerName
     else
         warn("Player not allowed: " .. playerName)
@@ -1396,33 +1395,23 @@ local function target()
     end
 end
 
-print(game.PlaceId)
 target()
 
-local function autoquest(boolean)
+local function autoquest()
     if not isPlayerAllowed(targetted) then return end
-    
+
     repeat
         task.wait()
     until game.workspace.Living[targetted]
 
-    local values = {
-        Strength = data.Strength.Value,
-        Energy = data.Energy.Value,
-        Defense = data.Defense.Value,
-        Speed = data.Speed.Value
-    }
-
-    local smallest = math.min(values.Strength, values.Energy, values.Defense, values.Speed)
-    checkValue = smallest
-    print("check value is " .. checkValue)
-    print("The smallest number is: " .. smallest)
+    local a, b, c, d = data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value
+    local smallest = math.min(a, b, c, d)
 
     for _, quest in ipairs(quests) do
-        if checkValue >= quest.requiredValue and checkValue <= quest.endRange then
-            print("Quest " .. quest.name .. " has a required value between " .. quest.requiredValue .. " and " .. quest.endRange)
+        if smallest >= quest.requiredValue and smallest <= quest.endRange then
             SelectedQuests = quest.name
             SelectedMobs = quest.nickname
+            break
         end
     end
 
@@ -1431,15 +1420,13 @@ local function autoquest(boolean)
         firstquest = false
     end
 
-    if autostack and checkValue > 8000 then
+    if autostack and smallest > 8000 then
         if lastquest ~= SelectedQuests and isLoop6Active then
             game.workspace.Living[targetted].UpperTorso:Destroy()
             getgenv().stacked = false
             repeat
-                print("in auto loop died check")
                 task.wait()
-            until plr.Character.Humanoid.Health >= 0
-            task.wait()
+            until plr.Character.Humanoid.Health > 0
         end
         lastquest = SelectedQuests
     end
@@ -1449,26 +1436,20 @@ getgenv().stacked = false
 
 local function quest()
     if not isPlayerAllowed(player.Name) then return end
-    
-    print(SelectedQuests)
+
     if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests and isLoop6Active then
-        player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Others.NPCs[SelectedQuests].HumanoidRootPart.CFrame
+        local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
+        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
         repeat
             task.wait(0.1)
-            events.Qaction:InvokeServer(game:GetService("Workspace").Others.NPCs[SelectedQuests])
+            events.Qaction:InvokeServer(npc)
         until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
     end
 end
 
-spawn(function()
-    while true do
-        pcall(function()
-            autoquest(autostack)
-            quest()
-            task.wait(1)
-        end)
-    end
-end)
+task.spawn(autoquest)
+task.spawn(quest)
+
 
 local function activateFlight()
     local character = player.Character
