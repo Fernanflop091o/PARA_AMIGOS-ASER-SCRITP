@@ -1485,7 +1485,7 @@ end
 
 spawn(function()
     while true do
-        task.wait(0.1)
+        task.wait()
         pcall(function()
             if player.Character:FindFirstChild("HumanoidRootPart") then
                 for _, v in ipairs(game.Workspace.Living:GetChildren()) do
@@ -1506,7 +1506,7 @@ spawn(function()
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                             end
-                            task.wait(0.1)
+                            task.wait()
                         until not getgenv().farm or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                         deactivateFlight()
                     end
@@ -1518,7 +1518,7 @@ end)
 
 spawn(function()
     while true do
-        task.wait(.3) -- Delay para evitar bucles apretados
+        task.wait() -- Delay para evitar bucles apretados
         pcall(function()
             if data.Strength.Value < 20000000009880000000 then
                 while data.Quest.Value ~= SelectedQuests do
@@ -1526,7 +1526,7 @@ spawn(function()
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait(0.2) 
+                    task.wait(.05) 
                 end
             end
         end)
