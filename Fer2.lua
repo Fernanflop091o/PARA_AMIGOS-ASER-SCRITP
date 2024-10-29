@@ -1483,32 +1483,70 @@ local function deactivateFlight()
     end
 end
 
+local function tpToBoss(boss)
+    if player.Character:FindFirstChild("HumanoidRootPart") and boss:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+    end
+end
+
 spawn(function()
-    while true do
+    while true  do
         task.wait()
         pcall(function()
-            if player.Character:FindFirstChild("HumanoidRootPart") then
-                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
-                    autoquest()
-                    if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and isLoop6Active then
-                        quest()
-                        getgenv().farm = true
-                        activateFlight()
-                        repeat
-                            player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-                            if not attacked then
-                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                            else
-                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+            while true  do
+                task.wait()
+                if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
+                        autoquest()
+                        if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and isLoop6Active then
+                            quest()
+                            getgenv().farm = true
+                            activateFlight()
+                            repeat
+                             spawn(function()
+                                while getgenv().farm and v and v.Humanoid.Health > 0 do
+                                    player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+                                    task.wait()
+                                end
+                            end)
+                                  task.wait(0.1)
+                                spawn(function()
+                                while getgenv().farm and v and v.Humanoid.Health > 0 do
+                                    if not attacked then
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                                    else
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                                    end
+                                    
+                                    CanAttack = true
+                                    task.wait()
+                                end
+                            end)
+                            if table.find(mobs, v.Name) then
+                                spawn(function()
+                                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                    game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                                    if game.ReplicatedStorage.Datas[game.Players.LocalPlayer.UserId].Rebirth.Value <= 2800 then
+                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") end
+                                end)
                             end
-                            task.wait()
-                        until not getgenv().farm or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
-                        deactivateFlight()
+                            until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
+                            if player.Character.Humanoid.Health <= 0 then
+                                getgenv().farm = false
+                                getgenv().stacked = false
+                                deactivateFlight()
+                                repeat
+                                    task.wait()
+                                until player.Character.Humanoid.Health >= 0
+                                task.wait()
+                            end
+                            deactivateFlight()
+                        end
                     end
                 end
             end
@@ -1518,15 +1556,35 @@ end)
 
 spawn(function()
     while true do
-        task.wait() -- Delay para evitar bucles apretados
+        task.wait() -- Ajusta el tiempo de espera según sea necesario
+        pcall(function()
+            if player.Character:FindFirstChild("HumanoidRootPart") then
+                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+                    if v.Name:lower() == SelectedMobs:lower() and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                        -- Realiza ataques adicionales si el jugador está atacando
+                        if attacked then
+                            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                            task.wait() -- Espera un poco entre ataques
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+spawn(function()
+    while true and wait() do
         pcall(function()
             if data.Strength.Value < 20000000009880000000 then
-                while data.Quest.Value ~= SelectedQuests do
-                    local npc = game.Workspace.Others.NPCs[SelectedQuests]
+                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
+                    local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
                     if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait(.05) 
+                    task.wait(0.2) 
                 end
             end
         end)
