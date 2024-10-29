@@ -1593,7 +1593,7 @@ end)
 task.spawn(function()
     local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait(0.3)
+        task.wait(.07)
         pcall(function()
             local currentGameHour = math.floor(game.Lighting.ClockTime)
             local playerCount = #game.Players:GetPlayers()
