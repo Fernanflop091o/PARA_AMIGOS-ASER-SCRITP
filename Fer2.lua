@@ -1496,9 +1496,16 @@ spawn(function()
                         activateFlight()
                         repeat
                             player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-                            events.p:FireServer("Blacknwhite27", 1)
-                            events.p:FireServer("Blacknwhite27", 2)
-                            events.block:InvokeServer(true)
+                            if not attacked then
+                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                            else
+                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                            end
                             task.wait(0.1)
                         until not getgenv().farm or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                         deactivateFlight()
