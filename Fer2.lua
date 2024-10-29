@@ -1367,7 +1367,7 @@ local allowedPlayers = {
     "JAVIER_ROBLOX", "angente6real6", "Jefflop2002", "leonardi4133", 
     "CRACKLITOS_ROBLOX", "luisgamey28267", "Turufo_1", 
     "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", 
-    "Kasenli"
+    "Kasenli", "FACHERITO_XD9"
 }
 
 local quests = {
