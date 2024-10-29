@@ -1364,10 +1364,11 @@ local allowedPlayers = {
     "maisde8milksks", "frandeli0101", "gokumalvado1234", 
     "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
     "Thamersad172", "yere0303", "Ocami7", "jesusxdgggg", 
-    "JAVIER_ROBLOX", "angente6real6", "Jefflop2002", "leonardi4133", 
-    "CRACKLITOS_ROBLOX", "luisgamey28267", "Turufo_1", 
+    "JAVIER_R0BL0X", "angente6real6", "Jefflop2002", "leonardi4133", 
+    "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
     "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", 
-    "Kasenli", "FACHERITO_XD9"
+    "Kasenli", "FACHERITO_XD9", "4NG5L07777", "iLordYamoshi666",
+    "GamerWIDOWX56"
 }
 
 local quests = {
@@ -1589,15 +1590,16 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    while true and wait() do
+    while true do
+        task.wait()
         pcall(function()
             if data.Strength.Value < 20000000009880000000 then
-                while game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests do
+                local questValue = game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value
+                if questValue ~= SelectedQuests and isLoop6Active then
                     local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
-                    if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop6Active then
+                    if npc and npc:FindFirstChild("HumanoidRootPart") then
                         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     end
-                    task.wait(0.2) 
                 end
             end
         end)
