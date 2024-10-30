@@ -1170,7 +1170,6 @@ local playerHumanoid = character:WaitForChild("Humanoid")
 local RunService = game:GetService('RunService')
 local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
 
--- Listas de transformaciones
 local GoodForms = {
     {"Astral Instinct", 120e6, "Blanco"},	
     {"Beast", 120e6, "Blanco"},
@@ -1199,7 +1198,6 @@ local GoodForms = {
 }
 
 local EvilForms = {
-    
     {"Beast", 120e6, "Blanco"},
     {"Ultra Ego", 120e6, "Blanco"},
     {"LBSSJ4", 100e6},
@@ -1228,35 +1226,42 @@ local EvilForms = {
 
 local function transform(forms)
     pcall(function()
+        local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+        local currentStrength = stats.Strength.Value
+
         for index, form in pairs(forms) do
             local currentForm = form[1]
-            local maxMastery = 332526  -- Define el máximo de maestría
+            local masteryRequirement = form[2]
             
-            local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
             if ldata:FindFirstChild(currentForm) then
                 local currentMastery = ldata[currentForm].Value
-                if currentMastery < maxMastery and isLoop2Active then
-                    if equipRemote:InvokeServer(currentForm) and isLoop2Active then
-                        break  -- Se elige la forma actual si no está en máximo
+                
+                -- Verifica si la fuerza es suficiente para la transformación
+                if currentStrength >= masteryRequirement then
+                    -- Si la maestría está al máximo, elige la forma anterior
+                    if currentMastery >= 332526 then
+                        if index > 1 then
+                            local previousForm = forms[index - 1][1]
+                            equipRemote:InvokeServer(previousForm)
+                            print("Transformación revertida a " .. previousForm)
+                        else
+                            print("No hay transformación anterior para elegir.")
+                        end
+                    else
+                        -- Equipar la forma actual si no está al máximo
+                        if equipRemote:InvokeServer(currentForm) then
+                            break
+                        end
                     end
                 else
-                    print("Maestría máxima alcanzada para " .. currentForm)
-                    -- Si la maestría es máxima, elige la forma anterior en la lista
-                    if index > 1 then
-                        local previousForm = forms[index - 1][1]
-                        equipRemote:InvokeServer(previousForm)
-                        print("Transformación revertida a " .. previousForm)
-                    else
-                        print("No hay transformación anterior para elegir.")
-                    end
-                    break  -- Salir del bucle después de cambiar la forma
+                    print("Fuerza insuficiente para " .. currentForm)
                 end
             end
         end
         
         repeat
             wait()
-            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value and isLoop2Active then
+            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
         until player.Status.SelectedTransformation.Value == player.Status.Transformation.Value
@@ -1267,12 +1272,10 @@ RunService.RenderStepped:Connect(function()
     playerHumanoid.Health = math.huge
 end)
 
--- Transformación sin requisitos
-while isLoop2Active do
+while _G.rebirthed do
     wait()
     transform(GoodForms) -- O usa EvilForms según lo necesites
 end
-
        end
        task.wait(0.1)
     end
