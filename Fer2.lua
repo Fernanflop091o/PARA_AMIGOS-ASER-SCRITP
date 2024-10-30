@@ -1300,11 +1300,11 @@ end
                 wait(.01)
             end
         end
-        task.wait()
+        task.wait(.2)
     end
 end)  
                 
-        wait() 
+        task.wait(.5)
     end)
 end
 
@@ -1332,7 +1332,7 @@ spawn(function()
 end)
             end
         end)
-        wait()
+        task.wait(.2)
     end
 end
 
@@ -1350,35 +1350,54 @@ local data = game.ReplicatedStorage.Datas[player.UserId]
 local events = game:GetService("ReplicatedStorage").Package.Events
 local rs = game:GetService("RunService")
 
-local allowedPlayers = {
-    "fernanfloP091o", "armijosfernando2178", "azeldex", "elmegafer",
-    "123daishinkan", "ItzSebaGod", "alexisetter2008", "AlejandroItzi", 
-    "TheFinal126", "0oAKILESo0", "brxxn_sl", "GOKUVSJJJ", 
-    "xxXDarknessRisingXxx", "ryu_krs", "mattz678", "FreireBG", 
-    "Fernanflop093o", "Gotenks_129", "InFeRnUsKaSlO", "mattz678",
-    "DEMONZTSB", "rodri2020proxd", "SAHID_YT6792", "FreireBG", 
-    "Flux_chog", "robloxesmuymalo2020", "Freire69", "furia3476", 
-    "SuperPato0319", "andygamer012345", "Crocrakxer246", 
-    "fernando_snake", "R4T4TOPP0", "Gotenks_129", "juancarlosvillo", 
-    "CR7_CHAMPIOSN", "FrivUpd", "kayoolicool", "wellington19800", 
-    "maisde8milksks", "frandeli0101", "gokumalvado1234", 
-    "cepeer_minecratf", "SEBAS_LAPAJ", "santiago123337pro",
-    "Thamersad172", "yere0303", "Ocami7", "jesusxdgggg", 
-    "JAVIER_R0BL0X", "angente6real6", "Jefflop2002", "leonardi4133", 
+local vipPlayers = {
+    "azeldex", "wellington19800",
+    "GOKUVSJJJ", "maisde8milksks",
+    "ryu_krs", "mattz678", "FreireBG", 
+    "Gotenks_129", "InFeRnUsKaSlO", "mattz678", 
+    "DEMONZTSB", "SAHID_YT6792", "FreireBG", 
+    "robloxesmuymalo2020", "Freire69", 
+    "furia3476", "SuperPato0319", "andygamer012345", 
+    "Crocrakxer246", "fernando_snake", "R4T4TOPP0", 
+    "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", 
+    "kayoolicool" 
+}
+local clanPlayers = {
+    "elmegafer",
+    "123daishinkan", "FreireBG", 
+    "rodri2020proxd", "cepeer_minecratf", "SEBAS_LAPAJ", 
+    "santiago123337pro", "Thamersad172", "yere0303", 
+    "Ocami7", "jesusxdgggg", "JAVIER_R0BL0X", 
+    "angente6real6", "Jefflop2002", "leonardi4133", 
     "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
-    "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", 
-    "Kasenli", "FACHERITO_XD9", "4NG5L07777", "iLordYamoshi666",
-    "GamerWIDOWX56", "DestructionThePower", "TocinoProgramador",
-    "Suly_Goodx"
+    "aTUJUAN", "ALT_garou11", "BETOKILLER15",
+    "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
+    "DestructionThePower", "TocinoProgramador"
+}
+
+local freePlayers = {
+    "frandeli0101", "FrivUpd", "Fernanflop093o",
+      "fernanfloP091o", "armijosfernando2178",
+        "xxXDarknessRisingXxx", "gokumalvado1234"
 }
 
 local quests = {
-    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 20000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 20000, endRange = math.huge },
+  { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 25000 },
+    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 25000, endRange = math.huge },
 }
 
 function isPlayerAllowed(name)
-    for _, allowedName in ipairs(allowedPlayers) do
+    for _, allowedName in ipairs(vipPlayers) do
+        if name == allowedName then
+            return true
+        end
+    end
+    for _, allowedName in ipairs(clanPlayers) do
+        if name == allowedName then
+            return true
+        end
+    end
+    for _, allowedName in ipairs(freePlayers) do
         if name == allowedName then
             return true
         end
@@ -1397,6 +1416,7 @@ function target()
 end
 
 target()
+
 
 local function autoquest()
     if not isPlayerAllowed(targetted) then return end
@@ -1520,7 +1540,7 @@ task.spawn(function()
                                     end
                                     
                                     CanAttack = true
-                                    task.wait()
+                                    task.wait(.1)
                                 end
                             end)
                             if table.find(mobs, v.Name) then
@@ -1538,9 +1558,9 @@ task.spawn(function()
                                 getgenv().stacked = false
                                 deactivateFlight()
                                 repeat
-                                    task.wait()
+                                    task.wait(.05)
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait()
+                                task.wait(.01)
                             end
                             deactivateFlight()
                         end
@@ -1553,13 +1573,13 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait() 
-        pcall(function()
+        local lag = game:GetService("RunService").Heartbeat:Wait()
+        local success, errorMessage = pcall(function()
             if player.Character:FindFirstChild("HumanoidRootPart") then
                 for _, v in ipairs(game.Workspace.Living:GetChildren()) do
                     if v.Name:lower() == SelectedMobs:lower() and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                        if attacked then                         
-                            while not lplr.Status.Blocking.Value do
+                        if attacked then
+                            while not player.Status.Blocking.Value do
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                                 task.wait()
                             end
@@ -1568,13 +1588,22 @@ task.spawn(function()
                 end
             end
         end)
+
+        if not success then
+            warn("Error en el bucle de ataque: " .. tostring(errorMessage))
+        end
+        if lag > 0.1 then
+            task.wait(0.2)
+        else
+            task.wait(0.07)
+        end
     end
 end)
 
 task.spawn(function()
     while true do
-        task.wait()
-        pcall(function()
+        local lag = game:GetService("RunService").Stepped:Wait()
+        local success, errorMessage = pcall(function()
             if data.Strength.Value < 20000000009880000000 then
                 local questValue = game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value
                 if questValue ~= SelectedQuests and isLoop6Active then
@@ -1584,29 +1613,50 @@ task.spawn(function()
                     end
                 end
             end
-        end)
+        end)        
+        if not success then
+            warn("Error en la función de teletransporte: " .. tostring(errorMessage))
+        end
+
+        if lag > 0.1 then
+            task.wait(0.2)
+        else
+            task.wait(0.4)
+        end
     end
 end)
 
 task.spawn(function()
     local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait(.07)
-        pcall(function()
+        local lag = game:GetService("RunService").Stepped:Wait()
+        local success, errorMessage = pcall(function()
             local currentGameHour = math.floor(game.Lighting.ClockTime)
             local playerCount = #game.Players:GetPlayers()
-            if currentGameHour < lastGameHour or currentGameHour < 3 or currentGameHour == 0 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            elseif currentGameHour >= 3 and currentGameHour < 12 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            elseif playerCount > 1 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            end            
-            lastGameHour = currentGameHour
+
+            if currentGameHour ~= lastGameHour then
+                if currentGameHour < 3 or currentGameHour == 0 or playerCount > 1 then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                elseif currentGameHour >= 3 and currentGameHour < 12 then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                end
+
+                lastGameHour = currentGameHour
+            end
         end)
+
+        if not success then
+            warn("Error en la función de teletransporte: " .. tostring(errorMessage))
+        end
+
+        if lag > 0.1 then
+            task.wait(0.2)
+        else
+            task.wait(0.07)
+        end
     end
 end)
-            task.wait()
+            task.wait(.1)
     end)
 end
 
