@@ -1158,20 +1158,21 @@ while true do
 _G.rebirthed = false
 local HttpService = game:GetService("HttpService")
 local player = game:GetService("Players").LocalPlayer
-
 repeat
-    task.wait()
+    wait()
 until player.CharacterAdded
-
 local userId = player.UserId
+
 local character = player.Character
 local stats = character:WaitForChild("Stats")
 local playerHumanoid = character:WaitForChild("Humanoid")
+
 local RunService = game:GetService('RunService')
 local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
 
-local Forms = {
-    {"Astral Instinct", 120e6, "Blanco"},
+-- Listas de transformaciones
+local GoodForms = {
+    {"Astral Instinct", 120e6, "Blanco"},	
     {"Beast", 120e6, "Blanco"},
     {"SSJBUI", 120e6, "Blanco"},
     {"LBSSJ4", 100e6},
@@ -1198,6 +1199,7 @@ local Forms = {
 }
 
 local EvilForms = {
+    
     {"Beast", 120e6, "Blanco"},
     {"Ultra Ego", 120e6, "Blanco"},
     {"LBSSJ4", 100e6},
@@ -1224,80 +1226,52 @@ local EvilForms = {
     {"Kaioken", 1000}
 }
 
-local maxMastery = 332526
-local lagThreshold = 5
-
-local function getCurrentForm()
-    return player.Status.Transformation.Value
-end
-
-local function canTransform(form, mastery)
-    return stats.Strength.Value >= mastery
-end
-
-local function transform()
+local function transform(forms)
     pcall(function()
-        local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-
-        local transformationList = _G.rebirthed and Forms or EvilForms
-        local currentTransformation = getCurrentForm()
-
-        for i, formData in ipairs(transformationList) do
-            local form = formData[1]
-            local masteryRequirement = formData[2]
-            local currentMastery = ldata[form] and ldata[form].Value or 0
-
-            if currentTransformation == form and currentMastery >= maxMastery and i > 1 then
-                form = transformationList[i - 1][1]
-                masteryRequirement = transformationList[i - 1][2]
-                currentMastery = ldata[form] and ldata[form].Value or 0
-            end
+        for index, form in pairs(forms) do
+            local currentForm = form[1]
+            local maxMastery = 332526  -- Define el máximo de maestría
             
-            if currentMastery < maxMastery and canTransform(form, masteryRequirement) then
-                local success, err = pcall(function()
-                    return equipRemote:InvokeServer(form)
-                end)
-
-                if success then
-                    break
-                elseif not success then
-                    warn("Error al equipar la transformación: " .. err)
+            local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+            if ldata:FindFirstChild(currentForm) then
+                local currentMastery = ldata[currentForm].Value
+                if currentMastery < maxMastery and isLoop2Active then
+                    if equipRemote:InvokeServer(currentForm) and isLoop2Active then
+                        break  -- Se elige la forma actual si no está en máximo
+                    end
+                else
+                    print("Maestría máxima alcanzada para " .. currentForm)
+                    -- Si la maestría es máxima, elige la forma anterior en la lista
+                    if index > 1 then
+                        local previousForm = forms[index - 1][1]
+                        equipRemote:InvokeServer(previousForm)
+                        print("Transformación revertida a " .. previousForm)
+                    else
+                        print("No hay transformación anterior para elegir.")
+                    end
+                    break  -- Salir del bucle después de cambiar la forma
                 end
             end
         end
-
+        
         repeat
-            task.wait()
-            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
+            wait()
+            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value and isLoop2Active then
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
         until player.Status.SelectedTransformation.Value == player.Status.Transformation.Value
     end)
 end
 
-local function checkLag()
-    local lagCounter = 0
-    while _G.rebirthed do
-        task.wait(1)
-        if task.wait() >= lagThreshold then
-            lagCounter += 1
-            warn("Lag detectado! Contador de lag: " .. lagCounter)
-        else
-            lagCounter = 0
-        end
-    end
-end
-
-spawn(checkLag)
-
-while _G.rebirthed do
-    task.wait()
-    transform()
-end
-
 RunService.RenderStepped:Connect(function()
     playerHumanoid.Health = math.huge
 end)
+
+-- Transformación sin requisitos
+while isLoop2Active do
+    wait()
+    transform(GoodForms) -- O usa EvilForms según lo necesites
+end
 
        end
        task.wait(0.1)
