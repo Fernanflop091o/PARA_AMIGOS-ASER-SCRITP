@@ -1155,11 +1155,11 @@ end
 local function loop2()
 while true do
          if isLoop2Active then
-         _G.rebirthed = false
+_G.rebirthed = false
 local HttpService = game:GetService("HttpService")
 local player = game:GetService("Players").LocalPlayer
 repeat
-    wait()
+    task.wait()
 until player.CharacterAdded
 local userId = player.UserId
 
@@ -1208,6 +1208,7 @@ local Forms = {
 }
 
 local maxMastery = 332526
+local lagThreshold = 5  -- umbral de lag en segundos
 
 local function getCurrentForm()
     return player.Status.Transformation.Value
@@ -1217,27 +1218,54 @@ local function transform()
     pcall(function()
         local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
 
-        for i = 1, #Forms do  -- Iterar desde el inicio hacia el final
+        for i = 1, #Forms do  
+
             local form = Forms[i]
             local currentMastery = ldata[form] and ldata[form].Value or 0
+            
+            
             if currentMastery < maxMastery and isLoop2Active then
-                if equipRemote:InvokeServer(form) and isLoop2Active then
-                    break  -- Salir si la transformación se ha equipado correctamente
+                local success, err = pcall(function()
+                    return equipRemote:InvokeServer(form)
+                end)
+
+                if success and isLoop2Active then
+                    break  
+                elseif not success then
+                    warn("Error al equipar la transformación: " .. err)
                 end
             end
         end
 
         repeat
-            wait()
-            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value  and isLoop2Active then
+            task.wait()
+            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value and isLoop2Active then
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
         until player.Status.SelectedTransformation.Value == player.Status.Transformation.Value
     end)
 end
 
+
+local function checkLag()
+    local lagCounter = 0
+    while isLoop2Active do
+        task.wait(1)  
+        if task.wait() >= lagThreshold then
+            lagCounter += 1
+            warn("Lag detectado! Contador de lag: " .. lagCounter)
+        else
+            lagCounter = 0
+        end
+    end
+end
+
+
+spawn(checkLag)
+
+
 while isLoop2Active do
-    wait()
+    task.wait()
     transform()
 end
 
@@ -1246,7 +1274,7 @@ RunService.RenderStepped:Connect(function()
 end)
 
        end
-       task.wait(.5)
+       task.wait(0.1)
     end
 end
 
@@ -1301,7 +1329,8 @@ local vipPlayers = {
     "furia3476", "SuperPato0319", "andygamer012345", 
     "Crocrakxer246", "fernando_snake", "R4T4TOPP0", 
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", 
-    "kayoolicool", "FACHERITO_XD9", "alexisetter2008"
+    "kayoolicool", "FACHERITO_XD9", "alexisetter2008",
+    "Suly_Goodx"
 }
 local clanPlayers = {
     "elmegafer",
