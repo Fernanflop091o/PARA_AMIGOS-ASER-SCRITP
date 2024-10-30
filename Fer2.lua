@@ -1360,7 +1360,7 @@ local vipPlayers = {
     "furia3476", "SuperPato0319", "andygamer012345", 
     "Crocrakxer246", "fernando_snake", "R4T4TOPP0", 
     "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", 
-    "kayoolicool" 
+    "kayoolicool", "FACHERITO_XD9", "alexisetter2008"
 }
 local clanPlayers = {
     "elmegafer",
