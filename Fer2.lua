@@ -1158,79 +1158,108 @@ while true do
 _G.rebirthed = false
 local HttpService = game:GetService("HttpService")
 local player = game:GetService("Players").LocalPlayer
+
 repeat
     task.wait()
 until player.CharacterAdded
-local userId = player.UserId
 
+local userId = player.UserId
 local character = player.Character
 local stats = character:WaitForChild("Stats")
 local playerHumanoid = character:WaitForChild("Humanoid")
-
 local RunService = game:GetService('RunService')
 local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
 
--- Lista de transformaciones (sin repeticiones)
 local Forms = {
-    "Astral Instinct",
-    "Beast",
-    "Ultra Ego",
-    "SSJBUI",
-    "LBSSJ4",
-    "SSJB3",
-    "God of Creation",
-    "Mastered Ultra Instinct",
-    "Godly SSJ2",
-    "Blue Evolution",
-    "Kefla SSJ2",
-    "SSJB Kaioken",
-    "SSJ Blue",
-    "SSJ Rage",
-    "SSJG",
-    "SSJ4",
-    "Mystic",
-    "LSSJ",
-    "SSJ3",
-    "Spirit SSJ",
-    "SSJ2",
-    "SSJ Kaioken",
-    "SSJ",
-    "FSSJ",
-    "Kaioken",
-    "God of Destruction",
-    "Jiren Ultra Instinct",
-    "Evil SSJ",
-    "Dark Rose",
-    "SSJ Berserker",
-    "True Rose",
-    "SSJ Rose",
-    "Corrupt SSJ"
+    {"Astral Instinct", 120e6, "Blanco"},
+    {"Beast", 120e6, "Blanco"},
+    {"SSJBUI", 120e6, "Blanco"},
+    {"LBSSJ4", 100e6},
+    {"SSJB3", 50e6, "SSJB4"},
+    {"God of Creation", 30e6, "True God of Creation"},
+    {"Mastered Ultra Instinct", 14e6},
+    {"Godly SSJ2", 8e6, "Super Broly"},
+    {"Blue Evolution", 3.5e6, "Super Broly"},
+    {"Kefla SSJ2", 3e6},
+    {"SSJB Kaioken", 2.2e6},
+    {"SSJ Blue", 1.2e6},
+    {"SSJ Rage", 700000},
+    {"SSJG", 450000},
+    {"SSJ4", 300000},
+    {"Mystic", 200000},
+    {"LSSJ", 140000},
+    {"SSJ3", 95000},
+    {"Spirit SSJ", 65000},
+    {"SSJ2", 34000},
+    {"SSJ Kaioken", 16000},
+    {"SSJ", 6000},
+    {"FSSJ", 2500},
+    {"Kaioken", 1000}
+}
+
+local EvilForms = {
+    {"Beast", 120e6, "Blanco"},
+    {"Ultra Ego", 120e6, "Blanco"},
+    {"LBSSJ4", 100e6},
+    {"SSJR3", 50e6, "SSJB4"},
+    {"God of Destruction", 30e6, "True God of Destrucción"},
+    {"Jiren Ultra Instinct", 14e6},
+    {"Godly SSJ2", 8e6, "Super Broly"},
+    {"Evil SSJ", 4e6, "Super Broly"},
+    {"Dark Rose", 3.5e6, "Super Broly"},
+    {"SSJ Berserker", 3e6},
+    {"True Rose", 2.4e6},
+    {"SSJ Rose", 1.4e6},
+    {"Corrupt SSJ", 700000},
+    {"SSJG", 450000},
+    {"SSJ4", 300000},
+    {"Mystic", 200000},
+    {"LSSJ", 140000},
+    {"SSJ3", 95000},
+    {"SSJ2 Majin", 65000},
+    {"SSJ2", 34000},
+    {"SSJ Kaioken", 16000},
+    {"SSJ", 6000},
+    {"FSSJ", 2500},
+    {"Kaioken", 1000}
 }
 
 local maxMastery = 332526
-local lagThreshold = 5  -- umbral de lag en segundos
+local lagThreshold = 5
 
 local function getCurrentForm()
     return player.Status.Transformation.Value
+end
+
+local function canTransform(form, mastery)
+    return stats.Strength.Value >= mastery
 end
 
 local function transform()
     pcall(function()
         local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
 
-        for i = 1, #Forms do  
+        local transformationList = _G.rebirthed and Forms or EvilForms
+        local currentTransformation = getCurrentForm()
 
-            local form = Forms[i]
+        for i, formData in ipairs(transformationList) do
+            local form = formData[1]
+            local masteryRequirement = formData[2]
             local currentMastery = ldata[form] and ldata[form].Value or 0
+
+            if currentTransformation == form and currentMastery >= maxMastery and i > 1 then
+                form = transformationList[i - 1][1]
+                masteryRequirement = transformationList[i - 1][2]
+                currentMastery = ldata[form] and ldata[form].Value or 0
+            end
             
-            
-            if currentMastery < maxMastery and isLoop2Active then
+            if currentMastery < maxMastery and canTransform(form, masteryRequirement) then
                 local success, err = pcall(function()
                     return equipRemote:InvokeServer(form)
                 end)
 
-                if success and isLoop2Active then
-                    break  
+                if success then
+                    break
                 elseif not success then
                     warn("Error al equipar la transformación: " .. err)
                 end
@@ -1239,18 +1268,17 @@ local function transform()
 
         repeat
             task.wait()
-            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value and isLoop2Active then
+            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
         until player.Status.SelectedTransformation.Value == player.Status.Transformation.Value
     end)
 end
 
-
 local function checkLag()
     local lagCounter = 0
-    while isLoop2Active do
-        task.wait(1)  
+    while _G.rebirthed do
+        task.wait(1)
         if task.wait() >= lagThreshold then
             lagCounter += 1
             warn("Lag detectado! Contador de lag: " .. lagCounter)
@@ -1260,11 +1288,9 @@ local function checkLag()
     end
 end
 
-
 spawn(checkLag)
 
-
-while isLoop2Active do
+while _G.rebirthed do
     task.wait()
     transform()
 end
