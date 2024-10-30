@@ -883,16 +883,192 @@ end
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
-
 local function transform()
-    if not Boss then
-        return
-    end
     if not FindChar() then return end
     if FindChar():WaitForChild("Stats").Ki.Value < 200 then return end
     if getloweststat() < 34000 then return end
-    while not lplr.Status:FindFirstChild("Transformation") do
-        task.wait()
+
+    -- Verifica la transformación actual y su maestría
+    local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+    local currentForm = lplr.Status.Transformation.Value
+
+    if ldata:FindFirstChild(currentForm) then
+        local currentMastery = ldata[currentForm].Value
+        local maxMastery = 332526
+
+        -- Si la maestría está al máximo, transforma a la siguiente forma
+        if currentMastery >= maxMastery then
+            for i, form in ipairs(forms) do
+                if form[1] == currentForm and forms[i + 1] then
+                    local nextForm = forms[i + 1][1]
+                    game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(nextForm)
+                    return
+                end
+            end
+        end
+    end
+
+    while not lplr.Status:FindFirstChild("Transformation") and isLoop1Active do task.wait() end
+    if not Boss then
+    end
+    if side.Value == "Good" and isLoop1Active then
+        forms = {
+            {"Astral Instinct", 120e6, "Blanco"},
+            {"Beast", 120e6, "Blanco"},
+            {"SSJBUI", 120e6, "Blanco"},
+            {"LBSSJ4", 100e6},
+            {"SSJB3", 50e6, "SSJB4"},
+            {"God of Creation", 30e6, "True God of Creation"},
+            {"Mastered Ultra Instinct", 14e6},
+            {"Godly SSJ2", 8e6, "Super Broly"},
+            {"Blue Evolution", 3.5e6, "Super Broly"},
+            {"Kefla SSJ2", 3e6},
+            {"SSJB Kaioken", 2.2e6},
+            {"SSJ Blue", 1.2e6},
+            {"SSJ Rage", 700000},
+            {"SSJG", 450000},
+            {"SSJ4", 300000},
+            {"Mystic", 200000},
+            {"LSSJ", 140000},
+            {"SSJ3", 95000},
+            {"Spirit SSJ", 65000},
+            {"SSJ2", 34000},
+            {"SSJ Kaioken", 16000},
+            {"SSJ", 6000},
+            {"FSSJ", 2500},
+            {"Kaioken", 1000},
+        }
+    elseif side.Value == "Evil" and isLoop1Active then
+        forms = {
+            {"Astral Instinct", 120e6, "Blanco"},
+            {"Beast", 120e6, "Blanco"},
+            {"Ultra Ego", 120e6, "Blanco"},
+            {"LBSSJ4", 100e6},
+            {"SSJR3", 50e6, "SSJB4"},
+            {"God of Destruction", 30e6, "True God of Destruction"},
+            {"Jiren Ultra Instinct", 14e6},
+            {"Godly SSJ2", 8e6, "Super Broly"},
+            {"Evil SSJ", 4e6, "Super Broly"},
+            {"Dark Rose", 3.5e6, "Super Broly"},
+            {"SSJ Berserker", 3e6},
+            {"True Rose", 2.4e6},
+            {"SSJ Rose", 1.4e6},
+            {"Corrupt SSJ", 700000},
+            {"SSJG", 450000},
+            {"SSJ4", 300000},
+            {"Mystic", 200000},
+            {"LSSJ", 140000},
+            {"SSJ3", 95000},
+            {"SSJ2 Majin", 65000},
+            {"SSJ2", 34000},
+            {"SSJ Kaioken", 16000},
+            {"SSJ", 6000},
+            {"FSSJ", 2500},
+            {"Kaioken", 1000},
+        }
+    end
+
+    -- Don't transform if stat grinding
+    local lstatus = lplr.Status
+    local currentform = lstatus.Transformation.Value
+    if planet == "Earth" and ldata.Rebirth.Value >= 20000 then
+        if getloweststat() < 30e6 and isLoop1Active then return end
+        local useform = nil
+        for i, form in pairs(forms) do
+            if form[2] == 30e6 and isLoop1Active then useform = form[1] break end
+        end
+        while lplr.Status.Transformation.Value ~= useform and isLoop1Active do
+            game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(useform)
+            if lplr.Status.Transformation.Value == useform and isLoop1Active then return end
+            pcall(function()
+                game.ReplicatedStorage.Package.Events.ta:InvokeServer()
+            end)
+            task.wait(0.01)
+        end
+        return
+    end
+    if FindChar() then
+        if getloweststat() < 1e12 then -- (ldata.Rebirth.Value*3e6)+2e6
+            -- Under 1T stats, transform for efficiency
+            for i, form in pairs(forms) do
+                if currentform == form[1] or (form[3] and currentform == form[3]) and isLoop1Active then return end
+                if getloweststat() >= form[2] and isLoop1Active then 
+                    game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(form[1])
+                    if form[3] ~= nil and isLoop1Active then
+                        game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(form[3])
+                    end
+                    CanAttack = true
+                    pcall(function()                                  
+                        game.ReplicatedStorage.Package.Events.ta:InvokeServer()
+                    end)
+                    while FindChar().HumanoidRootPart.Anchored == true do wait() end
+                    CanAttack = true
+                    break
+                end
+            end
+        else -- Transform for mastery, should be over 1T so no need to check for req
+            for i, form in pairs(forms) do -- 5,767/332,526"
+                if ldata[form[1]].Value < 5767 then
+                    local useform = form[1] -- Name of the form you SHOULD use
+                    if form[1] == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
+                    else
+                        game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
+                        CanAttack = false
+                        killtarget = nil
+                        while lplr.Status.Transformation.Value ~= useform do
+                            game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
+                            pcall(function()
+                                game.ReplicatedStorage.Package.Events.ta:InvokeServer()
+                            end)
+                            task.wait(.01)
+                        end
+                        while FindChar().HumanoidRootPart.Anchored == true do wait() end
+                        CanAttack = true
+                    end
+                    Stacking = true
+                    return
+                end
+            end
+           
+            useform = "Beast"
+            if ldata[useform].Value < 332526 then
+                if useform == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
+                else
+                    game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(useform)
+                    CanAttack = true
+                    killtarget = nil
+                    
+                    while lplr.Status.Transformation.Value ~= useform do
+                        pcall(function()
+                            game.ReplicatedStorage.Package.Events.ta:InvokeServer()
+                        end)
+                        task.wait(.01)
+                    end
+                    while FindChar().HumanoidRootPart.Anchored == true do wait() end
+                    CanAttack = true
+                end
+                return
+            end -- 332526
+            for i, form in pairs(forms) do -- 5,767/332,526"
+                if ldata[form[1]].Value < 332526 then
+                    local useform = form[1] -- Name of the form you SHOULD use
+                    if form[1] == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
+                    else
+                        game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
+                        CanAttack = true
+                        killtarget = nil
+                        while lplr.Status.Transformation.Value ~= useform do
+                            pcall(function()
+                                game.ReplicatedStorage.Package.Events.ta:InvokeServer()
+                            end)
+                            task.wait(0.01)
+                        end
+                        CanAttack = true
+                    end
+                    return
+                end
+            end
+        end
     end
 end
 
@@ -1155,95 +1331,6 @@ end
 local function loop2()
 while true do
          if isLoop2Active then
-local player = game.Players.LocalPlayer
-
-local function fuerzaRequerida(form)
-    local fuerzaJugador = game.ReplicatedStorage.Datas[player.UserId].Strength.Value
-    return fuerzaJugador >= form.fuerza
-end
-
-_G.fasesalv = true
-
-spawn(function ()
-    while _G.fasesalv do
-        local formas = {
-            {name = 'SSJB4', fuerza = 120000000}, 
-            {name = 'Beast', fuerza = 120000000}, 
-            {name = "SSJBUI", fuerza = 120000000},
-            {name = "Ultra Ego", fuerza = 120000000},
-            {name = "LBSSJ4", fuerza = 100000000},
-            {name = "True God of Creation", fuerza = 30000000},
-            {name = "True God of Destruction", fuerza = 30000000},
-            {name = "SSJR3", fuerza = 50000000},
-            {name = "God of Creation", fuerza = 30000000},
-            {name = "God of Destruction", fuerza = 30000000},
-            {name = "Super Broly", fuerza = 4000000},
-            {name = "Jiren Ultra Instinct", fuerza = 14000000},
-            {name = "Mastered Ultra Instinct", fuerza = 14000000},
-            {name = "Godly SSJ2", fuerza = 8000000},
-            {name = "LSSJG", fuerza = 3000000},
-            {name = "Ultra Instinct Omen", fuerza = 5000000},
-            {name = "LSSJ4", fuerza = 1800000},
-            {name = "SSJG4", fuerza = 1000000},
-            {name = "Evil SSJ", fuerza = 4000000},
-            {name = "Blue Evolution", fuerza = 3500000},
-            {name = "LSSJ3", fuerza = 800000},
-            {name = "Dark Rose", fuerza = 3500000},
-            {name = "SSJ Berseker", fuerza = 3000000},
-            {name = "Kefla SSJ2", fuerza = 3000000},
-            {name = "True Rose", fuerza = 2400000},
-            {name = "SSJ Blue Kaioken", fuerza = 2200000},
-            {name = "SSJ5", fuerza = 550000},
-            {name = "Mystic Kaioken", fuerza = 250000},
-            {name = "SSJ Rose", fuerza = 1400000},
-            {name = "SSJ Blue", fuerza = 1200000},
-            {name = "LSSJ Kaioken", fuerza = 160000},
-            {name = "Corrupt SSJ", fuerza = 700000},
-            {name = "SSJ Rage", fuerza = 700000},
-            {name = "SSJ2 Kaioken", fuerza = 50000},
-            {name = "SSJ4", fuerza = 300000},
-            {name = "Mystic", fuerza = 200000},
-            {name = "LSSJ", fuerza = 140000},
-            {name = "SSJ3", fuerza = 95000},
-            {name = "SSJ2 Majin", fuerza = 65000},
-            {name = "Spirit SSJ", fuerza = 65000},
-            {name = "SSJ Kaioken", fuerza = 16000},
-        }
-
-        local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
-        local formaSeleccionada
-
-        for index, forma in pairs(formas) do
-            if fuerzaRequerida(forma) then
-                local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-                local currentMastery = ldata:FindFirstChild(forma.name).Value
-
-                -- Verifica si la maestría está al máximo
-                if currentMastery >= 332526 then
-                    -- Si la maestría está al máximo, elige la transformación anterior si existe
-                    if index > 1 then
-                        formaSeleccionada = formas[index - 1]
-                    else
-                        print("No hay transformación anterior para elegir.")
-                    end
-                else
-                    formaSeleccionada = forma
-                end
-                break
-            end
-        end
-
-        if formaSeleccionada then
-            equipRemote:InvokeServer(formaSeleccionada.name)
-            wait()  -- Ajusta este tiempo de espera según sea necesario
-            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
-                game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
-            end
-        end
-
-        wait()
-    end
-end)
 
        end
        task.wait(0.1)
