@@ -1155,127 +1155,96 @@ end
 local function loop2()
 while true do
          if isLoop2Active then
-_G.rebirthed = false
-local HttpService = game:GetService("HttpService")
-local player = game:GetService("Players").LocalPlayer
-repeat
-    wait()
-until player.CharacterAdded
-local userId = player.UserId
+local player = game.Players.LocalPlayer
 
-local character = player.Character
-local stats = character:WaitForChild("Stats")
-local playerHumanoid = character:WaitForChild("Humanoid")
+local function fuerzaRequerida(form)
+    local fuerzaJugador = game.ReplicatedStorage.Datas[player.UserId].Strength.Value
+    return fuerzaJugador >= form.fuerza
+end
 
-local RunService = game:GetService('RunService')
-local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+_G.fasesalv = true
 
-local GoodForms = {
-    {"Astral Instinct", 120e6, "Blanco"},	
-    {"Beast", 120e6, "Blanco"},
-    {"SSJBUI", 120e6, "Blanco"},
-    {"LBSSJ4", 100e6},
-    {"SSJB3", 50e6, "SSJB4"},
-    {"God of Creation", 30e6, "True God of Creation"},
-    {"Mastered Ultra Instinct", 14e6},
-    {"Godly SSJ2", 8e6, "Super Broly"},
-    {"Blue Evolution", 3.5e6, "Super Broly"},
-    {"Kefla SSJ2", 3e6},
-    {"SSJB Kaioken", 2.2e6},
-    {"SSJ Blue", 1.2e6},
-    {"SSJ Rage", 700000},
-    {"SSJG", 450000},
-    {"SSJ4", 300000},
-    {"Mystic", 200000},
-    {"LSSJ", 140000},
-    {"SSJ3", 95000},
-    {"Spirit SSJ", 65000},
-    {"SSJ2", 34000},
-    {"SSJ Kaioken", 16000},
-    {"SSJ", 6000},
-    {"FSSJ", 2500},
-    {"Kaioken", 1000}
-}
+spawn(function ()
+    while _G.fasesalv do
+        local formas = {
+            {name = 'SSJB4', fuerza = 120000000}, 
+            {name = 'Beast', fuerza = 120000000}, 
+            {name = "SSJBUI", fuerza = 120000000},
+            {name = "Ultra Ego", fuerza = 120000000},
+            {name = "LBSSJ4", fuerza = 100000000},
+            {name = "True God of Creation", fuerza = 30000000},
+            {name = "True God of Destruction", fuerza = 30000000},
+            {name = "SSJR3", fuerza = 50000000},
+            {name = "God of Creation", fuerza = 30000000},
+            {name = "God of Destruction", fuerza = 30000000},
+            {name = "Super Broly", fuerza = 4000000},
+            {name = "Jiren Ultra Instinct", fuerza = 14000000},
+            {name = "Mastered Ultra Instinct", fuerza = 14000000},
+            {name = "Godly SSJ2", fuerza = 8000000},
+            {name = "LSSJG", fuerza = 3000000},
+            {name = "Ultra Instinct Omen", fuerza = 5000000},
+            {name = "LSSJ4", fuerza = 1800000},
+            {name = "SSJG4", fuerza = 1000000},
+            {name = "Evil SSJ", fuerza = 4000000},
+            {name = "Blue Evolution", fuerza = 3500000},
+            {name = "LSSJ3", fuerza = 800000},
+            {name = "Dark Rose", fuerza = 3500000},
+            {name = "SSJ Berseker", fuerza = 3000000},
+            {name = "Kefla SSJ2", fuerza = 3000000},
+            {name = "True Rose", fuerza = 2400000},
+            {name = "SSJ Blue Kaioken", fuerza = 2200000},
+            {name = "SSJ5", fuerza = 550000},
+            {name = "Mystic Kaioken", fuerza = 250000},
+            {name = "SSJ Rose", fuerza = 1400000},
+            {name = "SSJ Blue", fuerza = 1200000},
+            {name = "LSSJ Kaioken", fuerza = 160000},
+            {name = "Corrupt SSJ", fuerza = 700000},
+            {name = "SSJ Rage", fuerza = 700000},
+            {name = "SSJ2 Kaioken", fuerza = 50000},
+            {name = "SSJ4", fuerza = 300000},
+            {name = "Mystic", fuerza = 200000},
+            {name = "LSSJ", fuerza = 140000},
+            {name = "SSJ3", fuerza = 95000},
+            {name = "SSJ2 Majin", fuerza = 65000},
+            {name = "Spirit SSJ", fuerza = 65000},
+            {name = "SSJ Kaioken", fuerza = 16000},
+        }
 
-local EvilForms = {
-    {"Beast", 120e6, "Blanco"},
-    {"Ultra Ego", 120e6, "Blanco"},
-    {"LBSSJ4", 100e6},
-    {"SSJR3", 50e6, "SSJB4"},
-    {"God of Destruction", 30e6, "True God of Destrucción"},
-    {"Jiren Ultra Instinct", 14e6},
-    {"Godly SSJ2", 8e6, "Super Broly"},
-    {"Evil SSJ", 4e6, "Super Broly"},
-    {"Dark Rose", 3.5e6, "Super Broly"},
-    {"SSJ Berserker", 3e6},
-    {"True Rose", 2.4e6},
-    {"SSJ Rose", 1.4e6},
-    {"Corrupt SSJ", 700000},
-    {"SSJG", 450000},
-    {"SSJ4", 300000},
-    {"Mystic", 200000},
-    {"LSSJ", 140000},
-    {"SSJ3", 95000},
-    {"SSJ2 Majin", 65000},
-    {"SSJ2", 34000},
-    {"SSJ Kaioken", 16000},
-    {"SSJ", 6000},
-    {"FSSJ", 2500},
-    {"Kaioken", 1000}
-}
+        local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+        local formaSeleccionada
 
-local function transform(forms)
-    pcall(function()
-        local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
-        local currentStrength = stats.Strength.Value
+        for index, forma in pairs(formas) do
+            if fuerzaRequerida(forma) then
+                local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+                local currentMastery = ldata:FindFirstChild(forma.name).Value
 
-        for index, form in pairs(forms) do
-            local currentForm = form[1]
-            local masteryRequirement = form[2]
-            
-            if ldata:FindFirstChild(currentForm) then
-                local currentMastery = ldata[currentForm].Value
-                
-                -- Verifica si la fuerza es suficiente para la transformación
-                if currentStrength >= masteryRequirement then
-                    -- Si la maestría está al máximo, elige la forma anterior
-                    if currentMastery >= 332526 then
-                        if index > 1 then
-                            local previousForm = forms[index - 1][1]
-                            equipRemote:InvokeServer(previousForm)
-                            print("Transformación revertida a " .. previousForm)
-                        else
-                            print("No hay transformación anterior para elegir.")
-                        end
+                -- Verifica si la maestría está al máximo
+                if currentMastery >= 332526 then
+                    -- Si la maestría está al máximo, elige la transformación anterior si existe
+                    if index > 1 then
+                        formaSeleccionada = formas[index - 1]
                     else
-                        -- Equipar la forma actual si no está al máximo
-                        if equipRemote:InvokeServer(currentForm) then
-                            break
-                        end
+                        print("No hay transformación anterior para elegir.")
                     end
                 else
-                    print("Fuerza insuficiente para " .. currentForm)
+                    formaSeleccionada = forma
                 end
+                break
             end
         end
-        
-        repeat
-            wait()
+
+        if formaSeleccionada then
+            equipRemote:InvokeServer(formaSeleccionada.name)
+            wait()  -- Ajusta este tiempo de espera según sea necesario
             if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
-        until player.Status.SelectedTransformation.Value == player.Status.Transformation.Value
-    end)
-end
+        end
 
-RunService.RenderStepped:Connect(function()
-    playerHumanoid.Health = math.huge
+        wait()
+    end
 end)
 
-while _G.rebirthed do
-    wait()
-    transform(GoodForms) -- O usa EvilForms según lo necesites
-end
        end
        task.wait(0.1)
     end
