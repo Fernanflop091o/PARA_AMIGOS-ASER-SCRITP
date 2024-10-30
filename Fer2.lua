@@ -1368,7 +1368,8 @@ local allowedPlayers = {
     "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
     "aTUJUAN", "ALT_garou11", "BETOKILLER15", "frost123337", 
     "Kasenli", "FACHERITO_XD9", "4NG5L07777", "iLordYamoshi666",
-    "GamerWIDOWX56", "DestructionThePower", "TocinoProgramador"
+    "GamerWIDOWX56", "DestructionThePower", "TocinoProgramador",
+    "Suly_Goodx"
 }
 
 local quests = {
