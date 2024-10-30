@@ -238,7 +238,7 @@ formsLabel.BorderSizePixel = 0
 formsLabel.Position = UDim2.new(0.6, -30, 0, 53)
 formsLabel.Size = UDim2.new(0, 89, 0, 60)
 formsLabel.Font = Enum.Font.SourceSans
-formsLabel.Text = "...."
+formsLabel.Text = "F/A/MTR"
 formsLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 formsLabel.TextScaled = true
 formsLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
@@ -684,6 +684,7 @@ local function createSwitchModel(parent, position, switchName)
 end
 
 local switchButton1, switchBall1 = createSwitchModel(MenuPanel, UDim2.new(0.1, 75, 0, 69), "Switch1")
+local switchButton2, switchBall2 = createSwitchModel(MenuPanel, UDim2.new(0.6, 75, 0, 69), "Switch2")
 local switchButton5, switchBall5 = createSwitchModel(MenuPanel, UDim2.new(0.220, 19, 0.2, 81), "Switch5")
 local switchButton6, switchBall6 = createSwitchModel(MenuPanel, UDim2.new(0.239, 19, 0.2, 125), "Switch6")
 local switchButton7, switchBall7 = createSwitchModel(MenuPanel, UDim2.new(0.4, 49, 0.242, 125), "Switch7")
@@ -720,6 +721,7 @@ local function toggleSwitch(isActive, switchBall)
 end
 
 local isLoop1Active = LoadSwitchState("Switch1")
+local isLoop2Active = LoadSwitchState("Switch2")
 local isLoop5Active = LoadSwitchState("Switch5")
 local isLoop6Active = LoadSwitchState("Switch6")
 local isLoop7Active = LoadSwitchState("Switch7")
@@ -881,174 +883,16 @@ end
 
 local forms = {}
 local side = ldata:WaitForChild("Allignment")
+
 local function transform()
+    if not Boss then
+        return
+    end
     if not FindChar() then return end
     if FindChar():WaitForChild("Stats").Ki.Value < 200 then return end
     if getloweststat() < 34000 then return end
-    while not lplr.Status:FindFirstChild("Transformation") and isLoop1Active do task.wait() end
-    if not Boss then
-    end
-    if side.Value == "Good" and isLoop1Active then
-        forms = {
-	    {"Astral Instinct",120e6,"Blanco"},	
-            {"Beast",120e6,"Blanco"},
-            {"SSJBUI",120e6,"Blanco"},
-            {"LBSSJ4",100e6},
-            {"SSJB3",50e6,"SSJB4"},
-            {"God of Creation",30e6,"True God of Creation"},
-            {"Mastered Ultra Instinct",14e6},
-            {"Godly SSJ2",8e6,"Super Broly"},
-            {"Blue Evolution",3.5e6,"Super Broly"},
-            {"Kefla SSJ2",3e6},
-            {"SSJB Kaioken",2.2e6},
-            {"SSJ Blue",1.2e6},
-            {"SSJ Rage",700000},
-            {"SSJG",450000},
-            {"SSJ4",300000},
-            {"Mystic",200000},
-            {"LSSJ",140000},
-            {"SSJ3",95000},
-            {"Spirit SSJ",65000},
-            {"SSJ2",34000},
-            {"SSJ Kaioken",16000},
-            {"SSJ",6000},
-            {"FSSJ",2500},
-            {"Kaioken",1000},
-        }
-    elseif side.Value == "Evil" and isLoop1Active then
-        forms = {
-          {"Astral Instinct",120e6,"Blanco"},	
-            {"Beast",120e6,"Blanco"},
-            {"Ultra Ego",120e6,"Blanco"},
-            {"LBSSJ4",100e6},
-            {"SSJR3",50e6,"SSJB4"},
-            {"God of Destruction",30e6,"True God of Destruction"},
-            {"Jiren Ultra Instinct",14e6},
-            {"Godly SSJ2",8e6,"Super Broly"},
-            {"Evil SSJ",4e6,"Super Broly"},
-            {"Dark Rose",3.5e6,"Super Broly"},
-            {"SSJ Berserker",3e6},
-            {"True Rose",2.4e6},
-            {"SSJ Rose",1.4e6},
-            {"Corrupt SSJ",700000},
-            {"SSJG",450000},
-            {"SSJ4",300000},
-            {"Mystic",200000},
-            {"LSSJ",140000},
-            {"SSJ3",95000},
-            {"SSJ2 Majin",65000},
-            {"SSJ2",34000},
-            {"SSJ Kaioken",16000},
-            {"SSJ",6000},
-            {"FSSJ",2500},
-            {"Kaioken",1000},
-        }
-    end
-    -- Don't transform if stat grinding
-    local lstatus = lplr.Status
-    local currentform = lstatus.Transformation.Value
-    if planet == "Earth" and ldata.Rebirth.Value >= 20000 then
-        if getloweststat() < 30e6 and isLoop1Active then return end
-        local useform = nil
-        for i,form in pairs(forms) do
-            if form[2] == 30e6 and isLoop1Active then useform = form[1] break end
-        end
-        while lplr.Status.Transformation.Value ~= useform and isLoop1Active do
-            game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(useform)
-            if lplr.Status.Transformation.Value == useform and isLoop1Active then return end
-            pcall(function()
-                game.ReplicatedStorage.Package.Events.ta:InvokeServer()
-            end)
-            task.wait(.01)
-        end
-        return
-    end
-    if FindChar() then
-        if getloweststat() < 1e12 then -- (ldata.Rebirth.Value*3e6)+2e6
-            -- Under 1T stats, transform for efficiency
-            for i,form in pairs(forms) do
-                if currentform == form[1] or (form[3] and currentform == form[3]) and isLoop1Active then return end
-                if getloweststat() >= form[2] and isLoop1Active then 
-                    
-                    game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(form[1])
-                    if form[3] ~= nil and isLoop1Active then
-                        game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(form[3])
-                    end
-                    CanAttack = true
-                    pcall(function()                                  
-                        game.ReplicatedStorage.Package.Events.ta:InvokeServer()
-                    end)
-                    while FindChar().HumanoidRootPart.Anchored == true do wait() end
-                    CanAttack = true
-                    break
-                end
-            end
-        else -- Transform for mastery, should be over 1T so no need to check for req
-            for i,form in pairs(forms) do -- 5,767/332,526"
-                if ldata[form[1]].Value < 5767 then
-                    local useform = form[1] -- Name of the form you SHOULD use
-                    if form[1] == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
-                    else
-                        
-                        game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
-                        CanAttack = false
-                        killtarget = nil
-                        while lplr.Status.Transformation.Value ~= useform do
-                            game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
-                            pcall(function()
-                                game.ReplicatedStorage.Package.Events.ta:InvokeServer()
-                            end)
-                            task.wait(.01)
-                        end
-                        while FindChar().HumanoidRootPart.Anchored == true do wait() end
-                        CanAttack = true
-                    end
-                    Stacking = true
-                    return
-                end
-            end
-           
-            useform = "Beast"
-            if ldata[useform].Value < 332526 then
-                if useform == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
-                else
-                    game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(useform)
-                    CanAttack = true
-                    killtarget = nil
-                    
-                    while lplr.Status.Transformation.Value ~= useform do
-                        pcall(function()
-                            game.ReplicatedStorage.Package.Events.ta:InvokeServer()
-                        end)
-                        task.wait(.01)
-                    end
-                    while FindChar().HumanoidRootPart.Anchored == true do wait() end
-                    CanAttack = true
-                end
-                return
-            end -- 332526
-            for i,form in pairs(forms) do -- 5,767/332,526"
-                if ldata[form[1]].Value < 332526 then
-                    local useform = form[1] -- Name of the form you SHOULD use
-                    if form[1] == lplr.Status.Transformation.Value then return -- If already in this form then don't do it again lol
-                    else
-                        
-                        game.ReplicatedStorage.Package.Events.equipskill:InvokeServer(form[1])
-                        CanAttack = true
-                        killtarget = nil
-                        while lplr.Status.Transformation.Value ~= useform do
-                            pcall(function()
-                                game.ReplicatedStorage.Package.Events.ta:InvokeServer()
-                            end)
-                            task.wait(0.01)
-                        end
-                       CanAttack = true
-                                   
-                    end
-                    return
-                end
-            end
-        end
+    while not lplr.Status:FindFirstChild("Transformation") do
+        task.wait()
     end
 end
 
@@ -1308,6 +1152,103 @@ end)
     end)
 end
 
+local function loop2()
+while true do
+         if isLoop2Active then
+         _G.rebirthed = false
+local HttpService = game:GetService("HttpService")
+local player = game:GetService("Players").LocalPlayer
+repeat
+    wait()
+until player.CharacterAdded
+local userId = player.UserId
+
+local character = player.Character
+local stats = character:WaitForChild("Stats")
+local playerHumanoid = character:WaitForChild("Humanoid")
+
+local RunService = game:GetService('RunService')
+local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+
+-- Lista de transformaciones (sin repeticiones)
+local Forms = {
+    "Astral Instinct",
+    "Beast",
+    "Ultra Ego",
+    "SSJBUI",
+    "LBSSJ4",
+    "SSJB3",
+    "God of Creation",
+    "Mastered Ultra Instinct",
+    "Godly SSJ2",
+    "Blue Evolution",
+    "Kefla SSJ2",
+    "SSJB Kaioken",
+    "SSJ Blue",
+    "SSJ Rage",
+    "SSJG",
+    "SSJ4",
+    "Mystic",
+    "LSSJ",
+    "SSJ3",
+    "Spirit SSJ",
+    "SSJ2",
+    "SSJ Kaioken",
+    "SSJ",
+    "FSSJ",
+    "Kaioken",
+    "God of Destruction",
+    "Jiren Ultra Instinct",
+    "Evil SSJ",
+    "Dark Rose",
+    "SSJ Berserker",
+    "True Rose",
+    "SSJ Rose",
+    "Corrupt SSJ"
+}
+
+local maxMastery = 332526
+
+local function getCurrentForm()
+    return player.Status.Transformation.Value
+end
+
+local function transform()
+    pcall(function()
+        local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(player.UserId)
+
+        for i = 1, #Forms do  -- Iterar desde el inicio hacia el final
+            local form = Forms[i]
+            local currentMastery = ldata[form] and ldata[form].Value or 0
+            if currentMastery < maxMastery and isLoop2Active then
+                if equipRemote:InvokeServer(form) and isLoop2Active then
+                    break  -- Salir si la transformación se ha equipado correctamente
+                end
+            end
+        end
+
+        repeat
+            wait()
+            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value  and isLoop2Active then
+                game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+            end
+        until player.Status.SelectedTransformation.Value == player.Status.Transformation.Value
+    end)
+end
+
+while isLoop2Active do
+    wait()
+    transform()
+end
+
+RunService.RenderStepped:Connect(function()
+    playerHumanoid.Health = math.huge
+end)
+
+       end
+       task.wait(.5)
+    end
+end
 
 local function loop5()
     while true do
@@ -1855,7 +1796,13 @@ switchButton1.MouseButton1Click:Connect(function()
     end)
 end)
 
-
+switchButton2.MouseButton1Click:Connect(function()
+    SafeCall(function()
+        isLoop2Active = not isLoop2Active
+        toggleSwitch(isLoop2Active, switchBall2)
+        SaveSwitchState(isLoop2Active, "Switch2")
+    end)
+end)
 
 switchButton5.MouseButton1Click:Connect(function()
     SafeCall(function()
@@ -1882,11 +1829,13 @@ switchButton7.MouseButton1Click:Connect(function()
 end)
 
 SafeCall(function() toggleSwitch(isLoop1Active, switchBall1) end)
+SafeCall(function() toggleSwitch(isLoop2Active, switchBall2) end)
 SafeCall(function() toggleSwitch(isLoop5Active, switchBall5) end)
 SafeCall(function() toggleSwitch(isLoop6Active, switchBall6) end)
 SafeCall(function() toggleSwitch(isLoop7Active, switchBall7) end)
 
 SafeCall(function() coroutine.wrap(loop1)() end)
+SafeCall(function() coroutine.wrap(loop2)() end)
 SafeCall(function() coroutine.wrap(loop5)() end)
 SafeCall(function() coroutine.wrap(loop6)() end)
 SafeCall(function() coroutine.wrap(loop7)() end)
