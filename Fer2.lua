@@ -1396,7 +1396,7 @@ local clanPlayers = {
     "123daishinkan", "FreireBG", 
     "rodri2020proxd", "cepeer_minecratf", "SEBAS_LAPAJ", 
     "santiago123337pro", "Thamersad172", "yere0303", 
-    "Ocami7", "jesusxdgggg", "JAVIER_R0BL0X", 
+    "Ocami7", "JAVIER_R0BL0X", 
     "angente6real6", "Jefflop2002", "leonardi4133", 
     "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
     "aTUJUAN", "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
