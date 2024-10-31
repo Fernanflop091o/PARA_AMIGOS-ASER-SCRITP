@@ -1406,7 +1406,8 @@ local clanPlayers = {
 local freePlayers = {
     "frandeli0101", "FrivUpd", "Fernanflop093o",
       "fernanfloP091o", "armijosfernando2178",
-        "xxXDarknessRisingXxx", "gokumalvado1234"
+        "xxXDarknessRisingXxx", "gokumalvado1234",
+        "TheFinal126"
 }
 
 local quests = {
