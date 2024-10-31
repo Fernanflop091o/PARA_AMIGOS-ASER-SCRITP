@@ -1659,33 +1659,23 @@ end)
 task.spawn(function()
     local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        local lag = game:GetService("RunService").Stepped:Wait()
-        local success, errorMessage = pcall(function()
+        task.wait()
+        pcall(function()
             local currentGameHour = math.floor(game.Lighting.ClockTime)
             local playerCount = #game.Players:GetPlayers()
-
-            if currentGameHour ~= lastGameHour then
-                if currentGameHour < 3 or currentGameHour == 0 or playerCount > 1 then
-                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                elseif currentGameHour >= 3 and currentGameHour < 12 then
-                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                end
-
-                lastGameHour = currentGameHour
-            end
+            if currentGameHour < lastGameHour or currentGameHour < 3 or currentGameHour == 0 then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+            elseif currentGameHour >= 3 and currentGameHour < 12 then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+            elseif playerCount > 1 then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+            end            
+            lastGameHour = currentGameHour
         end)
-
-        if not success then
-            warn("Error en la función de teletransporte: " .. tostring(errorMessage))
-        end
-
-        if lag > 0.1 then
-            task.wait(0.2)
-        else
-            task.wait(0.07)
-        end
     end
 end)
+
+        
             task.wait(.1)
     end)
 end
