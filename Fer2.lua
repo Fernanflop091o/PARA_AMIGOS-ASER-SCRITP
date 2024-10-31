@@ -1400,7 +1400,7 @@ local clanPlayers = {
     "angente6real6", "Jefflop2002", "leonardi4133", 
     "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
     "aTUJUAN", "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
-    "TocinoProgramador", "DestructionThePower"
+    "TocinoProgramador", "DestructionThePower", "gamerWiDoWx56"
 }
 
 local freePlayers = {
