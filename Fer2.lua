@@ -1401,8 +1401,7 @@ local clanPlayers = {
     "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
     "aTUJUAN", "ALT_garou11", "BETOKILLER15",
     "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
-    "TocinoProgramador", "DestructionThePower",
-    "4NG5L07777"
+    "TocinoProgramador", "DestructionThePower"
 }
 
 local freePlayers = {
