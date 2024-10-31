@@ -1399,8 +1399,7 @@ local clanPlayers = {
     "Ocami7", "jesusxdgggg", "JAVIER_R0BL0X", 
     "angente6real6", "Jefflop2002", "leonardi4133", 
     "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
-    "aTUJUAN", "ALT_garou11", "BETOKILLER15",
-    "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
+    "aTUJUAN", "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
     "TocinoProgramador", "DestructionThePower"
 }
 
