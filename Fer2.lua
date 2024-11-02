@@ -1381,7 +1381,7 @@ local vipPlayers = {
     "kayoolicool", "FACHERITO_XD9", "alexisetter2008",
     "Suly_Goodx", "sneuder282", "ItzSebaGod",
     "donuts160706", "Oliverio7546", "TocinoProgramador",
-    "brxxn_sl"
+    "brxxn_sl", "TheMasterp1234"
     
 }
 local clanPlayers = {
