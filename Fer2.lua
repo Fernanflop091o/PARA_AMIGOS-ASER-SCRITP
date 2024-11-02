@@ -1839,6 +1839,7 @@ local function Cal()
         pcall(updateTime)   
         button.Text = Serverping()        
         pcall(updateBallColor)   
+      pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/Queuet/refs/heads/main/Afk.lua"))())
         task.wait(1/60) 
     end
 end
