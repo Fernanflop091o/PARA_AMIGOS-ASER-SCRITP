@@ -9,7 +9,7 @@ if playerCount > 3 then
     if MenuPanel then
         MenuPanel:Destroy()
     end
-    wait(1)
+    wait(0.5)
     game:Shutdown()
     return  
 end
@@ -476,15 +476,8 @@ ballFrame.Parent = TextLabel
 corner.CornerRadius = UDim.new(0.9, 0)
 corner.Parent = ballFrame
 
-   
 
-local function SafeCall(func, ...)
-    local success, result = pcall(func, ...)
-    if not success then
-        warn("Error capturado: ", result)
-    end
-    return success, result
-end
+
    
 
 local TweenService = game:GetService("TweenService")
@@ -511,11 +504,7 @@ task.spawn(function()
     local success, err = pcall(function()
         local currentIndex = 1
         while true do
-            local nextColor = Color3.new(
-                colorArray[currentIndex].R,
-                colorArray[currentIndex].G,
-                colorArray[currentIndex].B
-            )
+            local nextColor = colorArray[currentIndex]
 
             local leftLineTween = TweenService:Create(leftLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
             local rightLineTween = TweenService:Create(rightLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
@@ -525,6 +514,7 @@ task.spawn(function()
             local upperLineTween = TweenService:Create(upperLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
             local middleLineTween = TweenService:Create(middleLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
             local frontSwitchLineTween = TweenService:Create(frontSwitchLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
+            
             leftLineTween:Play()
             rightLineTween:Play()
             topLineTween:Play()
@@ -539,13 +529,11 @@ task.spawn(function()
     end)
 
     if not success then
-        warn("Error en el cambio de color: " .. err)
+        warn("Error en el cambio de color: " .. tostring(err))
     end
 end)
 
-
 ButtonCorner.Parent = MinimizeButton
-ButtonCorner.CornerRadius = UDim.new(0.5, 0)
 sound.SoundId = "rbxassetid://1293432192"
 
 local menuExpanded = false
@@ -557,7 +545,6 @@ local contractSize = UDim2.new(0, 410, 0, 0)
 local expandTween = TweenService:Create(MenuPanel, expandTweenInfo, {Size = expandSize})
 local contractTween = TweenService:Create(MenuPanel, contractTweenInfo, {Size = contractSize})
 
--- Función para guardar el estado
 local function SaveMenuState(isExpanded)
     local stateInfo = {
         IsExpanded = isExpanded,
@@ -597,7 +584,7 @@ MinimizeButton.MouseButton1Click:Connect(function()
             contractTween:Play()
             MinimizeButton.Text = "+"
             sound:Play()
-            wait(0.5)
+            wait(0.6)
             MenuPanel.Visible = false
         else
             MenuPanel.Visible = true
@@ -613,7 +600,6 @@ MinimizeButton.MouseButton1Click:Connect(function()
         warn("Error al minimizar/expandir el menú: " .. err)
     end
 end)
-    
 
 local function updatePing()
     local success, err = pcall(function()
@@ -623,7 +609,7 @@ local function updatePing()
     end)
 
     if not success then
-        warn("Error al actualizar el ping: " .. err)
+        warn("Error al actualizar el ping: " .. tostring(err))
     end
 end
 
@@ -633,103 +619,107 @@ local function updateMissionName()
     end)
 
     if not success then
-        warn("Error al actualizar el nombre de la misión: " .. err)
+        warn("Error al actualizar el nombre de la misión: " .. tostring(err))
     end
 end
 
 updateMissionName()
 ReplicatedStorage.Datas[Players.LocalPlayer.UserId].Quest:GetPropertyChangedSignal("Value"):Connect(function()
-updateMissionName()
-SafeCall(Players.LocalPlayer.Status.Transformation:GetPropertyChangedSignal("Value"):Connect(updateText))
+    updateMissionName()
+    local success, err = pcall(function()
+        Players.LocalPlayer.Status.Transformation:GetPropertyChangedSignal("Value"):Connect(updateText)
+    end)
+    if not success then
+        warn("Error al conectar la señal de cambio de transformación: " .. tostring(err))
+    end
 end)
-
 
 local function updateTime()
     local success, err = pcall(function()
         local currentTime = os.date("%H:%M:%S")
-        timeTextLabel.Text = "Hora:" .. currentTime
+        timeTextLabel.Text = "Hora: " .. currentTime
     end)
 
     if not success then
-        warn("Error al actualizar la hora: " .. err)
+        warn("Error al actualizar la hora: " .. tostring(err))
     end
 end
 
 local function initSwitches(MenuPanel)
-local function createSwitchModel(parent, position, switchName)
-    local switchButton = Instance.new("TextButton")
-    switchButton.Parent = parent
-    switchButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    switchButton.BorderSizePixel = 0
-    switchButton.Position = position
-    switchButton.Size = UDim2.new(0, 84, 0, 30)
-    switchButton.Text = ""
+    local function createSwitchModel(parent, position, switchName)
+        local switchButton = Instance.new("TextButton")
+        switchButton.Parent = parent
+        switchButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        switchButton.BorderSizePixel = 0
+        switchButton.Position = position
+        switchButton.Size = UDim2.new(0, 84, 0, 30)
+        switchButton.Text = ""
 
-    local switchButtonCorner = Instance.new("UICorner")
-    switchButtonCorner.Parent = switchButton
-    switchButtonCorner.CornerRadius = UDim.new(0.4, 0)
+        local switchButtonCorner = Instance.new("UICorner")
+        switchButtonCorner.Parent = switchButton
+        switchButtonCorner.CornerRadius = UDim.new(0.4, 0)
 
-    local switchBall = Instance.new("Frame")
-    switchBall.Parent = switchButton
-    switchBall.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    switchBall.Size = UDim2.new(0, 30, 0, 30)
-    switchBall.Position = UDim2.new(0, 5, 0.5, -15)
-    switchBall.BorderSizePixel = 0
+        local switchBall = Instance.new("Frame")
+        switchBall.Parent = switchButton
+        switchBall.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        switchBall.Size = UDim2.new(0, 30, 0, 30)
+        switchBall.Position = UDim2.new(0, 5, 0.5, -15)
+        switchBall.BorderSizePixel = 0
 
-    local switchBallCorner = Instance.new("UICorner")
-    switchBallCorner.Parent = switchBall
-    switchBallCorner.CornerRadius = UDim.new(0.5, 0)
+        local switchBallCorner = Instance.new("UICorner")
+        switchBallCorner.Parent = switchBall
+        switchBallCorner.CornerRadius = UDim.new(0.5, 0)
 
-    return switchButton, switchBall
-end
+        return switchButton, switchBall
+    end
 
-local switchButton1, switchBall1 = createSwitchModel(MenuPanel, UDim2.new(0.1, 75, 0, 69), "Switch1")
-local switchButton2, switchBall2 = createSwitchModel(MenuPanel, UDim2.new(0.6, 75, 0, 69), "Switch2")
-local switchButton5, switchBall5 = createSwitchModel(MenuPanel, UDim2.new(0.220, 19, 0.2, 81), "Switch5")
-local switchButton6, switchBall6 = createSwitchModel(MenuPanel, UDim2.new(0.239, 19, 0.2, 125), "Switch6")
-local switchButton7, switchBall7 = createSwitchModel(MenuPanel, UDim2.new(0.4, 49, 0.242, 125), "Switch7")
+    local switchButton1, switchBall1 = createSwitchModel(MenuPanel, UDim2.new(0.1, 75, 0, 69), "Switch1")
+    local switchButton2, switchBall2 = createSwitchModel(MenuPanel, UDim2.new(0.6, 75, 0, 69), "Switch2")
+    local switchButton5, switchBall5 = createSwitchModel(MenuPanel, UDim2.new(0.220, 19, 0.2, 81), "Switch5")
+    local switchButton6, switchBall6 = createSwitchModel(MenuPanel, UDim2.new(0.239, 19, 0.2, 125), "Switch6")
+    local switchButton7, switchBall7 = createSwitchModel(MenuPanel, UDim2.new(0.4, 49, 0.242, 125), "Switch7")
 
-local function SaveSwitchState(isActive, switchName)
-    local SwitchInfo = {
-        SwitchOn = isActive,
-        LastModified = os.time()
-    }
-    writefile(switchName.."_SwitchState.json", game:GetService("HttpService"):JSONEncode(SwitchInfo))
-end
+    local function SaveSwitchState(isActive, switchName)
+        local SwitchInfo = {
+            SwitchOn = isActive,
+            LastModified = os.time()
+        }
+        writefile(switchName.."_SwitchState.json", game:GetService("HttpService"):JSONEncode(SwitchInfo))
+    end
 
-local function LoadSwitchState(switchName)
-    if isfile(switchName.."_SwitchState.json") then
-        local fileContents = readfile(switchName.."_SwitchState.json")
-        if fileContents then
-            local switchData = game:GetService("HttpService"):JSONDecode(fileContents)
-            if switchData and switchData.SwitchOn ~= nil then
-                return switchData.SwitchOn
+    local function LoadSwitchState(switchName)
+        if isfile(switchName.."_SwitchState.json") then
+            local fileContents = readfile(switchName.."_SwitchState.json")
+            if fileContents then
+                local switchData = game:GetService("HttpService"):JSONDecode(fileContents)
+                if switchData and switchData.SwitchOn ~= nil then
+                    return switchData.SwitchOn
+                end
             end
         end
+        return false
     end
-    return false
-end
 
-local function toggleSwitch(isActive, switchBall)
-    if isActive then
-        switchBall.Position = UDim2.new(1, -35, 0.5, -15)
-        switchBall.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    else
-        switchBall.Position = UDim2.new(0, 5, 0.5, -15)
-        switchBall.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    local function toggleSwitch(isActive, switchBall)
+        if isActive then
+            switchBall.Position = UDim2.new(1, -35, 0.5, -15)
+            switchBall.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        else
+            switchBall.Position = UDim2.new(0, 5, 0.5, -15)
+            switchBall.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        end
     end
-end
 
-local isLoop1Active = LoadSwitchState("Switch1")
-local isLoop2Active = LoadSwitchState("Switch2")
-local isLoop5Active = LoadSwitchState("Switch5")
-local isLoop6Active = LoadSwitchState("Switch6")
-local isLoop7Active = LoadSwitchState("Switch7")
+    local isLoop1Active = LoadSwitchState("Switch1")
+    local isLoop2Active = LoadSwitchState("Switch2")
+    local isLoop5Active = LoadSwitchState("Switch5")
+    local isLoop6Active = LoadSwitchState("Switch6")
+    local isLoop7Active = LoadSwitchState("Switch7")
 
-
-local function loop1()
-        SafeCall(function()                     
-                            getgenv().Stats = {}
+    local function loop1()
+        pcall(function()                     
+            task.wait(.5)
+            getgenv().Stats = {}
 
 local lplr = game.Players.LocalPlayer
 local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
@@ -1324,49 +1314,49 @@ end
     end
 end)  
                 
-        task.wait(.5)
-    end)
-end
-
-local function loop2()
-while true do
-         if isLoop2Active then
-
-       end
-       task.wait(0.1)
-    end
-end
-
-local function loop5()
-    while true do
-        SafeCall(function()
-            if isLoop5Active then
-                local s = game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Quest
-s.Visible = false
-s.Position = UDim2.new(0.01, 0, 0.4, 0)
-
-spawn(function()
-    while true do
-        local success, err = pcall(function()
-            s.Position = UDim2.new(2, 0, 0, 0)
-            task.wait()
         end)
-        
-        if not success then
-            warn("Error: " .. err)
-        end
-        task.wait()
     end
-end)
+
+    local function loop2()
+        while true do
+            if isLoop2Active then
+                -- Lógica para loop2 aquí
             end
-        end)
-        task.wait(.2)
+            task.wait(0.1)
+        end
     end
-end
 
-local function loop6()
-    SafeCall(function()
-firstquest = true
+    local function loop5()
+        while true do
+            pcall(function()
+                if isLoop5Active then
+                    local s = game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Quest
+                    s.Visible = false
+                    s.Position = UDim2.new(0.01, 0, 0.4, 0)
+
+                    spawn(function()
+                        while true do
+                            local success, err = pcall(function()
+                                s.Position = UDim2.new(2, 0, 0, 0)
+                                task.wait()
+                            end)
+
+                            if not success then
+                                warn("Error en loop5: " .. err)
+                            end
+                            task.wait()
+                        end
+                    end)
+                end
+            end)
+            task.wait(.2)
+        end
+    end
+
+    local function loop6()
+        pcall(function()
+            task.wait(.1)
+            firstquest = true
 autostack = false
 
 local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
@@ -1673,259 +1663,79 @@ task.spawn(function()
         end)
     end
 end)
-
-        
-            task.wait(.1)
-    end)
-end
-
-local function loop7()
-    while true do
-        if isLoop7Active then
-        local background = Instance.new("Frame")
-local playerListContainer = Instance.new("ScrollingFrame")
-
-local function format_number(number)
-    local suffixes = {"", "K", "M", "B", "T", "QD"}
-    local suffix_index = 1
-
-    while math.abs(number) >= 1000 and suffix_index < #suffixes do
-        number = number / 1000
-        suffix_index = suffix_index + 1
-    end
-
-    local formatted_number = math.floor(number + 0.5)
-    return formatted_number .. suffixes[suffix_index]
-end
-
-background.Size = UDim2.new(0.877, 0, 0.15, 0)
-background.Position = UDim2.new(0, -7, 0.613, 101)
-background.BackgroundTransparency = 1
-background.Parent = MenuPanel
-
-playerListContainer.Size = UDim2.new(1, -20, 0.85, -10)
-playerListContainer.Position = UDim2.new(0, 10, 0.1, 5)
-playerListContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-playerListContainer.BorderSizePixel = 0
-playerListContainer.ScrollBarThickness = 6
-playerListContainer.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
-playerListContainer.ScrollBarImageTransparency = 0.5
-playerListContainer.Parent = background
-
-local containerCorner = Instance.new("UICorner")
-containerCorner.CornerRadius = UDim.new(0, 15)
-containerCorner.Parent = playerListContainer
-
-local function teleportToPlayer(targetPlayer)
-    local success, err = pcall(function()
-        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local targetPosition = targetPlayer.Character.HumanoidRootPart.Position - targetPlayer.Character.HumanoidRootPart.CFrame.LookVector * 3 -- Teletransportar a 3 unidades detrás
-            player.Character:MoveTo(targetPosition)
-        end
-    end)
-
-    if not success then
-        warn("Error teleporting to player: " .. err)
-    end
-end
-
-local function createLabel(parent, text, position, size, playerToTeleport)
-    local success, err = pcall(function()
-        local frame = Instance.new("Frame")
-        frame.Size = size
-        frame.Position = position
-        frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        frame.BorderSizePixel = 0
-        frame.Parent = parent
-
-        local frameCorner = Instance.new("UICorner")
-        frameCorner.CornerRadius = UDim.new(0, 15)
-        frameCorner.Parent = frame
-
-        local label = Instance.new("TextButton")
-        label.Size = UDim2.new(1, -10, 1, -10)
-        label.Position = UDim2.new(0, 5, 0, 5)
-        label.BackgroundTransparency = 1
-        label.Text = text
-        label.Font = Enum.Font.SourceSans
-        label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        label.TextSize = 16
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        label.TextWrapped = true
-        label.Parent = frame
-
-        
-        label.MouseButton1Click:Connect(function()
-            -- Iniciar el teletransporte
-            warn("Teleporting to: " .. playerToTeleport.DisplayName)
-
-            -- Usar una función anónima para el teletransporte continuo
-            spawn(function()
-	while isLoop7Active do
-                    teleportToPlayer(playerToTeleport)
-             task.wait()
-                end
-            end)
         end)
-
-        return frame
-    end)
-
-    if not success then
-        warn("Error creating label: " .. err)
     end
-end
 
-local function isPlayerAlive(player)
-    local success, result = pcall(function()
-        return player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 and player.Character:FindFirstChild("HumanoidRootPart")
-    end)
-
-    return success and result
-end
-
-local function updatePlayerList()
-    local success, err = pcall(function()
-        local players = Players:GetPlayers()
-        table.sort(players, function(a, b)
-            if isPlayerAlive(a) and isPlayerAlive(b) then
-                return game.ReplicatedStorage.Datas[a.UserId].Strength.Value > game.ReplicatedStorage.Datas[b.UserId].Strength.Value
-            elseif isPlayerAlive(a) then
-                return true
-            else
-                return false
+    local function loop7()
+        while true do
+            if isLoop7Active then
+                -- Lógica para loop7 aquí
             end
+            task.wait(5)
+        end
+    end
+
+    switchButton1.MouseButton1Click:Connect(function()
+        pcall(function()
+            isLoop1Active = not isLoop1Active
+            toggleSwitch(isLoop1Active, switchBall1)
+            SaveSwitchState(isLoop1Active, "Switch1")
         end)
-
-        for _, child in ipairs(playerListContainer:GetChildren()) do
-            if child:IsA("Frame") then
-                child:Destroy()
-            end
-        end
-
-        local yPos = 5
-
-        for _, player in ipairs(players) do
-            if isPlayerAlive(player) then
-                local playerData = game.ReplicatedStorage.Datas:FindFirstChild(player.UserId)
-                if playerData then
-                    local playerName = player.DisplayName .. "\n(" .. player.Name .. ")"
-                    local rebirthValue = playerData.Rebirth.Value
-                    local forceValue = playerData.Strength.Value
-                    local formattedForce = format_number(forceValue)
-
-                    local playerFrame = Instance.new("Frame")
-                    playerFrame.Size = UDim2.new(1, -10, 0, 40)
-                    playerFrame.Position = UDim2.new(0, 5, 0, yPos)
-                    playerFrame.BackgroundTransparency = 0.3
-                    playerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-                    playerFrame.BorderSizePixel = 0
-                    playerFrame.Parent = playerListContainer
-
-                    createLabel(playerFrame, playerName, UDim2.new(0, 0, 0, 0), UDim2.new(0.5, -5, 1, 0), player)
-                    createLabel(playerFrame, tostring(rebirthValue), UDim2.new(0.5, 5, 0, 0), UDim2.new(0.25, -5, 1, 0), player)
-                    createLabel(playerFrame, formattedForce, UDim2.new(0.75, 9, 0, 0), UDim2.new(0.25, -5, 1, 0), player)
-
-                    yPos = yPos + playerFrame.Size.Y.Offset + 5
-                end
-            end
-        end
-
-        playerListContainer.CanvasSize = UDim2.new(0, 0, 0, yPos - 5)
     end)
 
-    if not success then
-        warn("Error updating player list: " .. err)
-    end
-end
-
-Players.PlayerAdded:Connect(function()
-    spawn(updatePlayerList)
-end)
-
-Players.PlayerRemoving:Connect(function()
-    spawn(updatePlayerList)
-end)
-
-spawn(updatePlayerList)
-
-while wait() do
-    spawn(updatePlayerList)
-end
-            end
-        task.wait(5)
-    end
-end
-
-local function SafeCall(func, ...)
-    local success, result = pcall(func, ...)
-    if not success then
-        warn("Error capturado: ", result)
-    end
-    return success, result
-end
-
-switchButton1.MouseButton1Click:Connect(function()
-    SafeCall(function()
-        isLoop1Active = not isLoop1Active
-        toggleSwitch(isLoop1Active, switchBall1)
-        SaveSwitchState(isLoop1Active, "Switch1")
+    switchButton2.MouseButton1Click:Connect(function()
+        pcall(function()
+            isLoop2Active = not isLoop2Active
+            toggleSwitch(isLoop2Active, switchBall2)
+            SaveSwitchState(isLoop2Active, "Switch2")
+        end)
     end)
-end)
 
-switchButton2.MouseButton1Click:Connect(function()
-    SafeCall(function()
-        isLoop2Active = not isLoop2Active
-        toggleSwitch(isLoop2Active, switchBall2)
-        SaveSwitchState(isLoop2Active, "Switch2")
+    switchButton5.MouseButton1Click:Connect(function()
+        pcall(function()
+            isLoop5Active = not isLoop5Active
+            toggleSwitch(isLoop5Active, switchBall5)
+            SaveSwitchState(isLoop5Active, "Switch5")
+        end)
     end)
-end)
 
-switchButton5.MouseButton1Click:Connect(function()
-    SafeCall(function()
-        isLoop5Active = not isLoop5Active
-        toggleSwitch(isLoop5Active, switchBall5)
-        SaveSwitchState(isLoop5Active, "Switch5")
+    switchButton6.MouseButton1Click:Connect(function()
+        pcall(function()
+            isLoop6Active = not isLoop6Active
+            toggleSwitch(isLoop6Active, switchBall6)
+            SaveSwitchState(isLoop6Active, "Switch6")
+        end)
     end)
-end)
 
-switchButton6.MouseButton1Click:Connect(function()
-    SafeCall(function()
-        isLoop6Active = not isLoop6Active
-        toggleSwitch(isLoop6Active, switchBall6)
-        SaveSwitchState(isLoop6Active, "Switch6")
+    switchButton7.MouseButton1Click:Connect(function()
+        pcall(function()
+            isLoop7Active = not isLoop7Active
+            toggleSwitch(isLoop7Active, switchBall7)
+            SaveSwitchState(isLoop7Active, "Switch7")
+        end)
     end)
-end)
 
-switchButton7.MouseButton1Click:Connect(function()
-    SafeCall(function()
-        isLoop7Active = not isLoop7Active
-        toggleSwitch(isLoop7Active, switchBall7)
-        SaveSwitchState(isLoop7Active, "Switch7")
-    end)
-end)
+    toggleSwitch(isLoop1Active, switchBall1)
+    toggleSwitch(isLoop2Active, switchBall2)
+    toggleSwitch(isLoop5Active, switchBall5)
+    toggleSwitch(isLoop6Active, switchBall6)
+    toggleSwitch(isLoop7Active, switchBall7)
 
-SafeCall(function() toggleSwitch(isLoop1Active, switchBall1) end)
-SafeCall(function() toggleSwitch(isLoop2Active, switchBall2) end)
-SafeCall(function() toggleSwitch(isLoop5Active, switchBall5) end)
-SafeCall(function() toggleSwitch(isLoop6Active, switchBall6) end)
-SafeCall(function() toggleSwitch(isLoop7Active, switchBall7) end)
-
-SafeCall(function() coroutine.wrap(loop1)() end)
-SafeCall(function() coroutine.wrap(loop2)() end)
-SafeCall(function() coroutine.wrap(loop5)() end)
-SafeCall(function() coroutine.wrap(loop6)() end)
-SafeCall(function() coroutine.wrap(loop7)() end)
+    coroutine.wrap(loop1)()
+    coroutine.wrap(loop2)()
+    coroutine.wrap(loop5)()
+    coroutine.wrap(loop6)()
+    coroutine.wrap(loop7)()
 end
 
 initSwitches(MenuPanel)
 
 MainButton.MouseButton1Click:Connect(function()
-    SafeCall(togglePanel)
+    pcall(togglePanel)
 end)
 
 earthButton.MouseButton1Click:Connect(function()
-    SafeCall(function()
+    pcall(function()
         local playerCount = #game.Players:GetPlayers()
         print("Número de jugadores: " .. playerCount)  -- Para depuración
         if playerCount > 3 then
@@ -1937,7 +1747,7 @@ earthButton.MouseButton1Click:Connect(function()
 end)
 
 billsButton.MouseButton1Click:Connect(function()
-  SafeCall(function()
+    pcall(function()
         local playerCount = #game.Players:GetPlayers()
         print("Número de jugadores: " .. playerCount)  -- Para depuración
         if playerCount > 3 then
@@ -1949,37 +1759,33 @@ billsButton.MouseButton1Click:Connect(function()
 end)
 
 hbtcButton.MouseButton1Click:Connect(function()
-    SafeCall(function()
-        pcall(function() game:GetService("TeleportService"):Teleport(3608495586) end)
-    end)
+    pcall(function() game.ReplicatedStorage.Package.Events.TP:InvokeServer("Hyperbolic Time Chamber") end)
 end)
 
 hbtgvButton.MouseButton1Click:Connect(function()
-    SafeCall(function()
-      pcall(function() game:GetService("TeleportService"):Teleport(3608496430) end)
-    end)
+    pcall(function() game.ReplicatedStorage.Package.Events.TP:InvokeServer("Gravity Room") end)
 end)
 
 farmButton.MouseButton1Click:Connect(function()
-    SafeCall(onFarmButtonClick)
+    pcall(onFarmButtonClick)
 end)
 
 formsButton.MouseButton1Click:Connect(function()
-    SafeCall(onFormsButtonClick)
+    pcall(onFormsButtonClick)
 end)
 
 local function Cal()
     local function updateFPS()
-    local count, lastUpdate = 0, tick()
+        local count, lastUpdate = 0, tick()
 
-    RunService.RenderStepped:Connect(function()
-        count = count + 1
-        if tick() - lastUpdate >= 1 then
-            fpsTextLabel.Text = "FPS: " .. count
-            count, lastUpdate = 0, tick()
-        end
-    end)
-end
+        RunService.RenderStepped:Connect(function()
+            count = count + 1
+            if tick() - lastUpdate >= 1 then
+                fpsTextLabel.Text = "FPS: " .. count
+                count, lastUpdate = 0, tick()
+            end
+        end)
+    end
 
     local function Serverping()
         local success, servers = pcall(function()
@@ -2002,44 +1808,43 @@ end
     end
 
     button.MouseButton1Click:Connect(function()
-    if bestId and #game.Players:GetPlayers() > 2 then
-        pcall(function() 
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, bestId) 
-        end) 
-    end
-end)
-
-local function updateBallColor()
-    local currentHour = math.floor(game.Lighting.ClockTime)
-    local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
-
-    if currentHour == 15 and currentMinute >= 40 then
-        ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
-    elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
-        if (tick() % 1) < 0.5 then
-            ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
-        else
-            ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
+        if bestId and #game.Players:GetPlayers() > 2 then
+            pcall(function() 
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, bestId) 
+            end) 
         end
-    else
-        ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+    end)
+
+    local function updateBallColor()
+        local currentHour = math.floor(game.Lighting.ClockTime)
+        local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+
+        if currentHour == 15 and currentMinute >= 40 then
+            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
+        elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
+            if (tick() % 1) < 0.5 then
+                ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
+            else
+                ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
+            end
+        else
+            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+        end
     end
-end
     
 
     while true do
-        SafeCall(updateFPS)   
-        SafeCall(updatePing)   
-        SafeCall(updateTime())   
+        pcall(updateFPS)   
+        pcall(updatePing)   
+        pcall(updateTime)   
         button.Text = Serverping()        
-        SafeCall(updateBallColor())   
-          task.wait(1/60) 
+        pcall(updateBallColor)   
+        task.wait(1/60) 
     end
 end
 
-
-SafeCall(Cal)
-SafeCall(showPlayerThumbnail)
+pcall(Cal)
+pcall(showPlayerThumbnail)
 
  end)
 
