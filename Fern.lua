@@ -149,10 +149,10 @@ local function executeScript()
             if data.Strength.Value >= 8000000 then
                 wait(waitTime)
                 game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer("Godly SSJ2")
-                wait(1)
+                task.wait(1)
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
-            wait(.01)
+            task.wait(.1)
         end
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Fernanflop091o/PARA_AMIGOS-ASER-SCRITP/main/Fer2.lua"))()
     end)
