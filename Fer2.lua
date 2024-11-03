@@ -1373,7 +1373,7 @@ game:GetService("RunService").Heartbeat:Connect(function()
     end
 end)
             end
-            task.wait(1.2)
+            task.wait(2)
         end
     end
 
@@ -1401,13 +1401,13 @@ end)
                     end)
                 end
             end)
-            task.wait(1)
+            task.wait(2)
         end
     end
 
     local function loop6()
         pcall(function()
-            task.wait(1)
+            task.wait(1.5)
             firstquest = true
 autostack = false
 
@@ -1535,7 +1535,7 @@ local function quest()
         local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
         repeat
-            task.wait(0.1)
+            task.wait(.2)
             events.Qaction:InvokeServer(npc)
         until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
     end
@@ -1584,7 +1584,7 @@ task.spawn(function()
         task.wait()
         pcall(function()
             while true  do
-                task.wait()
+                task.wait(.1)
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
                         autoquest()
@@ -1596,10 +1596,10 @@ task.spawn(function()
                              spawn(function()
                                 while getgenv().farm and v and v.Humanoid.Health > 0 do
                                     player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-                                    task.wait()
+                                    task.wait(1)
                                 end
                             end)
-                                  task.wait(0.1)
+                                  task.wait(.2)
                                 task.spawn(function()
                                 while getgenv().farm and v and v.Humanoid.Health > 0 do
                                     if not attacked then
@@ -1613,7 +1613,7 @@ task.spawn(function()
                                     end
                                     
                                     CanAttack = true
-                                    task.wait(.1)
+                                    task.wait()
                                 end
                             end)
                             if table.find(mobs, v.Name) then
@@ -1631,9 +1631,9 @@ task.spawn(function()
                                 getgenv().stacked = false
                                 deactivateFlight()
                                 repeat
-                                    task.wait(.05)
+                                    task.wait(.1)
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait(.01)
+                                task.wait(.1)
                             end
                             deactivateFlight()
                         end
@@ -1654,7 +1654,7 @@ task.spawn(function()
                         if attacked then
                             while not player.Status.Blocking.Value do
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                task.wait()
+                                task.wait(.6)
                             end
                         end
                     end
@@ -1666,9 +1666,9 @@ task.spawn(function()
             warn("Error en el bucle de ataque: " .. tostring(errorMessage))
         end
         if lag > 0.1 then
-            task.wait(0.2)
-        else
             task.wait(1)
+        else
+            task.wait(2)
         end
     end
 end)
@@ -1692,9 +1692,9 @@ task.spawn(function()
         end
 
         if lag > 0.1 then
-            task.wait(0.2)
+            task.wait(0.5)
         else
-            task.wait(0.4)
+            task.wait(1)
         end
     end
 end)
@@ -1717,7 +1717,7 @@ task.spawn(function()
         end)
     end
 end)
-            task.wait(1)
+            task.wait(2)
         end)
     end
 
