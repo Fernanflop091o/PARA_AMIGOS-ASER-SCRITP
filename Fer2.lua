@@ -718,7 +718,7 @@ local function initSwitches(MenuPanel)
 
     local function loop1()
         pcall(function()                     
-            task.wait(.5)
+            task.wait(1)
             getgenv().Stats = {}
 
 local lplr = game.Players.LocalPlayer
@@ -973,7 +973,7 @@ local function transform()
             pcall(function()
                 game.ReplicatedStorage.Package.Events.ta:InvokeServer()
             end)
-            task.wait(0.01)
+            task.wait(0.1)
         end
         return
     end
@@ -1297,7 +1297,7 @@ end
                                 CanAttack = true
                             end
                         else
-                            task.wait(.01)
+                            task.wait(.06)
                             Boss = nil
                         end
                         task.wait(.01)
@@ -1307,13 +1307,14 @@ end
             elseif game.Workspace.Living:FindFirstChild(ldata.Quest.Value)  then
                 Boss = game.Workspace.Living[ldata.Quest.Value]
             else ldata.Quest.Value = ""
-                wait(.01)
+                wait(.3)
             end
         end
-        task.wait(.2)
+        task.wait(.4)
     end
 end)  
-                
+                  
+            task.wait(1.1)
         end)
     end
 
@@ -1334,29 +1335,33 @@ local function formatNumber(num)
 end
 
 local function updateStatsGui()
-    local MainFrame = lplr.PlayerGui:WaitForChild("Main"):WaitForChild("MainFrame")
-    local StatsFrame = MainFrame:WaitForChild("Frames"):WaitForChild("Stats")
-    local ZeniLabel = MainFrame.Indicator.Zeni 
-    local Bars = MainFrame.Bars
-    local HPText = Bars.Health.TextLabel
-    local EnergyText = Bars.Energy.TextLabel
+    local success, err = pcall(function()
+        local MainFrame = lplr.PlayerGui:WaitForChild("Main"):WaitForChild("MainFrame")
+        local StatsFrame = MainFrame:WaitForChild("Frames"):WaitForChild("Stats")
+        local ZeniLabel = MainFrame.Indicator:FindFirstChild("Zeni")
+        local Bars = MainFrame:WaitForChild("Bars")
+        local HPText = Bars.Health:FindFirstChild("TextLabel")
+        local EnergyText = Bars.Energy:FindFirstChild("TextLabel")
+        
+        local health = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.Health or 0
+        local maxHealth = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.MaxHealth or 0
+        local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
+        local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
+        
+        HPText.Text = "SALUD: " .. formatNumber(health) .. " / " .. formatNumber(maxHealth)
+        EnergyText.Text = "ENERGÍA: " .. formatNumber(ki) .. " / " .. formatNumber(maxKi)
+        ZeniLabel.Text = formatNumber(ldata.Zeni.Value) .. " Zeni"
 
-    local health = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.Health or 0
-    local maxHealth = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.MaxHealth or 0
-    local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
-    local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
-    
-    HPText.Text = "SALUD: " .. formatNumber(health) .. " / " .. formatNumber(maxHealth)
-    EnergyText.Text = "ENERGÍA: " .. formatNumber(ki) .. " / " .. formatNumber(maxKi)
-    ZeniLabel.Text = formatNumber(ldata.Zeni.Value) .. " Zeni"
-
-    for _, stat in pairs({"Strength", "Speed", "Defense", "Energy"}) do
-        if StatsFrame:FindFirstChild(stat) then
+        for _, stat in pairs({"Strength", "Speed", "Defense", "Energy"}) do
             local statLabel = StatsFrame:FindFirstChild(stat)
             if statLabel then
                 statLabel.Text = stat .. ": " .. formatNumber(ldata[stat].Value)
             end
         end
+    end)
+    
+    if not success then
+        warn("Error al actualizar GUI de estadísticas:", err)
     end
 end
 
@@ -1364,12 +1369,11 @@ updateStatsGui()
 
 game:GetService("RunService").Heartbeat:Connect(function()
     if lplr.Character and lplr.Character:FindFirstChild("Humanoid") and isLoop2Active then
-        updateStatsGui()
+        pcall(updateStatsGui)
     end
 end)
-
             end
-            task.wait(0.1)
+            task.wait(1.2)
         end
     end
 
@@ -1397,13 +1401,13 @@ end)
                     end)
                 end
             end)
-            task.wait(.2)
+            task.wait(1)
         end
     end
 
     local function loop6()
         pcall(function()
-            task.wait(.1)
+            task.wait(1)
             firstquest = true
 autostack = false
 
@@ -1664,7 +1668,7 @@ task.spawn(function()
         if lag > 0.1 then
             task.wait(0.2)
         else
-            task.wait(0.07)
+            task.wait(1)
         end
     end
 end)
@@ -1713,6 +1717,7 @@ task.spawn(function()
         end)
     end
 end)
+            task.wait(1)
         end)
     end
 
