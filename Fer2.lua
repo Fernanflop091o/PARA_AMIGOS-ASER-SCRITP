@@ -1317,14 +1317,62 @@ end)
         end)
     end
 
-    local function loop2()
+   local function loop2()
         while true do
             if isLoop2Active then
-                -- Lógica para loop2 aquí
+             local lplr = game.Players.LocalPlayer
+local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
+
+local function formatNumber(num)
+    if num >= 1e6 then
+        return string.format("%.1fm", num / 1e6)
+    elseif num >= 1e3 then
+        return string.format("%dk", num / 1e3)
+    else
+        return tostring(num)
+    end
+end
+
+local function updateStatsGui()
+    local MainFrame = lplr.PlayerGui:WaitForChild("Main"):WaitForChild("MainFrame")
+    local StatsFrame = MainFrame:WaitForChild("Frames"):WaitForChild("Stats")
+    local ZeniLabel = MainFrame.Indicator.Zeni 
+    local Bars = MainFrame.Bars
+    local HPText = Bars.Health.TextLabel
+    local EnergyText = Bars.Energy.TextLabel
+
+    local health = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.Health or 0
+    local maxHealth = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.MaxHealth or 0
+    local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
+    local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
+    
+    HPText.Text = "SALUD: " .. formatNumber(health) .. " / " .. formatNumber(maxHealth)
+    EnergyText.Text = "ENERGÍA: " .. formatNumber(ki) .. " / " .. formatNumber(maxKi)
+    ZeniLabel.Text = formatNumber(ldata.Zeni.Value) .. " Zeni"
+
+    for _, stat in pairs({"Strength", "Speed", "Defense", "Energy"}) do
+        if StatsFrame:FindFirstChild(stat) then
+            local statLabel = StatsFrame:FindFirstChild(stat)
+            if statLabel then
+                statLabel.Text = stat .. ": " .. formatNumber(ldata[stat].Value)
+            end
+        end
+    end
+end
+
+updateStatsGui()
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if lplr.Character and lplr.Character:FindFirstChild("Humanoid") and isLoop2Active then
+        updateStatsGui()
+    end
+end)
+
             end
             task.wait(0.1)
         end
     end
+
 
     local function loop5()
         while true do
