@@ -307,7 +307,7 @@ mle_extLabel.BorderSizePixel = 0
 mle_extLabel.Position = UDim2.new(0.4, 69, 0.4, 35)
 mle_extLabel.Size = UDim2.new(0, 39, 0, 40)
 mle_extLabel.Font = Enum.Font.SourceSans
-mle_extLabel.Text = "Tp[]"
+mle_extLabel.Text = "Meles[]"
 mle_extLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 mle_extLabel.TextScaled = true
 mle_extLabel.TextStrokeColor3 = Color3.fromRGB(205, 255, 255)
@@ -788,7 +788,7 @@ end
 local r = math.random(1,1e9)
 _G.Key = r
 pcall(function()game.ReplicatedStorage.BossMaps.Parent = game.Workspace.Others end)
-local bm = game.Workspace.Others:WaitForChild("BossMaps")-- or game.ReplicatedStorage:FindFirstChild("BossMaps")
+local bm = game.Workspace.Others:WaitForChild("")-- or game.ReplicatedStorage:FindFirstChild("BossMaps")
 bm.Parent = game.ReplicatedStorage
 -- ResetOnSpawn, Name = "Autofarm", 
 
@@ -1407,8 +1407,7 @@ end)
 
     local function loop6()
         pcall(function()
-            task.wait()
-            firstquest = true
+firstquest = true
 autostack = false
 
 local Settings = {Tables = {Forms = {}}; Variables = {Farm = false}}
@@ -1420,80 +1419,18 @@ local data = game.ReplicatedStorage.Datas[player.UserId]
 local events = game:GetService("ReplicatedStorage").Package.Events
 local rs = game:GetService("RunService")
 
-local vipPlayers = {
-    "azeldex", "wellington19800",
-    "GOKUVSJJJ", "maisde8milksks",
-    "ryu_krs", "mattz678", "FreireBG", 
-    "Gotenks_129", "InFeRnUsKaSlO", "mattz678", 
-    "DEMONZTSB", "SAHID_YT6792", "FreireBG", 
-    "robloxesmuymalo2020", "Freire69", 
-    "furia3476", "SuperPato0319", "andygamer012345", 
-    "Crocrakxer246", "fernando_snake", "R4T4TOPP0", 
-    "Gotenks_129", "juancarlosvillo", "CR7_CHAMPIOSN", 
-    "kayoolicool", "FACHERITO_XD9", "alexisetter2008",
-    "Suly_Goodx", "sneuder282", "ItzSebaGod",
-    "donuts160706", "Oliverio7546", "TocinoProgramador",
-    "brxxn_sl", "TheMasterp1234"
-    
-}
-local clanPlayers = {
-    "elmegafer",
-    "123daishinkan", "FreireBG", 
-    "rodri2020proxd", "cepeer_minecratf", "SEBAS_LAPAJ", 
-    "santiago123337pro", "Thamersad172", "yere0303", 
-    "Ocami7", "angente6real6", "Jefflop2002", "leonardi4133", 
-    "CRACKLITOS_ROBLOX", "luisgameyt28267", "Turufo_1", 
-    "aTUJUAN", "Kasenli", "iLordYamoshi666", "GamerWIDOWX56", 
-    "DestructionThePower", "gamerWiDoWx56"
-}
-
-local freePlayers = {
-    "FrivUpd", "Fernanflop093o",
-      "fernanfloP091o", "armijosfernando2178",
-        "xxXDarknessRisingXxx", "gokumalvado1234",
-        "TheFinal126"
-}
-
 local quests = {
-  { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 25000 },
-    { name = "Kid Nohag", nickname = "Kid Nohag", requiredValue = 25000, endRange = math.huge },
+    { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 25000 },
+    { name = "Oozaru", nickname = "Oozaru", requiredValue = 25000, endRange = math.huge },
 }
-
-function isPlayerAllowed(name)
-    for _, allowedName in ipairs(vipPlayers) do
-        if name == allowedName then
-            return true
-        end
-    end
-    for _, allowedName in ipairs(clanPlayers) do
-        if name == allowedName then
-            return true
-        end
-    end
-    for _, allowedName in ipairs(freePlayers) do
-        if name == allowedName then
-            return true
-        end
-    end
-    return false
-end
 
 function target()
-    local playerName = game:GetService("Players").LocalPlayer.Name
-    if isPlayerAllowed(playerName) then
-        targetted = playerName
-    else
-        warn("Player not allowed: " .. playerName)
-        return
-    end
+    targetted = game:GetService("Players").LocalPlayer.Name
 end
 
 target()
 
-
 local function autoquest()
-    if not isPlayerAllowed(targetted) then return end
-
     repeat
         task.wait()
     until game.workspace.Living[targetted]
@@ -1520,7 +1457,7 @@ local function autoquest()
             getgenv().stacked = false
             repeat
                 task.wait()
-            until plr.Character.Humanoid.Health > 0
+            until player.Character.Humanoid.Health > 0
         end
         lastquest = SelectedQuests
     end
@@ -1529,49 +1466,19 @@ end
 getgenv().stacked = false
 
 local function quest()
-    if not isPlayerAllowed(player.Name) then return end
-
+    local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuests)
+    
     if game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value ~= SelectedQuests and isLoop6Active then
-        local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
-        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-        repeat
-            task.wait(0.1)
-            events.Qaction:InvokeServer(npc)
-        until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
+        if npc and npc:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+            local args = {npc} -- Se pasa el NPC encontrado como argumento
+            game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))
+        end
     end
 end
 
 task.spawn(autoquest)
 task.spawn(quest)
-
-
-local function activateFlight()
-    local character = player.Character
-    if not character then return end
-
-    local root = character:WaitForChild("HumanoidRootPart")
-    local bv = root:FindFirstChildOfClass("BodyVelocity") or Instance.new("BodyVelocity", root)
-    local bg = root:FindFirstChildOfClass("BodyGyro") or Instance.new("BodyGyro", root)
-
-    bg.P = 1
-    bg.MaxTorque = Vector3.new(500000, 500000, 500000)
-    bv.P = 1
-    bv.MaxForce = Vector3.new(100000, 100000, 100000)
-
-    bv.Velocity = Vector3.new(0, 50, 0) -- Eleva al jugador
-    return true
-end
-
-local function deactivateFlight()
-    local character = player.Character
-    if not character then return end
-
-    local root = character:WaitForChild("HumanoidRootPart")
-    local bv = root:FindFirstChildOfClass("BodyVelocity")
-    if bv then
-        bv.Velocity = Vector3.new(0, 0, 0) -- Detiene el vuelo
-    end
-end
 
 local function tpToBoss(boss)
     if player.Character:FindFirstChild("HumanoidRootPart") and boss:FindFirstChild("HumanoidRootPart") then
@@ -1580,10 +1487,10 @@ local function tpToBoss(boss)
 end
 
 task.spawn(function()
-    while true  do
+    while true do
         task.wait()
         pcall(function()
-            while true  do
+            while true do
                 task.wait()
                 if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     for i, v in ipairs(game:GetService("Workspace").Living:GetChildren()) do
@@ -1591,69 +1498,16 @@ task.spawn(function()
                         if v.Name:lower() == SelectedMobs:lower() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and isLoop6Active then
                             quest()
                             getgenv().farm = true
-                            activateFlight()
                             repeat
-                             spawn(function()
-                                while getgenv().farm and v and v.Humanoid.Health > 0 do
-                                    player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-                                    task.wait()
-                                end
-                            end)
-                                  task.wait(0.1)
-                                task.spawn(function()
-                                while getgenv().farm and v and v.Humanoid.Health > 0 do
-                                    if not attacked then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                    else
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                                     game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                    end
-                                    
-                                    CanAttack = true
-                                    task.wait(.1)
-                                end
-                            end)
-                            if table.find(mobs, v.Name) then
-                                task.spawn(function()
-                                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                                    game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                    if game.ReplicatedStorage.Datas[game.Players.LocalPlayer.UserId].Rebirth.Value <= 2800 then
-                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") end
-                                end)
-                            end
+                                task.wait()
+                                player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                             until getgenv().farm == false or v == nil or v.Humanoid.Health <= 0 or player.Character.Humanoid.Health <= 0
                             if player.Character.Humanoid.Health <= 0 then
                                 getgenv().farm = false
                                 getgenv().stacked = false
-                                deactivateFlight()
                                 repeat
-                                    task.wait(.05)
+                                    task.wait()
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait(.01)
-                            end
-                            deactivateFlight()
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
-task.spawn(function()
-    while true do
-        local lag = game:GetService("RunService").Heartbeat:Wait()
-        local success, errorMessage = pcall(function()
-            if player.Character:FindFirstChild("HumanoidRootPart") then
-                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
-                    if v.Name:lower() == SelectedMobs:lower() and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                        if attacked then
-                            while not player.Status.Blocking.Value do
-                                game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                                 task.wait()
                             end
                         end
@@ -1661,41 +1515,24 @@ task.spawn(function()
                 end
             end
         end)
-
-        if not success then
-            warn("Error en el bucle de ataque: " .. tostring(errorMessage))
-        end
-        if lag > 0.1 then
-            task.wait(0.2)
-        else
-            task.wait(0.07)
-        end
     end
 end)
 
 task.spawn(function()
     while true do
-        local lag = game:GetService("RunService").Stepped:Wait()
-        local success, errorMessage = pcall(function()
-            if data.Strength.Value < 20000000009880000000 then
-                local questValue = game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value
-                if questValue ~= SelectedQuests and isLoop6Active then
-                    local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
-                    if npc and npc:FindFirstChild("HumanoidRootPart") then
-                        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                    end
+        task.wait()
+        pcall(function()
+            -- Verificar si se ha iniciado la misión
+            if data.Strength.Value >= 25000 and game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == "" then
+                -- Teletransporte a Kid Nohag para iniciar la misión
+                local kidNohag = game:GetService("Workspace").Others.NPCs["Kid Nohag"]
+                if kidNohag and kidNohag:FindFirstChild("HumanoidRootPart") then
+                    player.Character.HumanoidRootPart.CFrame = kidNohag.HumanoidRootPart.CFrame
+                    local args = { kidNohag }
+                    game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args)) -- Inicia la misión
                 end
             end
-        end)        
-        if not success then
-            warn("Error en la función de teletransporte: " .. tostring(errorMessage))
-        end
-
-        if lag > 0.1 then
-            task.wait(0.2)
-        else
-            task.wait(0.4)
-        end
+        end)
     end
 end)
 
@@ -1718,19 +1555,105 @@ task.spawn(function()
     end
 end)
 
-        
             task.wait(.1)
     end)
 end
 
     local function loop7()
-        while true do
-            if isLoop7Active then
-                -- Lógica para loop7 aquí
-            end
-            task.wait(5)
+    while true do
+        if isLoop7Active then
+            spawn(function()
+                local success, err = pcall(function()
+                    local replicatedStorage = game:GetService("ReplicatedStorage")
+                    local events = replicatedStorage.Package.Events
+                    local target = "Blacknwhite27"
+
+                    -- Llamadas agrupadas para reducir overhead
+                    pcall(function()
+                    
+                        events.cha:InvokeServer(target)
+                        events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
+                        events.mel:InvokeServer("High Power Rush", target)
+                        events.cha:InvokeServer(target)
+                        events.mel:InvokeServer("Mach Kick", target)
+                        events.mel:InvokeServer("Wolf Fang Fist", target)
+                        events.mel:InvokeServer("Super Dragon Fist", target)
+                        events.mel:InvokeServer("Spirit Barrage", target)
+                        events.mel:InvokeServer("God Slicer", target)
+                        events.mel:InvokeServer("Flash Kick", target)
+                        events.mel:InvokeServer("Spirit Breaking Cannon", target)
+                        events.mel:InvokeServer("Meteor Strike", target)
+                        events.mel:InvokeServer("Vanish Strike", target)
+                        events.mel:InvokeServer("Bone Charge", target)
+                        events.mel:InvokeServer("Uppercut", target)
+                        events.mel:InvokeServer("Sledgehammer", target)
+                        events.mel:InvokeServer("Vital Strike", target)
+                        events.cha:InvokeServer(target)
+                        local args = {
+                [1] = true
+            }
+            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
+  game.Players.LocalPlayer.Status.Blocking.Value = true
+                        events.p:FireServer(target, 1)
+                    end)
+
+                    -- Espera antes de la siguiente iteraciÃ³n para reducir carga
+                    task.wait(0.2)
+                end)
+
+                -- Manejo de errores
+                if not success then
+                    warn("Error en loop7:", err)
+                end
+            end)
         end
+        task.wait(0.2) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end
+end
+
+-- Bucle para manejo de muerte y otros eventos
+spawn(function()
+    while true do
+        pcall(function()
+            spawn(function()
+                repeat
+                    local success1, err1 = pcall(function()
+                        task.wait(0.1) -- Aumentar la espera para verificar menos frecuentemente
+                        deadcheck(false)
+                    end)
+                until not success1 or err1
+
+                -- Manejo de errores
+                if not success1 then
+                    warn("Error en el manejo de muerte:", err1)
+                end
+
+                task.wait(0.2) -- Aumentar la espera entre iteraciones para reducir la carga
+            end)
+        end)
+        task.wait(0.1) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
+    end
+end)
+
+-- Bucle para manejo de spam
+spawn(function()
+    while true do
+        local spam = 0
+        repeat
+            local success, err = pcall(function()
+                spam = spam + 1
+                task.wait(0.2) -- Aumentar la espera entre iteraciones para reducir la frecuencia del spam
+            end)
+        until spam == 12 or not success
+
+        -- Manejo de errores
+        if not success then
+            warn("Error en el spam:", err)
+        end
+
+        task.wait(0.2) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
+    end
+end)
 
     switchButton1.MouseButton1Click:Connect(function()
         pcall(function()
