@@ -1522,11 +1522,9 @@ task.spawn(function()
     while true do
         task.wait()
         pcall(function()
-            -- Verificar si se ha iniciado la misión
-            if data.Strength.Value >= 25000 and game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == "" then
-                -- Teletransporte a Kid Nohag para iniciar la misión
+            if data.Strength.Value >= 25000 and game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == "" and isLoop6Active then
                 local kidNohag = game:GetService("Workspace").Others.NPCs["Kid Nohag"]
-                if kidNohag and kidNohag:FindFirstChild("HumanoidRootPart") then
+                if kidNohag and kidNohag:FindFirstChild("HumanoidRootPart") and isLoop6Active then
                     player.Character.HumanoidRootPart.CFrame = kidNohag.HumanoidRootPart.CFrame
                     local args = { kidNohag }
                     game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args)) -- Inicia la misión
