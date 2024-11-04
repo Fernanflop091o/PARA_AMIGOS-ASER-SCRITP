@@ -1535,7 +1535,7 @@ local function quest()
         local npc = game:GetService("Workspace").Others.NPCs[SelectedQuests]
         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
         repeat
-            task.wait()
+            task.wait(0.1)
             events.Qaction:InvokeServer(npc)
         until game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == SelectedQuests
     end
@@ -1599,7 +1599,7 @@ task.spawn(function()
                                     task.wait()
                                 end
                             end)
-                                  task.wait()
+                                  task.wait(0.1)
                                 task.spawn(function()
                                 while getgenv().farm and v and v.Humanoid.Health > 0 do
                                     if not attacked then
@@ -1613,7 +1613,7 @@ task.spawn(function()
                                     end
                                     
                                     CanAttack = true
-                                    task.wait()
+                                    task.wait(.1)
                                 end
                             end)
                             if table.find(mobs, v.Name) then
@@ -1631,9 +1631,9 @@ task.spawn(function()
                                 getgenv().stacked = false
                                 deactivateFlight()
                                 repeat
-                                    task.wait()
+                                    task.wait(.05)
                                 until player.Character.Humanoid.Health >= 0
-                                task.wait()
+                                task.wait(.01)
                             end
                             deactivateFlight()
                         end
@@ -1654,7 +1654,7 @@ task.spawn(function()
                         if attacked then
                             while not player.Status.Blocking.Value do
                                 game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                                task.wait(0.1)
+                                task.wait()
                             end
                         end
                     end
@@ -1668,7 +1668,7 @@ task.spawn(function()
         if lag > 0.1 then
             task.wait(0.2)
         else
-            task.wait(0.1)
+            task.wait(0.07)
         end
     end
 end)
@@ -1694,7 +1694,7 @@ task.spawn(function()
         if lag > 0.1 then
             task.wait(0.2)
         else
-            task.wait(0.05)
+            task.wait(0.4)
         end
     end
 end)
@@ -1717,9 +1717,11 @@ task.spawn(function()
         end)
     end
 end)
-            task.wait(0.1)
-        end)
-    end
+
+        
+            task.wait(.1)
+    end)
+end
 
     local function loop7()
         while true do
