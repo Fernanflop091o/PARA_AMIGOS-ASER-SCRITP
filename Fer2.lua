@@ -1560,8 +1560,7 @@ end)
 end
 
     local function loop7()
-    while true do
-        if isLoop7Active then
+    pcall(function()
         local player = game.Players.LocalPlayer
 local events = game.ReplicatedStorage.Package.Events
 local target = "Blacknwhite27"
@@ -1593,7 +1592,7 @@ local function getClosestBoss()
     for _, v in ipairs(game.Workspace.Living:GetChildren()) do
         if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
             local distance = (player.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).magnitude
-            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
+            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name and isLoop7Active then
                 closestDistance, closestBoss = distance, v
             end
         end
@@ -1602,7 +1601,7 @@ local function getClosestBoss()
 end
 
 local function invokeAll()
-    for _, action in ipairs(actions) and isLoop7Active do
+    for _, action in ipairs(actions)  do
         task.spawn(invokeAction, action)
     end
 end
@@ -1620,9 +1619,9 @@ game:GetService("RunService").Heartbeat:Connect(function()
         task.wait(0.05)
     end
 end)
-            end
+            
         task.wait()
-    end
+    end)
 end
 
     switchButton1.MouseButton1Click:Connect(function()
