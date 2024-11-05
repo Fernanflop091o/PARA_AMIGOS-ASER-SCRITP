@@ -1124,9 +1124,8 @@ end)
     end)
 end
 
-    local function loop7()
-    pcall(function()
-        
+local function loop7()
+pcall(function()
             local player = game.Players.LocalPlayer
 local events = game:GetService("ReplicatedStorage").Package.Events
 local target = "Blacknwhite27"
@@ -1229,6 +1228,9 @@ spawn(function()
 end)
             
         task.wait()
+    end)
+end
+        task.wait() -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end)
 end
 
