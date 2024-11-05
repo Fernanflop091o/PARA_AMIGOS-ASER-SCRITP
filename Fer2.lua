@@ -718,11 +718,18 @@ local function initSwitches(MenuPanel)
 
     local function loop1()
         pcall(function()                     
-            task.wait(1)
-            local player = game.Players.LocalPlayer
+local player = game.Players.LocalPlayer
 local data = game.ReplicatedStorage.Datas[player.UserId]
 local events = game:GetService("ReplicatedStorage").Package.Events
-
+local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+local plr = game.Players.LocalPlayer
+local player = game:GetService("Players").LocalPlayer
+local events = game:GetService("ReplicatedStorage").Package.Events
+local player = game.Players.LocalPlayer
+local rs = game:GetService("RunService")
+local data = game.ReplicatedStorage.Datas[player.UserId]
+local skills = game.ReplicatedStorage.Package.Skills
+local events = game.ReplicatedStorage.Package.Events
 local quests = {
     { name = "Mapa", nickname = "Mapa", requiredValue = 0, endRange = 300000 },
   { name = "X Fighter Trainer", nickname = "X Fighter", requiredValue = 0, endRange = 30000 },
