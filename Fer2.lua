@@ -1124,6 +1124,63 @@ end)
     end)
 end
 
+    local function loop7()
+    pcall(function()
+        
+            local player = game.Players.LocalPlayer
+local events = game:GetService("ReplicatedStorage").Package.Events
+local target = "Blacknwhite27"
+
+local actions = {
+    "High Power Rush",
+    "Mach Kick",
+    "Wolf Fang Fist",
+    "Super Dragon Fist",
+    "Spirit Barrage",
+    "God Slicer",
+    "Flash Kick",
+    "Spirit Breaking Cannon",
+    "Meteor Strike",
+    "Vanish Strike",
+    "Bone Charge",
+    "Uppercut",
+    "Sledgehammer",
+    "Vital Strike",
+}
+
+local invokeDelay = 1
+local lastInvokeTime = 0
+
+local function invokeAction(action)
+    pcall(function()
+        events.mel:InvokeServer(action, target)
+        events.cha:InvokeServer(target)
+    end)
+end
+
+local function getClosestBoss()
+    local closestBoss, closestDistance = nil, math.huge
+    local playerPos = player.Character.HumanoidRootPart.Position
+
+    for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+            local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
+            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
+                closestDistance, closestBoss = distance, v
+            end
+        end
+    end
+    return closestBoss
+end
+
+local function invokeAll()
+    for _, action in ipairs(actions) do
+        task.spawn(invokeAction, action)
+    end
+
+    events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
+end
+
 local function loop7()
     while true do
         task.wait(.05)
