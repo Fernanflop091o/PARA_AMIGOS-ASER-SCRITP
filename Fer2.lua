@@ -1126,7 +1126,7 @@ end
 
 local function loop7()
 pcall(function()
-            local player = game.Players.LocalPlayer
+    local player = game.Players.LocalPlayer
 local events = game:GetService("ReplicatedStorage").Package.Events
 local target = "Blacknwhite27"
 
@@ -1182,7 +1182,7 @@ end
 
 local function loop7()
     while true do
-        task.wait(.05)
+        task.wait()
         local currentTime = tick()
         local boss = getClosestBoss()
 
@@ -1207,7 +1207,7 @@ task.spawn(loop7)
 
 spawn(function()
     while true do
-        task.wait()
+        task.wait(0.1)
     end
 end)
 
@@ -1217,7 +1217,7 @@ spawn(function()
         repeat
             local success, err = pcall(function()
                 spam = spam + 1
-                task.wait(0.5)
+                task.wait()
             end)
         until spam == 12 or not success
 
@@ -1226,10 +1226,6 @@ spawn(function()
         end
     end
 end)
-            
-        task.wait()
-    end)
-end
         task.wait() -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end)
 end
