@@ -966,7 +966,7 @@ end
                     end)
                 end
             end)
-            task.wait(0.5)
+            task.wait(1)
         end
     end
 
@@ -1126,104 +1126,57 @@ end
 
 local function loop7()
 pcall(function()
-    local player = game.Players.LocalPlayer
-local events = game:GetService("ReplicatedStorage").Package.Events
-local target = "Blacknwhite27"
+    task.spawn(function()
+    while true do
+        task.wait(0.2)
+        pcall(function()
+            if isLoop7Active then
+                local player = game.Players.LocalPlayer
+                local questValue = game.ReplicatedStorage.Datas[player.UserId].Quest.Value
+                
+                if questValue and questValue ~= "" then
+                    local closestBoss, closestDistance = nil, math.huge
+                    local playerPos = player.Character.HumanoidRootPart.Position
 
-local actions = {
-    "High Power Rush",
-    "Mach Kick",
-    "Wolf Fang Fist",
-    "Super Dragon Fist",
-    "Spirit Barrage",
-    "God Slicer",
-    "Flash Kick",
-    "Spirit Breaking Cannon",
-    "Meteor Strike",
-    "Vanish Strike",
-    "Bone Charge",
-    "Uppercut",
-    "Sledgehammer",
-    "Vital Strike",
-}
+                    for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+                        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                            local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
+                            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
+                                closestDistance, closestBoss = distance, v
+                            end
+                        end
+                    end
+                    
+                    if closestBoss and closestDistance <= 5 then
+                        game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
 
-local invokeDelay = 1
-local lastInvokeTime = 0
+                        task.spawn(function()
+                            while true do
+                                task.wait(0.1)
+                                pcall(function()
+                                    game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
+                                end)
+                            end
+                        end)
 
-local function invokeAction(action)
-    pcall(function()
-        events.mel:InvokeServer(action, target)
-        events.cha:InvokeServer(target)
-    end)
-end
+                        local attacks = {
+                            "Super Dragon Fist", "God Slicer", "Spirit Barrage", 
+                            "Mach Kick", "Wolf Fang Fist", "High Power Rush", 
+                            "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
+                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut"
+                        }
 
-local function getClosestBoss()
-    local closestBoss, closestDistance = nil, math.huge
-    local playerPos = player.Character.HumanoidRootPart.Position
-
-    for _, v in ipairs(game.Workspace.Living:GetChildren()) do
-        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-            local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
-            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
-                closestDistance, closestBoss = distance, v
+                        for _, attackName in ipairs(attacks) do
+                            task.spawn(function() 
+                                pcall(function()
+                                    game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
+                                end)
+                            end)
+                        end
+                    end
+                end
             end
-        end
-    end
-    return closestBoss
-end
-
-local function invokeAll()
-    for _, action in ipairs(actions) do
-        task.spawn(invokeAction, action)
-    end
-
-    events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
-end
-
-local function loop7()
-    while true do
-        task.wait()
-        local currentTime = tick()
-        local boss = getClosestBoss()
-
-        if boss and (player.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).magnitude <= 5 then
-            local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-
-            if ping < 500 and currentTime - lastInvokeTime >= invokeDelay then
-                pcall(function()
-                    events.block:InvokeServer(true)
-                end)
-
-                invokeAll()
-                events.p:FireServer(target, 1)
-                events.p:FireServer(target, 2)
-                lastInvokeTime = currentTime
-            end
-        end
-    end
-end
-
-task.spawn(loop7)
-
-spawn(function()
-    while true do
-        task.wait(0.1)
-    end
-end)
-
-spawn(function()
-    while true do
-        local spam = 0
-        repeat
-            local success, err = pcall(function()
-                spam = spam + 1
-                task.wait()
-            end)
-        until spam == 12 or not success
-
-        if not success then
-            warn("Error en el spam:", err)
-        end
+        end)
     end
 end)
         task.wait() -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
