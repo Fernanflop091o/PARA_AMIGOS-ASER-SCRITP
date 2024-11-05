@@ -1108,7 +1108,7 @@ local actions = {
 }
 
 local lastInvokeTime = 0
-local invokeDelay = 0.7  -- Ajusta este valor según sea necesario para evitar lag
+local invokeDelay = 1  -- Ajusta este valor según sea necesario para evitar lag
 
 local function invokeAction(action)
     pcall(function()
