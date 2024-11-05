@@ -1108,7 +1108,7 @@ local actions = {
 }
 
 local lastInvokeTime = 0
-local invokeDelay = 1  -- Ajusta este valor según sea necesario para evitar lag
+local invokeDelay = 1
 
 local function invokeAction(action)
     pcall(function()
@@ -1124,7 +1124,7 @@ local function getClosestBoss()
     for _, v in ipairs(game.Workspace.Living:GetChildren()) do
         if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
             local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
-            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
+            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name and isLoop7Active then
                 closestDistance, closestBoss = distance, v
             end
         end
@@ -1136,25 +1136,27 @@ local function invokeAll()
     for _, action in ipairs(actions) do
         task.spawn(invokeAction, action)
     end
+    events.reb:InvokeServer()
+    events.p:FireServer(target, 1)
+    events.p:FireServer(target, 2)
+    events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
 end
 
 game:GetService("RunService").Heartbeat:Connect(function()
-    local currentTime = tick()  -- Obtener el tiempo actual
+    local currentTime = tick()
     local playerData = game.ReplicatedStorage.Datas[player.UserId]
     local boss = getClosestBoss()
 
-    if playerData and playerData.Quest.Value ~= "" and boss and (player.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).magnitude <= 5 then
-        if currentTime - lastInvokeTime >= invokeDelay then  -- Controlar la frecuencia de invocación
+    if playerData and playerData.Quest.Value ~= "" and boss and (player.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).magnitude <= 5 and isLoop7Active then
+        if currentTime - lastInvokeTime >= invokeDelay then
             pcall(function()
                 events.block:InvokeServer(true)
             end)
-
             invokeAll()
-            lastInvokeTime = currentTime  -- Actualizar el tiempo de invocación
+            lastInvokeTime = currentTime
         end
     end
 end)
-            
         task.wait()
     end)
 end
