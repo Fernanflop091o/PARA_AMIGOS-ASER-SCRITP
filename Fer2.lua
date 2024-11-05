@@ -754,7 +754,7 @@ local rebirthRemote = events.reb
 local function assignQuest()
     local checkValue = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
 
-    if checkValue >= 200000000 and game.placeId ~= 5151400895 then
+    if checkValue >= 200000000 and game.placeId ~= 5151400895 and isLoop1Active then
         if data.Zeni.Value >= 15000 then
             local A_1 = "Vills Planet"
             local Event = events.TP
@@ -785,7 +785,7 @@ end
 local function startMission()
     local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
     
-    if npc and npc:FindFirstChild("HumanoidRootPart") then
+    if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop1Active then
         player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
         local args = {npc}
         events.Qaction:InvokeServer(unpack(args))
@@ -795,8 +795,11 @@ end
 local function tpToMissionBoss()
     local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
 
-    if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+    if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and isLoop1Active then
         player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0)
+        
+        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)   
+        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
     end
 end
 
@@ -820,18 +823,30 @@ task.spawn(function()
     end
 end)
 
+
 task.spawn(function()
     while true do
         wait(1)
         pcall(function()
-            rebirthRemote:InvokeServer()
-            if data.Strength.Value < 200000000 and game.placeId ~= 3311165597 then
+            if data.Strength.Value < 200000000 and game.PlaceId ~= 3311165597 and isLoop1Active then
                 local A_1 = "Earth"
                 local Event = events.TP
                 Event:InvokeServer(A_1)
                 wait(8)
             end
         end)
+    end
+end)
+
+
+task.spawn(function()
+    while true do
+        wait()
+        if isLoop5Active then
+            pcall(function()
+                game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
+            end)
+        end
     end
 end)
             task.wait(1)
@@ -938,9 +953,6 @@ end
 
                     spawn(function()
                         while true do
-                        game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")    
-                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
                             local success, err = pcall(function()
                                 s.Position = UDim2.new(2, 0, 0, 0)
                                 task.wait()
@@ -1114,8 +1126,7 @@ end
 
     local function loop7()
     pcall(function()
-        local player = game.Players.LocalPlayer
-        local player = game:GetService("Players").LocalPlayer
+ local player = game.Players.LocalPlayer
 local events = game.ReplicatedStorage.Package.Events
 local target = "Blacknwhite27"
 local actions = {
@@ -1136,7 +1147,7 @@ local actions = {
 }
 
 local lastInvokeTime = 0
-local invokeDelay = 1
+local invokeDelay = 0.5  -- Reducido a 0.5 segundos para una mayor frecuencia de invocación
 
 local function invokeAction(action)
     pcall(function()
@@ -1147,10 +1158,12 @@ end
 
 local function getClosestBoss()
     local closestBoss, closestDistance = nil, math.huge
-    local playerPos = player.Character.HumanoidRootPart.Position
+    local playerPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
+
+    if not playerPos then return nil end
 
     for _, v in ipairs(game.Workspace.Living:GetChildren()) do
-        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and isLoop7Active then
             local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
             if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
                 closestDistance, closestBoss = distance, v
@@ -1165,24 +1178,23 @@ local function invokeAll()
         task.spawn(invokeAction, action)
     end
     
-
-    game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
-    
+    pcall(function()
+        events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+    end)
 end
 
 task.spawn(function()
     while true do
-        task.wait(0.1)
+        task.wait(0.1)  -- Mayor tiempo entre cada ciclo para reducir sobrecarga
         local currentTime = tick()
         local playerData = game.ReplicatedStorage.Datas[player.UserId]
         local boss = getClosestBoss()
         local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
 
-        if playerData and playerData.Quest.Value ~= "" and boss and (player.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).magnitude <= 5 then
-            if ping < 500 and currentTime - lastInvokeTime >= invokeDelay then
+        if playerData and playerData.Quest.Value ~= "" and boss and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local distance = (player.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).magnitude
+            if distance <= 5 and isLoop7Active and ping < 500 and currentTime - lastInvokeTime >= invokeDelay then
                 pcall(function()
-                game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")    
-                
                     events.block:InvokeServer(true)
                 end)
                 invokeAll()
@@ -1191,6 +1203,7 @@ task.spawn(function()
         end
     end
 end)
+
         task.wait()
     end)
 end
