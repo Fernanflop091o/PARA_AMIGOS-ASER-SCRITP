@@ -859,14 +859,16 @@ end)
              local lplr = game.Players.LocalPlayer
 local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 
-local function formatNumber(num)
-    if num >= 1e6 then
-        return string.format("%.1fm", num / 1e6)
-    elseif num >= 1e3 then
-        return string.format("%dk", num / 1e3)
-    else
-        return tostring(num)
+local function format_number(number)
+    local suffixes = {"", "K", "M", "B", "T", "QD"}
+    local suffix_index = 1
+
+    while math.abs(number) >= 1000 and suffix_index < #suffixes do
+        number = number / 1000.0
+        suffix_index = suffix_index + 1
     end
+
+    return suffix_index > 1 and string.format("%.1f%s", number, suffixes[suffix_index]) or tostring(number)
 end
 
 local function updateStatsGui()
@@ -883,14 +885,14 @@ local function updateStatsGui()
         local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
         local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
         
-        HPText.Text = "SALUD: " .. formatNumber(health) .. " / " .. formatNumber(maxHealth)
-        EnergyText.Text = "ENERGÍA: " .. formatNumber(ki) .. " / " .. formatNumber(maxKi)
-        ZeniLabel.Text = formatNumber(ldata.Zeni.Value) .. " Zeni"
+        HPText.Text = "SALUD: " .. format_number(health) .. " / " .. format_number(maxHealth)
+        EnergyText.Text = "ENERGÍA: " .. format_number(ki) .. " / " .. format_number(maxKi)
+        ZeniLabel.Text = format_number(ldata.Zeni.Value) .. " Zeni"
 
         for _, stat in pairs({"Strength", "Speed", "Defense", "Energy"}) do
             local statLabel = StatsFrame:FindFirstChild(stat)
             if statLabel then
-                statLabel.Text = stat .. ": " .. formatNumber(ldata[stat].Value)
+                statLabel.Text = stat .. ": " .. format_number(ldata[stat].Value)
             end
         end
     end)
