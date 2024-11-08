@@ -720,12 +720,12 @@ local function initSwitches(MenuPanel)
 
     local function loop1()
         pcall(function()                     
-local player = game.Players.LocalPlayer
+        local player = game.Players.LocalPlayer
 local data = game.ReplicatedStorage.Datas[player.UserId]
 local events = game:GetService("ReplicatedStorage").Package.Events
 
 local missions = {
-   { name = "Klirin", bossName = "Klirin", requiredValue = 0, endRange = 20000 },
+    { name = "Klirin", bossName = "Klirin", requiredValue = 0, endRange = 20000 },
     { name = "Kid Nohag", bossName = "Kid Nohag", requiredValue = 20000, endRange = 100001 },
     { name = "Radish", bossName = "Radish", requiredValue = 100001, endRange = 200000 },
     { name = "Mapa", bossName = "Mapa", requiredValue = 200001, endRange = 300000 },
@@ -755,61 +755,78 @@ local lastQuest
 local rebirthRemote = events.reb
 
 local function assignQuest()
-    local checkValue = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
+    local success, fallo = pcall(function()
+        local checkValue = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
 
-    if checkValue >= 200000000 and game.placeId ~= 5151400895 and isLoop1Active then
-        if data.Zeni.Value >= 15000 then
-            local A_1 = "Vills Planet"
-            local Event = events.TP
-            Event:InvokeServer(A_1)
-            return
-        else 
-            SelectedQuest = "SSJG Kakata"
-            SelectedMob = "SSJG Kakata"
-            return
+        if checkValue >= 200000000 and game.placeId ~= 5151400895 and isLoop1Active then
+            if data.Zeni.Value >= 15000 then
+                local A_1 = "Vills Planet"
+                local Event = events.TP
+                Event:InvokeServer(A_1)
+                return
+            else 
+                SelectedQuest = "SSJG Kakata"
+                SelectedMob = "SSJG Kakata"
+                return
+            end
         end
-    end
 
-    if firstQuest == true then
-        lastQuest = SelectedQuest
-        firstQuest = false
-    end
-
-    local lowestStat = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
-    for _, mission in ipairs(missions) do
-        if lowestStat >= mission.requiredValue and lowestStat <= mission.endRange then
-            SelectedQuest = mission.name
-            SelectedMob = mission.bossName
-            break
+        if firstQuest == true then
+            lastQuest = SelectedQuest
+            firstQuest = false
         end
+
+        local lowestStat = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
+        for _, mission in ipairs(missions) do
+            if lowestStat >= mission.requiredValue and lowestStat <= mission.endRange then
+                SelectedQuest = mission.name
+                SelectedMob = mission.bossName
+                break
+            end
+        end
+    end)
+
+    if not success then
+        warn("Error en assignQuest: " .. fallo)
     end
 end
 
 local function startMission()
-    local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
-    
-    if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop1Active then
-        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-        local args = {npc}
-        events.Qaction:InvokeServer(unpack(args))
+    local success, fallo = pcall(function()
+        local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
+        
+        if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop1Active then
+            player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+            local args = {npc}
+            events.Qaction:InvokeServer(unpack(args))
+        end
+    end)
+
+    if not success then
+        warn("Error en startMission: " .. fallo)
     end
 end
 
 local function tpToMissionBoss()
-    local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
+    local success, fallo = pcall(function()
+        local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
 
-    if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and isLoop1Active then
-        player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0)
-        
-        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)   
-        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and isLoop1Active then
+            player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0)
+            
+            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)   
+            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+        end
+    end)
+
+    if not success then
+        warn("Error en tpToMissionBoss: " .. fallo)
     end
 end
 
 task.spawn(function()
     while true do
-        local lag = game:GetService("RunService").Stepped:Wait()
-        local success, errorMessage = pcall(function()
+        local success, fallo = pcall(function()
             assignQuest()
 
             local questValue = game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value
@@ -821,37 +838,58 @@ task.spawn(function()
         end)
 
         if not success then
-            warn("Error en el script: " .. errorMessage)
+            warn("Error en el script principal: " .. fallo)
         end
     end
 end)
 
-
 task.spawn(function()
     while true do
-        wait(1)
-        pcall(function()
+        task.wait(1)
+        local success, fallo = pcall(function()
             if data.Strength.Value < 200000000 and game.PlaceId ~= 3311165597 and isLoop1Active then
                 local A_1 = "Earth"
                 local Event = events.TP
                 Event:InvokeServer(A_1)
-                wait(8)
+                task.wait(8)
             end
         end)
-    end
-end)
 
-
-task.spawn(function()
-    while true do
-        wait()
-        if isLoop5Active then
-            pcall(function()
-                game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
-            end)
+        if not success then
+            warn("Error al ejecutar la teletransportación: " .. fallo)
         end
     end
 end)
+
+task.spawn(function()
+    while true do
+        task.wait()
+        if isLoop5Active then
+            local success, fallo = pcall(function()
+                game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
+            end)
+
+            if not success then
+                warn("Error al invocar el evento rebirth: " .. fallo)
+            end
+        end
+    end
+end)
+
+task.spawn(function() -- Auto Charge
+    while true do
+        local success, fallo = pcall(function()
+            local args = {[1] = true}
+            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
+        end)
+
+        if not success then
+            warn("Error al bloquear la acción de carga: " .. fallo)
+        end
+        task.wait(0.1)
+    end
+end)
+
             task.wait(1)
         end)
     end
@@ -859,59 +897,7 @@ end)
    local function loop2()
         while true do
             if isLoop2Active then
-             local lplr = game.Players.LocalPlayer
-local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 
-local function format_number(number)
-    local suffixes = {"", "K", "M", "B", "T", "QD"}
-    local suffix_index = 1
-
-    while math.abs(number) >= 1000 and suffix_index < #suffixes do
-        number = number / 1000.0
-        suffix_index = suffix_index + 1
-    end
-
-    return suffix_index > 1 and string.format("%.1f%s", number, suffixes[suffix_index]) or tostring(number)
-end
-
-local function updateStatsGui()
-    local success, err = pcall(function()
-        local MainFrame = lplr.PlayerGui:WaitForChild("Main"):WaitForChild("MainFrame")
-        local StatsFrame = MainFrame:WaitForChild("Frames"):WaitForChild("Stats")
-        local ZeniLabel = MainFrame.Indicator:FindFirstChild("Zeni")
-        local Bars = MainFrame:WaitForChild("Bars")
-        local HPText = Bars.Health:FindFirstChild("TextLabel")
-        local EnergyText = Bars.Energy:FindFirstChild("TextLabel")
-        
-        local health = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.Health or 0
-        local maxHealth = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.MaxHealth or 0
-        local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
-        local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
-        
-        HPText.Text = "SALUD: " .. format_number(health) .. " / " .. format_number(maxHealth)
-        EnergyText.Text = "ENERGÍA: " .. format_number(ki) .. " / " .. format_number(maxKi)
-        ZeniLabel.Text = format_number(ldata.Zeni.Value) .. " Zeni"
-
-        for _, stat in pairs({"Strength", "Speed", "Defense", "Energy"}) do
-            local statLabel = StatsFrame:FindFirstChild(stat)
-            if statLabel then
-                statLabel.Text = stat .. ": " .. format_number(ldata[stat].Value)
-            end
-        end
-    end)
-    
-    if not success then
-        warn("Error al actualizar GUI de estadísticas:", err)
-    end
-end
-
-updateStatsGui()
-
-game:GetService("RunService").Heartbeat:Connect(function()
-    if lplr.Character and lplr.Character:FindFirstChild("Humanoid") and isLoop2Active then
-        pcall(updateStatsGui)
-    end
-end)
             end
             task.wait(.5)
         end
@@ -1217,7 +1203,6 @@ task.spawn(function()
 end)
 
 
-
             task.wait(.1)
     end)
 end
@@ -1225,60 +1210,85 @@ end
 local function loop7()
 pcall(function()
     task.spawn(function()
-    task.wait(8)
-    while true do
-        task.wait(0.1)
-        pcall(function()
-            if isLoop7Active then
-                local player = game.Players.LocalPlayer
-                local questValue = game.ReplicatedStorage.Datas[player.UserId].Quest.Value
-                
-                if questValue and questValue ~= "" then
-                    local closestBoss, closestDistance = nil, math.huge
-                    local playerPos = player.Character.HumanoidRootPart.Position
+    game:GetService("RunService").Heartbeat:Connect(function()
+        if isLoop7Active then
+            pcall(function()
+                for _, player in ipairs(game.Players:GetPlayers()) do
+                    local ldata = game.ReplicatedStorage.Datas[player.UserId]
+                    local lplr = game.Players.LocalPlayer
+                    local Ki = lplr.Character:WaitForChild("Stats"):WaitForChild("Ki")
+                    local humanoid = lplr.Character:WaitForChild("Humanoid")
 
-                    for _, v in ipairs(game.Workspace.Living:GetChildren()) do
-                        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                            local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
-                            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
-                                closestDistance, closestBoss = distance, v
+                    pcall(function()
+                        if ldata.Quest.Value ~= "" and humanoid.Health > 0 then
+                            local successCha, errorCha = pcall(function()
+                                game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
+                            end)
+                            if not successCha then
+                                warn("Error en cha: ", errorCha)
                             end
                         end
-                    end
+                    end)
 
-                    if closestBoss and closestDistance <= 12 then
-                        game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-
-                        pcall(function()
-                            game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
+                    pcall(function()
+                        local successBlock, errorBlock = pcall(function()
+                            local args = {[1] = true}
+					game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
                         end)
+                        if not successBlock then
+                            warn("Error al intentar activar el bloqueo:", errorBlock)
+                        end
+                    end)
 
-                        local attacks = {
-                            "Super Dragon Fist", "God Slicer", "Spirit Barrage", 
-                            "Mach Kick", "Wolf Fang Fist", "High Power Rush", 
-                            "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
-                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut",
-                            function() 
-                                game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
-                            end
-                        }
+                    pcall(function()
+                        if ldata.Quest.Value ~= "" and ldata.Strength.Value > 40000 then
+                            local closestBoss, closestDistance = nil, math.huge
+                            local playerPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position or nil
 
-                        for _, attackName in ipairs(attacks) do
-                            task.spawn(function() 
+                            if playerPos then
+                                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+                                    if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                                        local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
+                                        if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
+                                            closestDistance, closestBoss = distance, v
+                                        end
+                                    end
+                                end
+
                                 pcall(function()
-                                    if type(attackName) == "string" then
-                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
-                                    elseif type(attackName) == "function" then
-                                        attackName()
+                                    if closestBoss and closestDistance <= 12 and closestBoss.Humanoid.Health > 0 then
+                                        local attacks = {
+                                            "Super Dragon Fist", "God Slicer", "Spirit Barrage", 
+                                            "Mach Kick", "Wolf Fang Fist", "High Power Rush", 
+                                            "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
+                                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut",
+                                            function() 
+                                                game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+                                            end
+                                        }
+
+                                        for _, attackName in ipairs(attacks) do
+                                            task.spawn(function() 
+                                                pcall(function()
+                                                    if type(attackName) == "string" then
+                                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
+                                                    elseif type(attackName) == "function" then
+                                                        attackName()
+                                                    end
+                                                end)
+                                            end)
+                                        end
                                     end
                                 end)
-                            end)
+                            else
+                                warn("Error: No se pudo encontrar la posición del jugador.")
+                            end
                         end
-                    end
+                    end)
                 end
-            end
-        end)
-    end
+            end)
+        end
+    end)
 end)
         task.wait() -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end)
