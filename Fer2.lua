@@ -918,7 +918,7 @@ end)
     local function loop5()
         while true do
             pcall(function()
-                if isLoop5Active then
+                if isLoop2Active then
                 
                 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1130,7 +1130,7 @@ local function loop7()
 pcall(function()
     task.spawn(function()
     while true do
-        task.wait(0.2)
+        task.wait(0.1)
         pcall(function()
             if isLoop7Active then
                 local player = game.Players.LocalPlayer
@@ -1148,30 +1148,32 @@ pcall(function()
                             end
                         end
                     end
-                    
-                    if closestBoss and closestDistance <= 5 then
+
+                    if closestBoss and closestDistance <= 12 then
                         game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
 
-                        task.spawn(function()
-                            while true do
-                                task.wait(0.1)
-                                pcall(function()
-                                    game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
-                                end)
-                            end
+                        pcall(function()
+                            game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
                         end)
 
                         local attacks = {
                             "Super Dragon Fist", "God Slicer", "Spirit Barrage", 
                             "Mach Kick", "Wolf Fang Fist", "High Power Rush", 
                             "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
-                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut"
+                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut",
+                            function() 
+                                game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+                            end
                         }
 
                         for _, attackName in ipairs(attacks) do
                             task.spawn(function() 
                                 pcall(function()
-                                    game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
+                                    if type(attackName) == "string" then
+                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
+                                    elseif type(attackName) == "function" then
+                                        attackName()
+                                    end
                                 end)
                             end)
                         end
