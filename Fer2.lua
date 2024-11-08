@@ -1,21 +1,30 @@
 local MenuPanel = game.CoreGui:FindFirstChild("Fernando")
 local playerCount = #game.Players:GetPlayers()
 
-if MenuPanel then
-    return  
-end
-
-if playerCount > 3 then
+pcall(function()
     if MenuPanel then
-        MenuPanel:Destroy()
+        return  
     end
-    wait(0.5)
-    game:Shutdown()
-    return  
-end
-if playerCount > 1 then
-    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-end
+
+    if playerCount > 3 then
+        pcall(function()
+            if MenuPanel then
+                MenuPanel:Destroy()
+            end
+        end)
+        wait(0.5)
+        pcall(function()
+            game:Shutdown()
+        end)
+        return  
+    end
+
+    if playerCount > 1 then
+        pcall(function()
+            game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+        end)
+    end
+end)
 
 
 local success, fail = pcall(function()
@@ -499,7 +508,6 @@ local blurEffect = Instance.new("BlurEffect")
 blurEffect.Size = 5
 blurEffect.Parent = game.Lighting
 
--- Capturar errores en el cambio de color
 task.spawn(function()
     local success, err = pcall(function()
         local currentIndex = 1
@@ -514,15 +522,18 @@ task.spawn(function()
             local upperLineTween = TweenService:Create(upperLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
             local middleLineTween = TweenService:Create(middleLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
             local frontSwitchLineTween = TweenService:Create(frontSwitchLine, colorChangeTweenInfo, {BackgroundColor3 = nextColor, Transparency = 0.6})
-            
-            leftLineTween:Play()
-            rightLineTween:Play()
-            topLineTween:Play()
-            bottomLineTween:Play()
-            centerLineTween:Play()
-            upperLineTween:Play()
-            middleLineTween:Play()
-            frontSwitchLineTween:Play()
+
+            pcall(function()
+                leftLineTween:Play()
+                rightLineTween:Play()
+                topLineTween:Play()
+                bottomLineTween:Play()
+                centerLineTween:Play()
+                upperLineTween:Play()
+                middleLineTween:Play()
+                frontSwitchLineTween:Play()
+            end)
+
             wait(0.7)
             currentIndex = currentIndex % #colorArray + 1
         end
@@ -533,8 +544,10 @@ task.spawn(function()
     end
 end)
 
-ButtonCorner.Parent = MinimizeButton
-sound.SoundId = "rbxassetid://1293432192"
+pcall(function()
+    ButtonCorner.Parent = MinimizeButton
+    sound.SoundId = "rbxassetid://1293432192"
+end)
 
 local menuExpanded = false
 local expandTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
@@ -546,37 +559,51 @@ local expandTween = TweenService:Create(MenuPanel, expandTweenInfo, {Size = expa
 local contractTween = TweenService:Create(MenuPanel, contractTweenInfo, {Size = contractSize})
 
 local function SaveMenuState(isExpanded)
-    local stateInfo = {
-        IsExpanded = isExpanded,
-        LastModified = os.time()
-    }
-    writefile("MenuState.json", HttpService:JSONEncode(stateInfo))
-end
+    local success, err = pcall(function()
+        local stateInfo = {
+            IsExpanded = isExpanded,
+            LastModified = os.time()
+        }
+        writefile("MenuState.json", HttpService:JSONEncode(stateInfo))
+    end)
 
--- Función para cargar el estado
-local function LoadMenuState()
-    if isfile("MenuState.json") then
-        local fileContents = readfile("MenuState.json")
-        local stateData = HttpService:JSONDecode(fileContents)
-        if stateData and stateData.IsExpanded ~= nil then
-            return stateData.IsExpanded
-        end
+    if not success then
+        warn("Error al guardar el estado del menú: " .. tostring(err))
     end
-    return false -- Valor predeterminado si no hay archivo
 end
 
--- Cargar el estado al inicio
+local function LoadMenuState()
+    local success, result = pcall(function()
+        if isfile("MenuState.json") then
+            local fileContents = readfile("MenuState.json")
+            local stateData = HttpService:JSONDecode(fileContents)
+            if stateData and stateData.IsExpanded ~= nil then
+                return stateData.IsExpanded
+            end
+        end
+        return false
+    end)
+
+    if not success then
+        warn("Error al cargar el estado del menú: " .. tostring(result))
+        return false
+    end
+
+    return result
+end
+
 menuExpanded = LoadMenuState()
 MenuPanel.Visible = menuExpanded
 
-if menuExpanded then
-    MenuPanel.Size = expandSize
-    MinimizeButton.Text = "X"
-else
-    MenuPanel.Size = contractSize
-    MinimizeButton.Text = "+"
-end
-
+pcall(function()
+    if menuExpanded then
+        MenuPanel.Size = expandSize
+        MinimizeButton.Text = "X"
+    else
+        MenuPanel.Size = contractSize
+        MinimizeButton.Text = "+"
+    end
+end)
 
 MinimizeButton.MouseButton1Click:Connect(function()
     local success, err = pcall(function()
@@ -593,11 +620,11 @@ MinimizeButton.MouseButton1Click:Connect(function()
             sound:Play()
         end
         menuExpanded = not menuExpanded
-        SaveMenuState(menuExpanded) -- Guardar el nuevo estado
+        SaveMenuState(menuExpanded)
     end)
 
     if not success then
-        warn("Error al minimizar/expandir el menú: " .. err)
+        warn("Error al minimizar/expandir el menú: " .. tostring(err))
     end
 end)
 
@@ -615,7 +642,7 @@ end
 
 local function updateMissionName()
     local success, err = pcall(function()
-        missionTextLabel.Text = "Misión: " .. ReplicatedStorage.Datas[player.UserId].Quest.Value .. " | Forma: " .. player.Status.Transformation.Value
+        missionTextLabel.Text = "Misión: " .. ReplicatedStorage.Datas[player.UserId].Quest.Value
     end)
 
     if not success then
@@ -626,12 +653,6 @@ end
 updateMissionName()
 ReplicatedStorage.Datas[Players.LocalPlayer.UserId].Quest:GetPropertyChangedSignal("Value"):Connect(function()
     updateMissionName()
-    local success, err = pcall(function()
-        Players.LocalPlayer.Status.Transformation:GetPropertyChangedSignal("Value"):Connect(updateText)
-    end)
-    if not success then
-        warn("Error al conectar la señal de cambio de transformación: " .. tostring(err))
-    end
 end)
 
 local function updateTime()
@@ -673,22 +694,30 @@ local function initSwitches(MenuPanel)
         return switchButton, switchBall
     end
 
-    local switchButton1, switchBall1 = createSwitchModel(MenuPanel, UDim2.new(0.1, 75, 0, 69), "Switch1")
-    local switchButton2, switchBall2 = createSwitchModel(MenuPanel, UDim2.new(0.6, 75, 0, 69), "Switch2")
-    local switchButton3, switchBall3 = createSwitchModel(MenuPanel, UDim2.new(0.285, 0, 0.2, 36), "Switch3")
-    local switchButton5, switchBall5 = createSwitchModel(MenuPanel, UDim2.new(0.220, 19, 0.2, 81), "Switch5")
-    local switchButton6, switchBall6 = createSwitchModel(MenuPanel, UDim2.new(0.239, 19, 0.2, 125), "Switch6")
-    local switchButton7, switchBall7 = createSwitchModel(MenuPanel, UDim2.new(0.4, 49, 0.242, 125), "Switch7")
+    local function safeCreateSwitch(position, switchName)
+    local success, button, ball = pcall(function() return createSwitchModel(MenuPanel, position, switchName) end)
+    return success and button, ball or nil, nil
+end
+
+local switchButton1, switchBall1 = safeCreateSwitch(UDim2.new(0.1, 75, 0, 69), "Switch1")
+local switchButton2, switchBall2 = safeCreateSwitch(UDim2.new(0.6, 75, 0, 69), "Switch2")
+local switchButton3, switchBall3 = safeCreateSwitch(UDim2.new(0.285, 0, 0.2, 36), "Switch3")
+local switchButton5, switchBall5 = safeCreateSwitch(UDim2.new(0.220, 19, 0.2, 81), "Switch5")
+local switchButton6, switchBall6 = safeCreateSwitch(UDim2.new(0.239, 19, 0.2, 125), "Switch6")
+local switchButton7, switchBall7 = safeCreateSwitch(UDim2.new(0.4, 49, 0.242, 125), "Switch7")
 
     local function SaveSwitchState(isActive, switchName)
+    pcall(function()
         local SwitchInfo = {
             SwitchOn = isActive,
             LastModified = os.time()
         }
         writefile(switchName.."_SwitchState.json", game:GetService("HttpService"):JSONEncode(SwitchInfo))
-    end
+    end)
+end
 
-    local function LoadSwitchState(switchName)
+local function LoadSwitchState(switchName)
+    local success, result = pcall(function()
         if isfile(switchName.."_SwitchState.json") then
             local fileContents = readfile(switchName.."_SwitchState.json")
             if fileContents then
@@ -699,9 +728,17 @@ local function initSwitches(MenuPanel)
             end
         end
         return false
+    end)
+
+    if success then
+        return result
+    else
+        return false
     end
+end
 
     local function toggleSwitch(isActive, switchBall)
+    pcall(function()
         if isActive then
             switchBall.Position = UDim2.new(1, -35, 0.5, -15)
             switchBall.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
@@ -709,14 +746,20 @@ local function initSwitches(MenuPanel)
             switchBall.Position = UDim2.new(0, 5, 0.5, -15)
             switchBall.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
         end
-    end
+    end)
+end
 
-    local isLoop1Active = LoadSwitchState("Switch1")
-    local isLoop2Active = LoadSwitchState("Switch2")
-    local isLoop3Active = LoadSwitchState("Switch3")
-    local isLoop5Active = LoadSwitchState("Switch5")
-    local isLoop6Active = LoadSwitchState("Switch6")
-    local isLoop7Active = LoadSwitchState("Switch7")
+    local function safeLoadSwitchState(switchName)
+    local success, result = pcall(function() return LoadSwitchState(switchName) end)
+    return success and result or false
+end
+
+local isLoop1Active = safeLoadSwitchState("Switch1")
+local isLoop2Active = safeLoadSwitchState("Switch2")
+local isLoop3Active = safeLoadSwitchState("Switch3")
+local isLoop5Active = safeLoadSwitchState("Switch5")
+local isLoop6Active = safeLoadSwitchState("Switch6")
+local isLoop7Active = safeLoadSwitchState("Switch7")
 
     local function loop1()
         pcall(function()                     
@@ -884,7 +927,71 @@ end)
    local function loop2()
         while true do
             if isLoop2Active then
+local lplr = game.Players.LocalPlayer
+local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 
+local function format_number(number)
+    local suffixes = {"", "K", "M", "B", "T", "QD"}
+    local suffix_index = 1
+
+    while math.abs(number) >= 1000 and suffix_index < #suffixes do
+        number = number / 1000.0
+        suffix_index = suffix_index + 1
+    end
+
+    return suffix_index > 1 and string.format("%.1f%s", number, suffixes[suffix_index]) or tostring(number)
+end
+
+local function updateStatsGui()
+    local success, err = pcall(function()
+        local MainFrame = lplr.PlayerGui:WaitForChild("Main"):WaitForChild("MainFrame")
+        local StatsFrame = MainFrame:WaitForChild("Frames"):WaitForChild("Stats")
+        local ZeniLabel = MainFrame.Indicator:FindFirstChild("Zeni")
+        local Bars = MainFrame:WaitForChild("Bars")
+        local HPText = Bars.Health:FindFirstChild("TextLabel")
+        local EnergyText = Bars.Energy:FindFirstChild("TextLabel")
+        
+        local health = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.Health or 0
+        local maxHealth = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.MaxHealth or 0
+        local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
+        local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
+        
+        pcall(function()
+            HPText.Text = "SALUD: " .. format_number(health) .. " / " .. format_number(maxHealth)
+        end)
+        pcall(function()
+            EnergyText.Text = "ENERGÍA: " .. format_number(ki) .. " / " .. format_number(maxKi)
+        end)
+        pcall(function()
+            ZeniLabel.Text = format_number(ldata.Zeni.Value) .. " Zeni"
+        end)
+
+        for _, stat in pairs({"Strength", "Speed", "Defense", "Energy"}) do
+            local statLabel = StatsFrame:FindFirstChild(stat)
+            if statLabel then
+                pcall(function()
+                    statLabel.Text = stat .. ": " .. format_number(ldata[stat].Value)
+                end)
+            end
+        end
+    end)
+    
+    if not success then
+        warn("Error al actualizar GUI de estadísticas:", err)
+    end
+end
+
+pcall(function()
+    updateStatsGui()
+end)
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if lplr.Character and lplr.Character:FindFirstChild("Humanoid") and isLoop2Active then
+        pcall(function()
+            updateStatsGui()
+        end)
+    end
+end)
             end
             task.wait(.5)
         end
@@ -978,37 +1085,42 @@ end
     local function loop5()
         while true do
             pcall(function()
-                if isLoop2Active then
-                
-                local Players = game:GetService("Players")
+                if isLoop3Active then
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local lplr = Players.LocalPlayer
 
-if lplr.PlayerGui:FindFirstChild("Start") then
-    ReplicatedStorage.Package.Events.Start:InvokeServer()
-
-    if Workspace.Others:FindFirstChild("Title") then
-        Workspace.Others.Title:Destroy()
-    end
-
-    local cam = Workspace.CurrentCamera
-    cam.CameraType = Enum.CameraType.Custom
-    cam.CameraSubject = lplr.Character.Humanoid
-
-    _G.Ready = true
-    game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-
-    lplr.PlayerGui.Main.Enabled = true
-
+pcall(function()
     if lplr.PlayerGui:FindFirstChild("Start") then
-        lplr.PlayerGui.Start:Destroy()
-    end
+        ReplicatedStorage.Package.Events.Start:InvokeServer()
 
-    lplr.PlayerGui.Main.bruh.Enabled = false
-    lplr.PlayerGui.Main.bruh.Enabled = true
-end
+        if Workspace.Others:FindFirstChild("Title") then
+            Workspace.Others.Title:Destroy()
+        end
+
+        local cam = Workspace.CurrentCamera
+        cam.CameraType = Enum.CameraType.Custom
+        cam.CameraSubject = lplr.Character.Humanoid
+
+        _G.Ready = true
+        game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+
+        lplr.PlayerGui.Main.Enabled = true
+
+        if lplr.PlayerGui:FindFirstChild("Start") then
+            lplr.PlayerGui.Start:Destroy()
+        end
+
+        pcall(function()
+            lplr.PlayerGui.Main.bruh.Enabled = false
+        end)
+        pcall(function()
+            lplr.PlayerGui.Main.bruh.Enabled = true
+        end)
+    end
+end)
                     local s = game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Quest
 s.Visible = false
 s.Position = UDim2.new(0.01, 0, 0.4, 0)
@@ -1230,7 +1342,7 @@ pcall(function()
                     local humanoid = lplr.Character:WaitForChild("Humanoid")
 
                     pcall(function()
-                        if ldata.Quest.Value ~= "" and humanoid.Health > 0 then
+                        if ldata.Quest.Value ~= "" then
                             local successCha, errorCha = pcall(function()
                                 game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
                             end)
@@ -1322,9 +1434,11 @@ end
     end)
     
     switchButton3.MouseButton1Click:Connect(function()
+    pcall(function()
     isLoop3Active = not isLoop3Active
     toggleSwitch(isLoop3Active, switchBall3)
     SaveSwitchState(isLoop3Active, "Switch3")
+    end)
 end)
 
     switchButton5.MouseButton1Click:Connect(function()
@@ -1419,7 +1533,9 @@ local function Cal()
         RunService.RenderStepped:Connect(function()
             count = count + 1
             if tick() - lastUpdate >= 1 then
-                fpsTextLabel.Text = "FPS: " .. count
+                pcall(function() 
+                    fpsTextLabel.Text = "FPS: " .. count
+                end)
                 count, lastUpdate = 0, tick()
             end
         end)
@@ -1446,37 +1562,38 @@ local function Cal()
     end
 
     button.MouseButton1Click:Connect(function()
-        if bestId and #game.Players:GetPlayers() > 2 then
-            pcall(function() 
+        pcall(function() 
+            if bestId and #game.Players:GetPlayers() > 2 then
                 TeleportService:TeleportToPlaceInstance(game.PlaceId, bestId) 
-            end) 
-        end
+            end
+        end)
     end)
 
     local function updateBallColor()
         local currentHour = math.floor(game.Lighting.ClockTime)
         local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
 
-        if currentHour == 15 and currentMinute >= 40 then
-            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
-        elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
-            if (tick() % 1) < 0.5 then
-                ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
+        pcall(function()
+            if currentHour == 15 and currentMinute >= 40 then
+                ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
+            elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
+                if (tick() % 1) < 0.5 then
+                    ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
+                else
+                    ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
+                end
             else
-                ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
+                ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
             end
-        else
-            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
-        end
+        end)
     end
-    
 
     while true do
-        pcall(updateFPS)   
-        pcall(updatePing)   
-        pcall(updateTime)   
-        button.Text = Serverping()        
-        pcall(updateBallColor)   
+        pcall(function() updateFPS() end)   
+        pcall(function() updatePing() end)   
+        pcall(function() updateTime() end)   
+        pcall(function() button.Text = Serverping() end)        
+        pcall(function() updateBallColor() end)   
         task.wait(1/60) 
     end
 end
