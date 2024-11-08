@@ -675,6 +675,7 @@ local function initSwitches(MenuPanel)
 
     local switchButton1, switchBall1 = createSwitchModel(MenuPanel, UDim2.new(0.1, 75, 0, 69), "Switch1")
     local switchButton2, switchBall2 = createSwitchModel(MenuPanel, UDim2.new(0.6, 75, 0, 69), "Switch2")
+    local switchButton3, switchBall3 = createSwitchModel(MenuPanel, UDim2.new(0.285, 0, 0.2, 36), "Switch3")
     local switchButton5, switchBall5 = createSwitchModel(MenuPanel, UDim2.new(0.220, 19, 0.2, 81), "Switch5")
     local switchButton6, switchBall6 = createSwitchModel(MenuPanel, UDim2.new(0.239, 19, 0.2, 125), "Switch6")
     local switchButton7, switchBall7 = createSwitchModel(MenuPanel, UDim2.new(0.4, 49, 0.242, 125), "Switch7")
@@ -712,6 +713,7 @@ local function initSwitches(MenuPanel)
 
     local isLoop1Active = LoadSwitchState("Switch1")
     local isLoop2Active = LoadSwitchState("Switch2")
+    local isLoop3Active = LoadSwitchState("Switch3")
     local isLoop5Active = LoadSwitchState("Switch5")
     local isLoop6Active = LoadSwitchState("Switch6")
     local isLoop7Active = LoadSwitchState("Switch7")
@@ -914,6 +916,97 @@ end)
         end
     end
 
+ local function loop3()
+        pcall(function()                   
+        local HttpService = game:GetService("HttpService")
+local player = game:GetService("Players").LocalPlayer
+local placeId = game.PlaceId  -- Obtener el ID del lugar actual
+
+repeat
+    wait()
+until player.CharacterAdded
+local character = player.Character
+local stats = character:WaitForChild("Stats")
+
+local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+
+local Forms = {'Astral Instinct','Ultra Ego','SSJB4','True God of Creation','True God of Destruction','Super Broly', 
+                'LSSJG','LSSJ4','SSJG4','LSSJ3','Mystic Kaioken','LSSJ Kaioken','SSJR3','SSJB3','God Of Destruction','God Of Creation',
+                'Jiren Ultra Instinct', 'Mastered Ultra Instinct','Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ','Blue Evolution',
+                'Dark Rose','Kefla SSJ2','SSJ Berserker','True Rose', 'SSJB Kaioken','SSJ Rose', 'SSJ Blue','Corrupt SSJ',
+                'SSJ Rage','SSJG','SSJ4','Mystic','LSSJ','SSJ3','Spirit SSJ','SSJ2 Majin','SSJ2','SSJ Kaioken','SSJ','FSSJ','Kaioken'}
+
+-- Crear el menú de transformación
+local screenGui = Instance.new("ScreenGui")
+screenGui.ResetOnSpawn = false  -- Evitar que se reinicie al reaparecer
+screenGui.Parent = game.CoreGui  -- Mostrar en CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.8, 0, 0, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.5
+frame.Parent = screenGui
+
+local transformLabel = Instance.new("TextLabel")
+transformLabel.Size = UDim2.new(1, 0, 1, 0)
+transformLabel.BackgroundTransparency = 1
+transformLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+transformLabel.TextScaled = true
+transformLabel.Text = "Transformación seleccionada: Ninguna"
+transformLabel.Parent = frame
+
+-- Función para actualizar el texto del menú (mostrando la transformación seleccionada)
+local function updateMenu(selectedForm)
+    transformLabel.Text = "Transformación seleccionada: " .. selectedForm
+end
+
+-- Variable para verificar si ya se ha ejecutado el evento para una transformación
+local alreadyEquipped = false
+
+local function transform()
+    pcall(function()
+        for i, v in pairs(Forms) do
+            if equipRemote:InvokeServer(v) then
+                -- Actualizar el menú con la transformación seleccionada
+                updateMenu(v)
+
+                -- Verificar si estamos en el lugar específico con ID 5151400895
+                if placeId == 5151400895 then
+                    -- Ejecutar el evento adicional solo si no se ha ejecutado antes
+                    if not alreadyEquipped then
+                        game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                        alreadyEquipped = true  -- Marcar que el evento ya se ejecutó
+                    end
+                end
+
+                break
+            end
+        end
+        repeat
+            wait()
+            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
+                game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+            end
+        until game.Players.LocalPlayer.Status.SelectedTransformation.Value ==
+            game.Players.LocalPlayer.Status.Transformation.Value
+    end)
+end
+
+-- Resetear el flag cuando el jugador deje de usar la transformación
+player.CharacterAdded:Connect(function()
+    alreadyEquipped = false
+end)
+
+while true and wait() do
+    if (stats.Strength.Value > 5000 and stats.Defense.Value > 5000 and stats.Energy.Value > 5000 and stats.Speed.Value > 5000) then
+        transform()
+    end
+end
+  
+        task.wait(1)
+        end)
+    end
 
     local function loop5()
         while true do
@@ -1106,16 +1199,18 @@ task.spawn(function()
     while true do
         task.wait()
         pcall(function()
-            local currentGameHour = math.floor(game.Lighting.ClockTime)
-            local playerCount = #game.Players:GetPlayers()
-            if currentGameHour < lastGameHour or currentGameHour < 3 or currentGameHour == 0 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            elseif currentGameHour >= 3 and currentGameHour < 12 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            elseif playerCount > 1 then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-            end            
-            lastGameHour = currentGameHour
+            if isLoop6Active then
+                local currentGameHour = math.floor(game.Lighting.ClockTime)
+                local playerCount = #game.Players:GetPlayers()                
+                if currentGameHour < lastGameHour or (currentGameHour >= 2 and currentGameHour < 3) then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                elseif currentGameHour >= 3 and currentGameHour < 12 then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                elseif playerCount > 1 then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                end                
+                lastGameHour = currentGameHour
+            end
         end)
     end
 end)
@@ -1129,6 +1224,7 @@ end
 local function loop7()
 pcall(function()
     task.spawn(function()
+    task.wait(8)
     while true do
         task.wait(0.1)
         pcall(function()
@@ -1203,6 +1299,12 @@ end
             SaveSwitchState(isLoop2Active, "Switch2")
         end)
     end)
+    
+    switchButton3.MouseButton1Click:Connect(function()
+    isLoop3Active = not isLoop3Active
+    toggleSwitch(isLoop3Active, switchBall3)
+    SaveSwitchState(isLoop3Active, "Switch3")
+end)
 
     switchButton5.MouseButton1Click:Connect(function()
         pcall(function()
@@ -1230,12 +1332,14 @@ end
 
     toggleSwitch(isLoop1Active, switchBall1)
     toggleSwitch(isLoop2Active, switchBall2)
+    toggleSwitch(isLoop3Active, switchBall3)
     toggleSwitch(isLoop5Active, switchBall5)
     toggleSwitch(isLoop6Active, switchBall6)
     toggleSwitch(isLoop7Active, switchBall7)
 
     coroutine.wrap(loop1)()
     coroutine.wrap(loop2)()
+    coroutine.wrap(loop3)()
     coroutine.wrap(loop5)()
     coroutine.wrap(loop6)()
     coroutine.wrap(loop7)()
