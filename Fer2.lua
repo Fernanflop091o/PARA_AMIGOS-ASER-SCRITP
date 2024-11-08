@@ -725,7 +725,7 @@ local data = game.ReplicatedStorage.Datas[player.UserId]
 local events = game:GetService("ReplicatedStorage").Package.Events
 
 local missions = {
-   { name = "Klirin", bossName = "Klirin", requiredValue = 0, endRange = 20000 },
+    { name = "Klirin", bossName = "Klirin", requiredValue = 0, endRange = 20000 },
     { name = "Kid Nohag", bossName = "Kid Nohag", requiredValue = 20000, endRange = 100001 },
     { name = "Radish", bossName = "Radish", requiredValue = 100001, endRange = 200000 },
     { name = "Mapa", bossName = "Mapa", requiredValue = 200001, endRange = 300000 },
@@ -758,16 +758,17 @@ local function assignQuest()
     local checkValue = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
 
     if checkValue >= 200000000 and game.placeId ~= 5151400895 and isLoop1Active then
-        if data.Zeni.Value >= 15000 then
-            local A_1 = "Vills Planet"
-            local Event = events.TP
-            Event:InvokeServer(A_1)
-            return
-        else 
-            SelectedQuest = "SSJG Kakata"
-            SelectedMob = "SSJG Kakata"
-            return
-        end
+        pcall(function()
+            if data.Zeni.Value >= 15000 then
+                local A_1 = "Vills Planet"
+                local Event = events.TP
+                Event:InvokeServer(A_1)
+            else
+                SelectedQuest = "SSJG Kakata"
+                SelectedMob = "SSJG Kakata"
+            end
+        end)
+        return
     end
 
     if firstQuest == true then
@@ -778,32 +779,35 @@ local function assignQuest()
     local lowestStat = math.min(data.Strength.Value, data.Energy.Value, data.Defense.Value, data.Speed.Value)
     for _, mission in ipairs(missions) do
         if lowestStat >= mission.requiredValue and lowestStat <= mission.endRange then
-            SelectedQuest = mission.name
-            SelectedMob = mission.bossName
+            pcall(function()
+                SelectedQuest = mission.name
+                SelectedMob = mission.bossName
+            end)
             break
         end
     end
 end
 
 local function startMission()
-    local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
-    
-    if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop1Active then
-        player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-        local args = {npc}
-        events.Qaction:InvokeServer(unpack(args))
-    end
+    pcall(function()
+        local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
+        if npc and npc:FindFirstChild("HumanoidRootPart") and isLoop1Active then
+            player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+            local args = {npc}
+            events.Qaction:InvokeServer(unpack(args))
+        end
+    end)
 end
 
 local function tpToMissionBoss()
-    local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
-
-    if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and isLoop1Active then
-        player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0)
-        
-        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)   
-        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-    end
+    pcall(function()
+        local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
+        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and isLoop1Active then
+            player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0)
+            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)   
+            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+        end
+    end)
 end
 
 task.spawn(function()
@@ -826,7 +830,6 @@ task.spawn(function()
     end
 end)
 
-
 task.spawn(function()
     while true do
         task.wait(1)
@@ -847,7 +850,7 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait(1)
+        task.wait()
         if isLoop5Active then
             local success, fallo = pcall(function()
                 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
@@ -874,7 +877,6 @@ task.spawn(function() -- Auto Charge
     end
 end)
 
-
             task.wait(1)
         end)
     end
@@ -890,7 +892,7 @@ end)
 
  local function loop3()
         pcall(function()                   
-local HttpService = game:GetService("HttpService")
+        local HttpService = game:GetService("HttpService")
 local player = game:GetService("Players").LocalPlayer
 local placeId = game.PlaceId
 
@@ -963,7 +965,7 @@ player.CharacterAdded:Connect(function()
     alreadyEquipped = false
 end)
 
-while true and wait() do
+while true and task.wait() do
     if (stats.Strength.Value > 5000 and stats.Defense.Value > 5000 and stats.Energy.Value > 5000 and stats.Speed.Value > 5000) then
         transform()
     end
@@ -977,42 +979,37 @@ end
         while true do
             pcall(function()
                 if isLoop2Active then
-               local Players = game:GetService("Players")
+                
+                local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local lplr = Players.LocalPlayer
 
-local succes, fallo = pcall(function()
-    if lplr.PlayerGui:FindFirstChild("Start") then
-        ReplicatedStorage.Package.Events.Start:InvokeServer()
+if lplr.PlayerGui:FindFirstChild("Start") then
+    ReplicatedStorage.Package.Events.Start:InvokeServer()
 
-        if Workspace.Others:FindFirstChild("Title") then
-            Workspace.Others.Title:Destroy()
-        end
-
-        local cam = Workspace.CurrentCamera
-        cam.CameraType = Enum.CameraType.Custom
-        cam.CameraSubject = lplr.Character.Humanoid
-
-        _G.Ready = true
-        game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-
-        lplr.PlayerGui.Main.Enabled = true
-
-        if lplr.PlayerGui:FindFirstChild("Start") then
-            lplr.PlayerGui.Start:Destroy()
-        end
-
-        lplr.PlayerGui.Main.bruh.Enabled = false
-        lplr.PlayerGui.Main.bruh.Enabled = true
+    if Workspace.Others:FindFirstChild("Title") then
+        Workspace.Others.Title:Destroy()
     end
-end)
 
-if not succes then
-    warn(fallo)
-end              
-local s = game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Quest
+    local cam = Workspace.CurrentCamera
+    cam.CameraType = Enum.CameraType.Custom
+    cam.CameraSubject = lplr.Character.Humanoid
+
+    _G.Ready = true
+    game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+
+    lplr.PlayerGui.Main.Enabled = true
+
+    if lplr.PlayerGui:FindFirstChild("Start") then
+        lplr.PlayerGui.Start:Destroy()
+    end
+
+    lplr.PlayerGui.Main.bruh.Enabled = false
+    lplr.PlayerGui.Main.bruh.Enabled = true
+end
+                    local s = game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Quest
 s.Visible = false
 s.Position = UDim2.new(0.01, 0, 0.4, 0)
 
@@ -1029,6 +1026,8 @@ spawn(function()
         task.wait()
     end
 end)
+                end
+            end)
             task.wait(1)
         end
     end
@@ -1169,6 +1168,7 @@ task.spawn(function()
         end)
     end
 end)
+
 
 task.spawn(function()
     while true do
