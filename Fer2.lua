@@ -1363,7 +1363,7 @@ pcall(function()
                     end)
 
                     pcall(function()
-                        if ldata.Quest.Value ~= "" and ldata.Strength.Value > 40000 then
+                        if ldata.Quest.Value ~= "" and ldata.Strength.Value > 40000 and ldata.Energy.Value > 40000 and ldata.Defense.Value > 40000 and ldata.Speed.Value > 40000 then
                             local closestBoss, closestDistance = nil, math.huge
                             local playerPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position or nil
 
