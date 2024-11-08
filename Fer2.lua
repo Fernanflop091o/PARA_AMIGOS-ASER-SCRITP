@@ -893,7 +893,7 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait()
+        task.wait(1)
         if isLoop5Active then
             local success, fallo = pcall(function()
                 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
@@ -916,7 +916,7 @@ task.spawn(function() -- Auto Charge
         if not success then
             warn("Error al bloquear la acción de carga: " .. fallo)
         end
-        task.wait(0.1)
+        task.wait(0.2)
     end
 end)
 
@@ -1004,7 +1004,7 @@ local player = game:GetService("Players").LocalPlayer
 local placeId = game.PlaceId
 
 repeat
-    wait()
+    task.wait()
 until player.CharacterAdded
 local character = player.Character
 local stats = character:WaitForChild("Stats")
@@ -1059,7 +1059,7 @@ local function transform()
             end
         end
         repeat
-            wait()
+            task.wait(.1)
             if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
                 game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
             end
@@ -1129,7 +1129,7 @@ spawn(function()
     while true do
         local success, err = pcall(function()
             s.Position = UDim2.new(2, 0, 0, 0)
-            task.wait()
+            task.wait(0.4)
         end)
 
         if not success then
@@ -1284,7 +1284,7 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait()
+        task.wait(0.4)
         local succes,fallo = pcall(function()
             if data.Strength.Value >= 25000 and game:GetService("ReplicatedStorage").Datas[player.UserId].Quest.Value == "" and isLoop6Active then
                 local kidNohag = game:GetService("Workspace").Others.NPCs["Kid Nohag"]
@@ -1304,7 +1304,7 @@ end)
 task.spawn(function()
     local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
-        task.wait()
+        task.wait(0.3)
         local succes,fallo = pcall(function()
             if isLoop6Active then
                 local currentGameHour = math.floor(game.Lighting.ClockTime)
@@ -1412,7 +1412,7 @@ pcall(function()
         end
     end)
 end)
-        task.wait() -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
+        task.wait(.1) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end)
 end
 
