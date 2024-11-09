@@ -642,7 +642,23 @@ end
 
 local function updateMissionName()
     local success, err = pcall(function()
-        missionTextLabel.Text = "Misión: " .. ReplicatedStorage.Datas[player.UserId].Quest.Value
+        if game.PlaceId ~= 5151400895 then
+            missionTextLabel.Text = "Misión: " .. ReplicatedStorage.Datas[player.UserId].Quest.Value .. " | Forma: " .. player.Status.Transformation.Value
+        else
+            local livingCharacters = game.Workspace.Living:GetDescendants()
+            for _, obj in ipairs(livingCharacters) do
+                if obj:IsA("Model") then
+                    local status = obj:FindFirstChild("Status")
+                    if status then
+                        local transformation = status:FindFirstChild("Transformation")
+                        if transformation then
+                            missionTextLabel.Text = "Misión: " .. ReplicatedStorage.Datas[player.UserId].Quest.Value .. " | Forma: " .. transformation.Value
+                            break
+                        end
+                    end
+                end
+            end
+        end
     end)
 
     if not success then
@@ -651,8 +667,18 @@ local function updateMissionName()
 end
 
 updateMissionName()
+
 ReplicatedStorage.Datas[Players.LocalPlayer.UserId].Quest:GetPropertyChangedSignal("Value"):Connect(function()
     updateMissionName()
+    local success, err = pcall(function()
+        if game.PlaceId ~= 5151400895 then
+            Players.LocalPlayer.Status.Transformation:GetPropertyChangedSignal("Value"):Connect(updateText)
+        end
+    end)
+    
+    if not success then
+        warn("Error al conectar la señal de cambio de transformación: " .. tostring(err))
+    end
 end)
 
 local function updateTime()
@@ -999,86 +1025,80 @@ end)
 
  local function loop3()
         pcall(function()                   
-        local HttpService = game:GetService("HttpService")
-local player = game:GetService("Players").LocalPlayer
-local placeId = game.PlaceId
+       task.spawn(function()
+    while true do
+        task.wait(.05)
+        
+        local succes, fallo = pcall(function()
+            local Forms = {'Astral Instinct','Ultra Ego','SSJB4','True God of Creation','True God of Destruction','Super Broly', 
+                           'LSSJG','LSSJ4','SSJG4','LSSJ3','Mystic Kaioken','LSSJ Kaioken','SSJR3','SSJB3','God Of Destruction','God Of Creation',
+                           'Jiren Ultra Instinct', 'Mastered Ultra Instinct','Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ','Blue Evolution',
+                           'Dark Rose','Kefla SSJ2','SSJ Berserker','True Rose', 'SSJB Kaioken','SSJ Rose', 'SSJ Blue','Corrupt SSJ',
+                           'SSJ Rage','SSJG','SSJ4','Mystic','LSSJ','SSJ3','Spirit SSJ','SSJ2 Majin','SSJ2','SSJ Kaioken','SSJ','FSSJ','Kaioken'}
 
-repeat
-    task.wait()
-until player.CharacterAdded
-local character = player.Character
-local stats = character:WaitForChild("Stats")
+            local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
+            local player = game:GetService("Players").LocalPlayer
 
-local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
-
-local Forms = {'Astral Instinct','Ultra Ego','SSJB4','True God of Creation','True God of Destruction','Super Broly', 
-                'LSSJG','LSSJ4','SSJG4','LSSJ3','Mystic Kaioken','LSSJ Kaioken','SSJR3','SSJB3','God Of Destruction','God Of Creation',
-                'Jiren Ultra Instinct', 'Mastered Ultra Instinct','Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ','Blue Evolution',
-                'Dark Rose','Kefla SSJ2','SSJ Berserker','True Rose', 'SSJB Kaioken','SSJ Rose', 'SSJ Blue','Corrupt SSJ',
-                'SSJ Rage','SSJG','SSJ4','Mystic','LSSJ','SSJ3','Spirit SSJ','SSJ2 Majin','SSJ2','SSJ Kaioken','SSJ','FSSJ','Kaioken'}
-
-local screenGui = Instance.new("ScreenGui")
-screenGui.ResetOnSpawn = false
-screenGui.Parent = game.CoreGui
-
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 100)
-frame.Position = UDim2.new(0.8, 0, 0, 0)
-frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-frame.BackgroundTransparency = 0.5
-frame.Parent = screenGui
-
-local transformLabel = Instance.new("TextLabel")
-transformLabel.Size = UDim2.new(1, 0, 1, 0)
-transformLabel.BackgroundTransparency = 1
-transformLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-transformLabel.TextScaled = true
-transformLabel.Text = "Transformación seleccionada: Ninguna"
-transformLabel.Parent = frame
-
-local function updateMenu(selectedForm)
-    transformLabel.Text = "Transformación seleccionada: " .. selectedForm
-end
-
-local alreadyEquipped = false
-
-local function transform()
-    pcall(function()
-        for i, v in pairs(Forms) do
-            if equipRemote:InvokeServer(v) then
-                updateMenu(v)
-
-                if placeId == 5151400895 then
-                    if not alreadyEquipped then
-                        game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
-                        alreadyEquipped = true
+            local function transform()
+                task.spawn(function()
+                    for i, v in pairs(Forms) do
+                        if equipRemote:InvokeServer(v) then
+                            break
+                        end
                     end
-                end
-
-                break
+                    
+                    repeat
+                        task.wait()
+                        if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
+                            game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                        end
+                    until game.Players.LocalPlayer.Status.SelectedTransformation.Value ==
+                        game.Players.LocalPlayer.Status.Transformation.Value
+                end)
             end
+
+            local stats = player.Character:WaitForChild("Stats")
+            if stats.Strength.Value > 5000 and stats.Defense.Value > 5000 and stats.Energy.Value > 5000 and stats.Speed.Value > 5000 then
+                transform()
+            end
+        end)
+
+        if not succes then
+            warn(fallo)
         end
-        repeat
-            task.wait(.1)
-            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
-                game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
-            end
-        until game.Players.LocalPlayer.Status.SelectedTransformation.Value ==
-            game.Players.LocalPlayer.Status.Transformation.Value
-    end)
-end
-
-player.CharacterAdded:Connect(function()
-    alreadyEquipped = false
+    end
 end)
 
-while true and task.wait() do
-    if (stats.Strength.Value > 5000 and stats.Defense.Value > 5000 and stats.Energy.Value > 5000 and stats.Speed.Value > 5000) then
-        transform()
+task.spawn(function()
+    while true do
+        task.wait(.01)
+        
+        local succes, fallo = pcall(function()
+            local trans = nil
+            for _, obj in ipairs(game.Workspace.Living:GetDescendants()) do
+                if obj:IsA("Model") and obj:FindFirstChild("Status") then
+                    trans = obj.Status:FindFirstChild("Transformation") and obj.Status.Transformation.Value
+                    if trans then break end
+                end
+            end
+            
+            if game.PlaceId == 5151400895 then
+                if trans == "Forma" then
+                    return
+                elseif not trans or trans == "None" then
+                    game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                end
+            end
+        end)
+        
+        if not succes then
+            warn("Error al verificar la transformación: " .. tostring(fallo))
+        end
     end
-end
-  
-        task.wait(1)
+end)
+
+
+        task.wait(.1)
         end)
     end
 
@@ -1332,7 +1352,7 @@ task.spawn(function()
             
             
             if not mission or mission.Value == "" then
-                task.wait(.05)  -- Espera 1 segundo y luego vuelve a revisar
+                task.wait(.05)  
                 continue
             end
             
@@ -1365,6 +1385,40 @@ task.spawn(function()
                 warn("Error al invocar el evento rebirth: " .. fallo)
             end
         end
+        task.wait(0.1)
+    end
+end)
+
+task.spawn(function()
+    local tpCount = 0
+
+    while true do
+        local currentGameHour = math.floor(game.Lighting.ClockTime)
+        
+        if currentGameHour == 20 and tpCount < 2 then
+            if tpCount == 0 then
+                local success, errorMsg = pcall(function()
+                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-41388.765625, 92.34290313720703, -29013.48046875))
+                end)
+                if success then
+                    tpCount = tpCount + 1
+                    task.wait(5)
+                    if tpCount == 1 then
+                        local success2, errorMsg2 = pcall(function()
+                            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-41388.765625, 92.34290313720703, -29013.48046875))
+                        end)
+                        if not success2 then
+                            warn("Error al realizar el segundo teletransporte: " .. errorMsg2)
+                        else
+                            tpCount = tpCount + 1
+                        end
+                    end
+                else
+                    warn("Error al realizar el primer teletransporte: " .. errorMsg)
+                end
+            end
+        end
+        
         task.wait(0.1)
     end
 end)
