@@ -1302,26 +1302,60 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    local lastGameHour = math.floor(game.Lighting.ClockTime)
     while true do
         task.wait(0.3)
-        local succes,fallo = pcall(function()
+        local succes, fallo = pcall(function()
             if isLoop6Active then
                 local currentGameHour = math.floor(game.Lighting.ClockTime)
-                local playerCount = #game.Players:GetPlayers()                
-                if currentGameHour < lastGameHour or (currentGameHour >= 2 and currentGameHour < 3) then
-                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                elseif currentGameHour >= 3 and currentGameHour < 12 then
+                local playerCount = #game.Players:GetPlayers()
+                if currentGameHour >= 6 and currentGameHour < 12 then
                     game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 elseif playerCount > 1 then
                     game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 end                
-                lastGameHour = currentGameHour
             end
         end)
         if not succes then
             warn(fallo)
         end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if isLoop6Active then
+            task.wait(.05)   
+            local currentGameHour = math.floor(game.Lighting.ClockTime)
+            
+            if currentGameHour >= 20 or currentGameHour < 6 then
+                continue  
+            end
+
+            local success, fallo = pcall(function()
+                local yo = game.Players.LocalPlayer
+                local maxDist = 50
+                local bossName = "Halloween Boss"
+
+                yo.Character:SetPrimaryPartCFrame(CFrame.new(-35233.1953125, 18.168001174926758, -28942.220703125))
+                
+                local boss = nil
+                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+                    if v:IsA("Model") and v.Name == bossName and v:FindFirstChild("HumanoidRootPart") then
+                        if (yo.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).Magnitude <= maxDist then
+                            boss = v
+                            break
+                        end
+                    end
+                end
+
+                yo.Character:SetPrimaryPartCFrame(boss and CFrame.new(boss.HumanoidRootPart.Position) or CFrame.new(-35233.1953125, 18.168001174926758, -28942.220703125))
+            end)
+
+            if not success then
+                warn("Error al invocar el evento rebirth: " .. fallo)
+            end
+        end
+        task.wait(0.1)
     end
 end)
 
