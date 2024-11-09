@@ -1324,7 +1324,18 @@ end)
 task.spawn(function()
     while true do
         if isLoop6Active then
-            task.wait(.05)   
+            task.wait(0.1)
+            
+            
+            local yo = game.Players.LocalPlayer
+            local mission = ReplicatedStorage.Datas[yo.UserId].Quest
+            
+            
+            if not mission or mission.Value == "" then
+                task.wait(.05)  -- Espera 1 segundo y luego vuelve a revisar
+                continue
+            end
+            
             local currentGameHour = math.floor(game.Lighting.ClockTime)
             
             if currentGameHour >= 20 or currentGameHour < 6 then
@@ -1332,7 +1343,6 @@ task.spawn(function()
             end
 
             local success, fallo = pcall(function()
-                local yo = game.Players.LocalPlayer
                 local maxDist = 50
                 local bossName = "Halloween Boss"
 
