@@ -1668,23 +1668,31 @@ local function Cal()
     end)
 
     local function updateBallColor()
-        local currentHour = math.floor(game.Lighting.ClockTime)
-        local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
+    local currentHour = math.floor(game.Lighting.ClockTime)
+    local currentMinute = math.floor((game.Lighting.ClockTime % 1) * 60)
 
-        pcall(function()
-            if currentHour == 15 and currentMinute >= 40 then
-                ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
-            elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
-                if (tick() % 1) < 0.5 then
-                    ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
-                else
-                    ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
-                end
+    pcall(function()
+        if currentHour == 15 and currentMinute >= 40 then
+            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Morado brillante
+        elseif currentHour == 15 and currentMinute >= 0 and currentMinute < 40 then
+            if (tick() % 1) < 0.5 then
+                ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Amarillo brillante
             else
-                ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+                ballFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255) -- Morado brillante
             end
+        else
+            ballFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Amarillo brillante
+        end
+
+        task.spawn(function()
+            local bb = game:service 'VirtualUser'
+            game:service 'Players'.LocalPlayer.Idled:connect(function()
+                bb:CaptureController()
+                bb:ClickButton2(Vector2.new())
+            end)
         end)
-    end
+    end)
+end
 
     while true do
         pcall(function() updateFPS() end)   
