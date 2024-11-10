@@ -1452,8 +1452,7 @@ pcall(function()
 
                     pcall(function()
                         local successBlock, errorBlock = pcall(function()
-                            local args = {[1] = true}
-					game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
+                            
                         end)
                         if not successBlock then
                             warn("Error al intentar activar el bloqueo:", errorBlock)
