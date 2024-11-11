@@ -868,17 +868,6 @@ local function startMission()
     end)
 end
 
-local function tpToMissionBoss()
-    pcall(function()
-        local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
-        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and isLoop1Active then
-            player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0)
-            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)   
-            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-        end
-    end)
-end
-
 task.spawn(function()
     while true do
         local lag = game:GetService("RunService").Stepped:Wait()
@@ -889,8 +878,6 @@ task.spawn(function()
             if questValue ~= SelectedQuest then
                 startMission()
             end
-
-            tpToMissionBoss()
         end)
 
         if not success then
@@ -943,6 +930,28 @@ task.spawn(function() -- Auto Charge
             warn("Error al bloquear la acción de carga: " .. fallo)
         end
         task.wait(0.2)
+    end
+end)
+
+
+           task.spawn(function()
+    while true do
+        local success, errorMessage = pcall(function()
+            local player = game.Players.LocalPlayer
+            local data = game.ReplicatedStorage.Datas[player.UserId]
+            local mission = data.Quest.Value
+            
+            local boss = game:GetService("Workspace").Living:FindFirstChild(mission)
+            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame
+            end
+        end)
+
+        if not success then
+            warn("Error en el script: " .. errorMessage)
+        end
+
+        task.wait(.1)
     end
 end)
 
