@@ -934,28 +934,28 @@ task.spawn(function() -- Auto Charge
 end)
 
 
-           task.spawn(function()
+  task.spawn(function()
     while true do
-        local success, errorMessage = pcall(function()
-            local player = game.Players.LocalPlayer
-            local data = game.ReplicatedStorage.Datas[player.UserId]
-            local mission = data.Quest.Value
-            
-            local boss = game:GetService("Workspace").Living:FindFirstChild(mission)
-            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame
+        task.wait(0.1)  
+        if isLoop1Active then
+            local success, errorMessage = pcall(function()
+                local player = game.Players.LocalPlayer
+                local data = game.ReplicatedStorage.Datas[player.UserId]
+                local mission = data.Quest.Value
+
+                local boss = game:GetService("Workspace").Living:FindFirstChild(mission)
+                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame
+                end
+            end)
+
+            if not success then
+                warn("Error en el script: " .. errorMessage)
             end
-        end)
-
-        if not success then
-            warn("Error en el script: " .. errorMessage)
         end
-
-        task.wait(.1)
     end
 end)
-
-            task.wait(1)
+            task.wait(0.2)
         end)
     end
 
@@ -1058,11 +1058,25 @@ end)
                     
                     repeat
                         task.wait()
-                        if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
-                            game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                        local success1 = pcall(function()
+                            if player.Status.SelectedTransformation.Value ~= player.Status.Transformation.Value then
+                                game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                            end
+                        end)
+
+                        if not success1 then
+                            local success2 = pcall(function()
+                                if game.Workspace.Living[player.Name].Status.SelectedTransformation.Value ~= game.Workspace.Living[player.Name].Status.Transformation.Value then
+                                    game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                                end
+                            end)
+
+                            if not success2 then
+                                warn("Ambos métodos fallaron al verificar las transformaciones.")
+                            end
                         end
-                    until game.Players.LocalPlayer.Status.SelectedTransformation.Value ==
-                        game.Players.LocalPlayer.Status.Transformation.Value
+                    until game.Workspace.Living[player.Name].Status.SelectedTransformation.Value ==
+                        game.Workspace.Living[player.Name].Status.Transformation.Value
                 end)
             end
 
@@ -1074,34 +1088,6 @@ end)
 
         if not succes then
             warn(fallo)
-        end
-    end
-end)
-
-task.spawn(function()
-    while true do
-        task.wait(.01)
-        
-        local succes, fallo = pcall(function()
-            local trans = nil
-            for _, obj in ipairs(game.Workspace.Living:GetDescendants()) do
-                if obj:IsA("Model") and obj:FindFirstChild("Status") then
-                    trans = obj.Status:FindFirstChild("Transformation") and obj.Status.Transformation.Value
-                    if trans then break end
-                end
-            end
-            
-            if game.PlaceId == 5151400895 then
-                if trans == "Forma" then
-                    return
-                elseif not trans or trans == "None" then
-                    game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
-                end
-            end
-        end)
-        
-        if not succes then
-            warn("Error al verificar la transformación: " .. tostring(fallo))
         end
     end
 end)
@@ -1440,7 +1426,8 @@ local function loop7()
 pcall(function()
     task.spawn(function()
     game:GetService("RunService").Heartbeat:Connect(function()
-        if isLoop7Active then
+        if isLoop7Active and (player.Status.SelectedTransformation.Value == player.Status.Transformation.Value or 
+   game.Workspace.Living[player.Name].Status.SelectedTransformation.Value == game.Workspace.Living[player.Name].Status.Transformation.Value) then
             pcall(function()
                 for _, player in ipairs(game.Players:GetPlayers()) do
                     local ldata = game.ReplicatedStorage.Datas[player.UserId]
@@ -1518,7 +1505,7 @@ pcall(function()
         end
     end)
 end)
-        task.wait(.1) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
+        task.wait(.2) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end)
 end
 
