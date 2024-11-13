@@ -1426,8 +1426,7 @@ local function loop7()
 pcall(function()
     task.spawn(function()
     game:GetService("RunService").Heartbeat:Connect(function()
-        if isLoop7Active and (player.Status.SelectedTransformation.Value == player.Status.Transformation.Value or 
-   game.Workspace.Living[player.Name].Status.SelectedTransformation.Value == game.Workspace.Living[player.Name].Status.Transformation.Value) then
+        if isLoop7Active then
             pcall(function()
                 for _, player in ipairs(game.Players:GetPlayers()) do
                     local ldata = game.ReplicatedStorage.Datas[player.UserId]
