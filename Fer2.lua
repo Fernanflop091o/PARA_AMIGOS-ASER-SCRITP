@@ -919,39 +919,26 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function() -- Auto Charge
+task.spawn(function()
     while true do
-        local success, fallo = pcall(function()
-            local args = {[1] = true}
-            game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(unpack(args))
-        end)
-
-        if not success then
-            warn("Error al bloquear la acción de carga: " .. fallo)
-        end
-        task.wait(0.2)
-    end
-end)
-
-
-  task.spawn(function()
-    while true do
-        task.wait(0.1)  
+        task.wait(.1)
         if isLoop1Active then
-            local success, errorMessage = pcall(function()
+            task.spawn(function()
                 local player = game.Players.LocalPlayer
                 local data = game.ReplicatedStorage.Datas[player.UserId]
                 local mission = data.Quest.Value
+                local boss = game.Workspace.Living:FindFirstChild(mission)
 
-                local boss = game:GetService("Workspace").Living:FindFirstChild(mission)
                 if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    task.spawn(function()
+                        player.Status.Blocking.Value = true
+                        local args = {[1] = "Blacknwhite27",[2] = 1}
+		game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))		
+                        game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
+                    end)
                     player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame
                 end
             end)
-
-            if not success then
-                warn("Error en el script: " .. errorMessage)
-            end
         end
     end
 end)
@@ -1039,7 +1026,7 @@ end)
         task.wait(.05)
         
         local succes, fallo = pcall(function()
-            local Forms = {'Astral Instinct','Ultra Ego','SSJB4','True God of Creation','True God of Destruction','Super Broly', 
+            local Forms = {'Divine Rose Prominence','Astral Instinct','Ultra Ego','SSJB4','True God of Creation','True God of Destruction','Super Broly', 
                            'LSSJG','LSSJ4','SSJG4','LSSJ3','Mystic Kaioken','LSSJ Kaioken','SSJR3','SSJB3','God Of Destruction','God Of Creation',
                            'Jiren Ultra Instinct', 'Mastered Ultra Instinct','Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ','Blue Evolution',
                            'Dark Rose','Kefla SSJ2','SSJ Berserker','True Rose', 'SSJB Kaioken','SSJ Rose', 'SSJ Blue','Corrupt SSJ',
@@ -1425,51 +1412,49 @@ end
 local function loop7()
 pcall(function()
     task.spawn(function()
-    game:GetService("RunService").Heartbeat:Connect(function()
-        if isLoop7Active then
-            pcall(function()
+    -- Espera 12 segundos antes de comenzar
+    task.wait(12)
+
+    while true do
+        task.wait(0.1)
+
+        if isLoop7Active then  -- Verifica si el bucle está activo
+
+            task.spawn(function()
                 for _, player in ipairs(game.Players:GetPlayers()) do
                     local ldata = game.ReplicatedStorage.Datas[player.UserId]
                     local lplr = game.Players.LocalPlayer
                     local Ki = lplr.Character:WaitForChild("Stats"):WaitForChild("Ki")
                     local humanoid = lplr.Character:WaitForChild("Humanoid")
 
-                    pcall(function()
+                    task.spawn(function()
                         if ldata.Quest.Value ~= "" then
-                            local successCha, errorCha = pcall(function()
-                                game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
-                            end)
-                            if not successCha then
-                                warn("Error en cha: ", errorCha)
-                            end
+                            -- Aquí puedes añadir tu lógica relacionada con las misiones si es necesario
                         end
                     end)
 
-                    pcall(function()
-                        local successBlock, errorBlock = pcall(function()
-                            
-                        end)
-                        if not successBlock then
-                            warn("Error al intentar activar el bloqueo:", errorBlock)
-                        end
+                    task.spawn(function()
+                        -- Aquí puedes agregar lógica relacionada con el bloqueo si es necesario
                     end)
 
-                    pcall(function()
+                    task.spawn(function()
                         if ldata.Quest.Value ~= "" and ldata.Strength.Value > 40000 and ldata.Energy.Value > 40000 and ldata.Defense.Value > 40000 and ldata.Speed.Value > 40000 then
                             local closestBoss, closestDistance = nil, math.huge
                             local playerPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position or nil
 
                             if playerPos then
-                                for _, v in ipairs(game.Workspace.Living:GetChildren()) do
-                                    if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                                        local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
-                                        if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
-                                            closestDistance, closestBoss = distance, v
+                                task.spawn(function()
+                                    for _, v in ipairs(game.Workspace.Living:GetChildren()) do
+                                        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                                            local distance = (playerPos - v.HumanoidRootPart.Position).magnitude
+                                            if distance < closestDistance and v.Humanoid.Health > 0 and v.Name ~= player.Character.Name then
+                                                closestDistance, closestBoss = distance, v
+                                            end
                                         end
                                     end
-                                end
+                                end)
 
-                                pcall(function()
+                                task.spawn(function()
                                     if closestBoss and closestDistance <= 12 and closestBoss.Humanoid.Health > 0 then
                                         local attacks = {
                                             "Super Dragon Fist", "God Slicer", "Spirit Barrage", 
@@ -1483,13 +1468,11 @@ pcall(function()
 
                                         for _, attackName in ipairs(attacks) do
                                             task.spawn(function() 
-                                                pcall(function()
-                                                    if type(attackName) == "string" then
-                                                        game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
-                                                    elseif type(attackName) == "function" then
-                                                        attackName()
-                                                    end
-                                                end)
+                                                if type(attackName) == "string" then
+                                                    game.ReplicatedStorage.Package.Events.mel:InvokeServer(attackName, "Blacknwhite27")
+                                                elseif type(attackName) == "function" then
+                                                    attackName()
+                                                end
                                             end)
                                         end
                                     end
@@ -1501,8 +1484,10 @@ pcall(function()
                     end)
                 end
             end)
+
+            task.wait(0.05)
         end
-    end)
+    end
 end)
         task.wait(.2) -- Aumentar la espera entre iteraciones principales para reducir la frecuencia de ejecuciÃ³n
     end)
@@ -1705,4 +1690,4 @@ pcall(showPlayerThumbnail)
 
 if not success then
     warn("Error en la inicialización: " .. tostring(fail))
-end
+end 
