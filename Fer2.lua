@@ -931,15 +931,26 @@ task.spawn(function()
 
                 if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                     task.spawn(function()
-                        player.Status.Blocking.Value = true
-                        local args = {[1] = "Blacknwhite27",[2] = 1}
-		game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))		
-                        game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
+                        player.Status.Blocking.Value = true                        
                     end)
                     player.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame
                 end
             end)
         end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        local ldata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(tostring(game.Players.LocalPlayer.UserId))
+
+        if ldata.Quest.Value ~= "" then
+        game.ReplicatedStorage.Package.Events.cha:InvokeServer("Blacknwhite27")
+            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)           
+        end
+
+        task.wait(0.2)
     end
 end)
             task.wait(0.2)
@@ -1427,16 +1438,7 @@ pcall(function()
                     local Ki = lplr.Character:WaitForChild("Stats"):WaitForChild("Ki")
                     local humanoid = lplr.Character:WaitForChild("Humanoid")
 
-                    task.spawn(function()
-                        if ldata.Quest.Value ~= "" then
-                            -- Aquí puedes añadir tu lógica relacionada con las misiones si es necesario
-                        end
-                    end)
-
-                    task.spawn(function()
-                        -- Aquí puedes agregar lógica relacionada con el bloqueo si es necesario
-                    end)
-
+                    
                     task.spawn(function()
                         if ldata.Quest.Value ~= "" and ldata.Strength.Value > 40000 and ldata.Energy.Value > 40000 and ldata.Defense.Value > 40000 and ldata.Speed.Value > 40000 then
                             local closestBoss, closestDistance = nil, math.huge
